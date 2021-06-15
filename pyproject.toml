@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "velo-action"
+version = "0.1.0"
+description = ""
+authors = [""]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+semantic-version = "^2.8.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.3"
+black = "^21.5b2"
+flake8 = "^3.8.4"
+flake8-bugbear = "^20.11.1"
+mypy = "^0.790"
+pylint = "^2.7.4"
+pex = "^2.1.42"
+pytest-mock = "^3.6.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ['py39']
+safe = true
+line-length = 180
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | _build
+  | build
+  | dist
+  | migrations
+)/
+'''

@@ -3,6 +3,46 @@ on:
   push:
 
 jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Cache environment
+        id: cached-poetry
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.poetry/venv
+            /opt/hostedtoolcache/Python/3.9.5/x64/bin/poetry
+          key: venv-action-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9.5"
+          architecture: "x64"
+
+      - run: |
+          pip install poetry
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project false
+          poetry config cache-dir ~/.poetry
+          poetry config virtualenvs.path ~/.poetry/venv
+
+      - run: |
+          poetry install --no-root
+
+      - run: poetry run black --check --config=pyproject.toml .
+      - run: poetry run flake8 --config='.flake8' .
+      - run: poetry run pylint --rcfile=.pylintrc --fail-under=7 .
+      - run: poetry run mypy --config-file=.mypy.ini .
+
+      - name: Run markdownlint
+        uses: avto-dev/markdown-lint@v1.5.0
+        with:
+          config: ".markdownlint.yaml"
+          args: .
   test:
     runs-on: ubuntu-latest
     name: A job to say hello
