@@ -8,6 +8,12 @@ update:
 test:
 	poetry run pytest . -c pytest.ini -v
 
+image:
+	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
+
+run: image
+	docker run -it --rm --name velo-action eu.gcr.io/nube-hub/velo-action:dev Ola Trine Nils
+
 lint: black flake8 mypy pylint yamllint markdownlint
 
 black:

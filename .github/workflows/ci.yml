@@ -45,14 +45,43 @@ jobs:
           args: .
   test:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Test Velo action using local file
     steps:
       - uses: actions/checkout@v2
-      - name: Hello world action step
-        id: hello
+      - name: Velo Deploy
+        id: velo
         uses: ./  # Uses the action in the root directory
         with:
           who-to-greet: 'Mona the Octocat'
       # Use the output from the `hello` step
+      # - name: Get the output time
+      #   run: echo "The time was ${{ steps.velo.outputs.time }}"
+
+  velo:
+    runs-on: ubuntu-latest
+    name: Test Velo action using action reference
+    steps:
+      - uses: actions/checkout@v2
+      - name: Velo Deploy
+        id: velo
+        uses: kolonialno/velo-action
+        with:
+          who-to-greet: 'Mona the Octocat'
+      # Use the output from the `hello` step
       - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+        run: echo "The time was ${{ steps.velo.outputs.time }}"
+
+  composite:
+    runs-on: ubuntu-latest
+    name: Test Composite
+    steps:
+      - uses: actions/checkout@v2
+      - name: Hello world action step
+        id: hello
+        uses: ./.github/actions/composite  # Uses the action in the root directory
+        with:
+          who-to-greet: 'Mona the Octocat'
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "Random number ${{ steps.hello.outputs.random-number }}"
+        shell: bash

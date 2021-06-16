@@ -1,0 +1,9 @@
+---
+version: '3.8'
+
+services:
+  velo-action:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: eu.gcr.io/nube-hub/velo-action:dev
