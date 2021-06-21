@@ -1,0 +1,2 @@
+export OCTOPUS_CLI_SERVER="https://octopusdeploy.prod.nube.tech"
+export OCTOPUS_CLI_API_KEY=

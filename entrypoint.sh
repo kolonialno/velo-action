@@ -1,3 +1,3 @@
-#!/bin/sh -l
-
-python main.py
+#!/bin/bash
+set -e
+poetry run python velo_action/action.py

@@ -1,22 +1,26 @@
-name: Test Velo-action on main branch
+name: Test Velo-action from local path
 on:
   push:
-    branches:
-      - "main"
+    branches-ignore:
+      - main
 
 env:
   IMAGE: eu.gcr.io/nube-hub/velo-action
+  TEST: test
 
 jobs:
-  test_velo_action_main:
-    runs-on: ubuntu-latest
-    name: Test Velo-action in main branch
+  test_action_in_repo:
+    runs-on: ubuntu-18.04
+    name: Test Velo action using local file
     steps:
       - uses: actions/checkout@v2
 
+      # - name: Rebuild velo-action image before testing it
+      #   run: docker build -t act-github-actions-velo:latest .
+
       - name: Velo Version
         id: velo_version
-        uses: kolonialno/velo-action@main
+        uses: ./.github/actions/velo
         with:
           mode: VERSION
 
@@ -28,25 +32,26 @@ jobs:
 
       - run: gcloud auth configure-docker -q
       - run: |
-          docker build -t eu.gcr.io/nube-hub/velo-action:${{ steps.velo_version.outputs.version }} .
-          docker tag eu.gcr.io/nube-hub/velo-action:${{ steps.velo_version.outputs.version }} ${{ env.IMAGE }}:latest
+          docker build -t ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }} .
+          docker tag ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }} ${{ env.IMAGE }}:latest
 
       - name: Wait on CI
         uses: lewagon/wait-on-check-action@v0.2
-        if: ${{ !env.ACT }}  # Do not run when testing locally using act
+        if: ${{ !env.ACT }}  # Do not wait then testing locally using act
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
-          running-workflow-name: test_velo_action_main
+          running-workflow-name: test_action_in_repo
           check-name: CI done
 
-      - name: Push all image tags to registry
-        run: docker push ${{ env.IMAGE }}
+      - run: |
+          docker push ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }}
+          docker push ${{ env.IMAGE }}:latest
 
       - name: Velo Deploy
         id: velo_deploy
-        uses: kolonialno/velo-action@main
+        uses: .github/actions/velo
         with:
           mode: DEPLOY
           octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}

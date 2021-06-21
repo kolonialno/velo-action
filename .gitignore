@@ -22,3 +22,9 @@ __pypackages__/
 
 appversion.json
 appversion.txt
+
+.act.secrets
+.envrc
+deploy
+.vscode
+.idea
