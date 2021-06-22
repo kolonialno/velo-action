@@ -3,7 +3,8 @@ set -e
 
 cd $GITHUB_WORKSPACE
 
-echo MODE=$MODE
+export MODE=$INPUT_MODE
+echo MODE=$INPUT_MODE
 
 gitversion > appversion.json
 
@@ -25,7 +26,6 @@ echo VERSION=$VERSION
 
 echo "::set-output name=version::$VERSION"
 
-export MODE=$INPUT_MODE
 if [ "$MODE" = 'DEPLOY' ]; then
 
     export OCTOPUS_CLI_SERVER=$INPUT_OCTOPUS_CLI_SERVER
