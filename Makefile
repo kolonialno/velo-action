@@ -1,4 +1,3 @@
-
 VERSION_FILE=appversion.txt
 VERSION=`cat $(VERSION_FILE)`
 
@@ -18,20 +17,15 @@ test_image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker run -it --rm --name velo-action eu.gcr.io/nube-hub/velo-action:dev -- poetry run pytest test -c pytest.ini -v
 
-image_no_cache:
-	docker build -t eu.gcr.io/nube-hub/velo-action:dev . --no-cache
-	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
-
 image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
-	docker image inspect eu.gcr.io/nube-hub/velo-action:dev --format='{{.Size}}'
 
 run: image
-	docker run -it --rm --name velo-action act-github-actions-velo:latest
+	docker-compose run --rm velo-action
 
 bash: image
-	docker run -it --rm --name velo-action --entrypoint bash eu.gcr.io/nube-hub/velo-action:dev
+	docker-compose run --rm velo-action --entrypoint bash
 
 staging: version
 	velo deploy-local-dir --version $(VERSION) --project-name velo-action --environment staging --tempdir-behavior existing_folder --tempdir-existing-folder deploy --local_dir .deploy

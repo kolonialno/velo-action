@@ -28,6 +28,8 @@ RUN wget --quiet https://github.com/GitTools/GitVersion/releases/download/$GITVE
     && mv /tmp/** /usr/local/bin \
     && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
 
+RUN mkdir -p /github/workspace
+
 ENV PYTHONPATH "${PYTHONPATH}:/velo_action/"
 ENV PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
@@ -48,6 +50,8 @@ RUN set -e \
     && poetry install --no-interaction --no-ansi $POETRY_INSTALL_ARGS
 
 COPY velo_action/ velo_action/
+
+COPY key.json /key.json
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

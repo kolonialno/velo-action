@@ -25,7 +25,7 @@ class Gitversion:
 
     def _create_gitversion_config_file(self, path):
         gitversion = """
-            ---git
+            ---
             mode: Mainline
             """
         try:
@@ -37,7 +37,7 @@ class Gitversion:
         except IOError as e:
             logging.error(f"Could not create GitVersion.yml file at {path}", exc_info=e)
 
-    def generate_version(self):
+    def generate_version(self, path):
         """Generate a GitVersion version
 
         Requires a initialised repo, aka .git folder and a GitVersion.yml configurations file.
@@ -45,7 +45,9 @@ class Gitversion:
         If GitVersion.yml is not found, one will be generated with the Mainline mode.
         https://gitversion.readthedocs.io/en/latest/input/docs/reference/versioning-modes/mainline-development/
         """
-        gitversion_path = str(BASE_DIR / "GitVersion.yml")
+        assert os.path.isdir(path)
+
+        gitversion_path = path + "/GitVersion.yml"
 
         if not os.path.isfile(gitversion_path):
             logging.warning("GitVersion.yml not found.")
@@ -53,10 +55,13 @@ class Gitversion:
             self._create_gitversion_config_file(gitversion_path)
 
         assert os.path.isfile(gitversion_path)
-        result = subprocess.run("gitversion", stdout=subprocess.PIPE)
+        result = subprocess.run("gitversion", stdout=subprocess.PIPE, cwd=path).stdout.decode("utf8")
 
-        print(result)
+        logging.debug(f"Gitversion raw={result}")
 
-        gitversion = json.loads(result.stdout.decode("utf8"))
-        version = gitversion.get("SemVer")
-        return version
+        if result == "":
+            raise Exception(f"Cannot find the .git directory at path {gitversion_path}")
+        else:
+            gitversion = json.loads(result)
+            version = gitversion.get("SemVer")
+            return version

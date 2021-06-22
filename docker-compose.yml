@@ -3,7 +3,13 @@ version: '3.8'
 
 services:
   velo-action:
+    container_name: velo-action
     build:
       context: .
       dockerfile: Dockerfile
-    image: eu.gcr.io/nube-hub/velo-action:dev
+    image: act-github-actions-velo:latest
+    env_file: .env
+    environment:
+      GITHUB_WORKSPACE: '/github/workspace'  # Overrides .env file used when debugging outside container
+    volumes:
+      - ${PWD}:/github/workspace

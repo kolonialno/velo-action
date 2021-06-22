@@ -22,7 +22,11 @@ def parse_args():
 
     parser.add_argument("--mode", "-m", env_var="INPUT_MODE", default="VERSION", type=str, required=False)
     parser.add_argument("--environment", env_var="ENVIRONMENT", default="staging", type=str, required=False)
-    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", default="INFO", type=str, required=False)
+    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", default=logging.INFO, type=str, required=False)
+
+    # workdir used by Github Actions.
+    # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#workdir
+    parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", default="/github/workspace", type=str, required=False)
 
     if os.getenv("INPUT_MODE") == "DEPLOY":
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
@@ -31,7 +35,6 @@ def parse_args():
         parser.add_argument("--project", env_var="INPUT_PROJECT", type=str, required=True)
 
         parser.add_argument("--velo_artifact_bucket", env_var="VELO_ARTIFACT_BUCKET", default="nube-velo-prod-deploy-artifacts", type=str, required=False)
-        parser.add_argument("--deploy_folder_path", env_var="DEPLOY_FOLDER_PATH", default=str(BASE_DIR / ".deploy"), type=str, required=False)
 
     args = parser.parse_args()
     args.mode = args.mode.upper()
@@ -45,44 +48,44 @@ def action(args):
     logging.info("Velo Deploy Action")
     gv = gitversion.Gitversion()
 
+    logging.info(f"Mode: {args.mode}")
     if args.mode == "VERSION":
-        version = gv.generate_version()
-        os.system(f'echo "::set-output name=version::{version}"')
+        version = gv.generate_version(path=args.github_workspace)
+        utils.github_action_output("version", version)
 
     elif args.mode == "DEPLOY":
         octopus_cli_server = os.getenv("INPUT_OCTOPUS_CLI_SERVER")
         octopus_cli_api_key = os.getenv("INPUT_OCTOPUS_CLI_API_KEY")
 
-        # Use gcloud auth for authenticating when running on in dev mode.
-        if args.environment == "dev":
-            logging.debug("Authentication to GCP using Cloud SDK default credentials since environment is dev.")
-            try:
-                credentials, _ = google.auth.default()
-            except google.auth.exceptions.DefaultCredentialsError as e:
-                logging.error("No credentials were found, or the credentials found were invalid.")
-        else:
-            google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
-            if google_service_account_key is not None:
-                try:
-                    base64_bytes = google_service_account_key.encode("ascii")
-                    message_bytes = base64.b64decode(base64_bytes)
-                    message = message_bytes.decode("ascii")
-                    google_service_account_key_json = json.loads(message)
-                    _ = service_account.Credentials.from_service_account_info(google_service_account_key_json)
-                except binascii.Error:
-                    logging.error("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
-            else:
-                logging.warning("Env var INPUT_SERVICE_ACCOUNT_KEY was not present")
+        path = str(args.github_workspace + "/.deploy")
+        logging.info(f"Repo root path is {args.github_workspace}")
+        logging.info(f"Looging for a .deploy folder in {path}...")
+        assert Path(path).is_dir()
 
-        version = gv.generate_version()
+        version = gv.generate_version(path=args.github_workspace)
+
         octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
 
-        assert Path(args.deploy_folder_path).is_dir()
-        path = str(args.deploy_folder_path)
+        google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
+        if google_service_account_key is None:
+            logging.error("Please set a Google Service Account Key.")
+            sys.exit(1)
+
+        try:
+            google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
+        except binascii.Error:
+            logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+
+        logging.info("Authenticating using Google Service Account Key")
+        # credentials = utils.authenticate_gcp(google_service_account_key_json)
+
+        logging.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
         utils.upload_from_directory(path, args.velo_artifact_bucket, f"{args.project}/{version}")
 
+        logging.info(f"Creating a release for project {args.project} with version {version}")
         octo.creatRelease(args.project, version)
 
+        logging.info(f"Deploying release for project {args.project} with version {version}")
         octo.deployRelease(args.project, version, args.environment)
 
 

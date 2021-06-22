@@ -67,7 +67,7 @@ class Octopus:
             args=[
                 "octo",
                 "deploy-release",
-                "----helpOutputFormat=Json",
+                "--helpOutputFormat=Json",
                 f"--server={self.server}",
                 f"--apiKey={self.apiKey}",
                 f"--project={project}",

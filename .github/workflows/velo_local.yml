@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # - name: Rebuild velo-action image before testing it
-      #   run: docker build -t act-github-actions-velo:latest .
+      - name: Rebuild velo-action image before testing it
+        run: docker build -t act-github-actions-velo:latest .
 
       - name: Velo Version
         id: velo_version
-        uses: ./
+        uses: ./.github/actions/velo
         with:
           mode: VERSION
 
@@ -51,7 +51,7 @@ jobs:
 
       - name: Velo Deploy
         id: velo_deploy
-        uses: ./
+        uses: ./.github/actions/velo
         with:
           mode: DEPLOY
           octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}
