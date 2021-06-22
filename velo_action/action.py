@@ -1,12 +1,7 @@
 import sys
 import os
 import os.path
-import json
-import base64
-import binascii
 import logging
-import google.auth
-from google.oauth2 import service_account
 from pathlib import Path
 import envargparse
 
@@ -66,15 +61,15 @@ def action(args):
 
         octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
 
-        google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
-        if google_service_account_key is None:
-            logging.error("Please set a Google Service Account Key.")
-            sys.exit(1)
+        # google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
+        # if google_service_account_key is None:
+        #     logging.error("Please set a Google Service Account Key.")
+        #     sys.exit(1)
 
-        try:
-            google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
-        except binascii.Error:
-            logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+        # try:
+        #     google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
+        # except binascii.Error:
+        #     logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
         logging.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
         utils.upload_from_directory(path, args.velo_artifact_bucket, f"{args.project}/{version}")
