@@ -33,12 +33,12 @@ ENV GITHUB_WORKSPACE '/github/workspace'
 
 RUN mkdir -p $GITHUB_WORKSPACE /app
 
-ENV PYTHONPATH $GITHUB_WORKSPACE/velo_action
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV POETRY_VERSION=$POETRY_VERSION
+# ENV PYTHONPATH $GITHUB_WORKSPACE/velo_action
+# # Turns off buffering for easier container logging
+# ENV PYTHONUNBUFFERED=1
+# # Keeps Python from generating .pyc files in the container
+# ENV PYTHONDONTWRITEBYTECODE 1
+# ENV POETRY_VERSION=$POETRY_VERSION
 
 # # Separate dependencies from the rest of the app to
 # # take advantage of cached builds
@@ -58,8 +58,8 @@ ENV POETRY_VERSION=$POETRY_VERSION
 
 # COPY velo_action/ /app/velo_action/
 
-COPY entrypoint.sh /app/entrypoint.sh
-COPY velo-action.sh /app/velo-action.sh
+COPY entrypoint.sh /entrypoint.sh
+COPY velo-action.sh /velo-action.sh
 
-RUN chmod +x /app/entrypoint.sh  /app/velo-action.sh
-ENTRYPOINT ["./app/velo-action.sh"]
+RUN chmod +x /entrypoint.sh /velo-action.sh
+ENTRYPOINT ["/velo-action.sh"]
