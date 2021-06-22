@@ -1,6 +1,5 @@
 import os
 import glob
-from google.cloud import storage
 
 
 def upload_from_directory(client, local_directory_path: str, dest_bucket_name: str, dest_blob_name: str, project: str = "nube-velo-prod"):
