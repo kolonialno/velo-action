@@ -76,7 +76,6 @@ jobs:
   ci-done:
     # Gather job which Velo can wait on.
     name: CI done
-    if: ${{ !env.ACT }}  # Do not run when testing locally using act
     runs-on: ubuntu-latest
     needs:
       - lint
