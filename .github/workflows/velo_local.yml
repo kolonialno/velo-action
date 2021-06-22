@@ -20,7 +20,7 @@ jobs:
 
       - name: Velo Version
         id: velo_version
-        uses: ./.github/actions/velo
+        uses: ./
         with:
           mode: VERSION
 
@@ -51,7 +51,7 @@ jobs:
 
       - name: Velo Deploy
         id: velo_deploy
-        uses: .github/actions/velo
+        uses: ./
         with:
           mode: DEPLOY
           octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}
