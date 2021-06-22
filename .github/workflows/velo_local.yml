@@ -15,8 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Rebuild velo-action image before testing it
-        run: docker build -t act-github-actions-velo:latest .
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.VELO_CI_KEY }}
+          project_id: nube-velo-prod
+          export_default_credentials: true
 
       - name: Velo Version
         id: velo_version
@@ -24,13 +27,8 @@ jobs:
         with:
           mode: VERSION
 
-      - uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.VELO_CI_KEY }}
-          project_id: nube-velo-prod
-          export_default_credentials: true
-
       - run: gcloud auth configure-docker -q
+
       - run: |
           docker build -t ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }} .
           docker tag ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }} ${{ env.IMAGE }}:latest

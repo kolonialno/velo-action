@@ -50,9 +50,6 @@ RUN set -e \
     && poetry install --no-interaction --no-ansi $POETRY_INSTALL_ARGS
 
 COPY velo_action/ velo_action/
-
-COPY key.json /key.json
-
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
