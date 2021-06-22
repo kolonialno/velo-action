@@ -2,7 +2,7 @@
 vars:
   target_cluster_region: europe-west4
   target_cluster_name: k8s-{{ environment }}
-  cluster_project_id: nube-k8s-{{ environment }}
+  target_cluster_project_id: nube-k8s-{{ environment }}
   k8s_namespace: infra
   owner: cloud-platform
   gcp_project_id: nube-velo-{{ environment }}
