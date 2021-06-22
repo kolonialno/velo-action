@@ -1,11 +1,16 @@
 import sys
+
+print(sys.path)
 import os
 import os.path
 import logging
 from pathlib import Path
+import json
+import base64
 import envargparse
-
-print(sys.path)
+import binascii
+from google.oauth2 import service_account
+from google.cloud import storage
 
 from velo_action import octopus, utils, gitversion
 
@@ -61,18 +66,28 @@ def action(args):
 
         octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
 
-        # google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
-        # if google_service_account_key is None:
-        #     logging.error("Please set a Google Service Account Key.")
-        #     sys.exit(1)
+        google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
+        if google_service_account_key is None:
+            logging.error("Please set a Google Service Account Key.")
+            sys.exit(1)
 
-        # try:
-        #     google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
-        # except binascii.Error:
-        #     logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+        try:
+            google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
+        except binascii.Error:
+            logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+
+        credentials = service_account.Credentials.from_service_account_info(google_service_account_key_json)
+
+        scoped_credentials = credentials.with_scopes(["https://www.googleapis.com/auth/cloud-platform"])
+
+        try:
+            client = storage.Client(credentials=scoped_credentials)
+        except Exception as e:
+            print(e)
+            raise
 
         logging.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
-        utils.upload_from_directory(path, args.velo_artifact_bucket, f"{args.project}/{version}")
+        utils.upload_from_directory(client, path, args.velo_artifact_bucket, f"{args.project}/{version}")
 
         logging.info(f"Creating a release for project {args.project} with version {version}")
         octo.creatRelease(args.project, version)

@@ -2,26 +2,8 @@ import os
 import glob
 from google.cloud import storage
 
-# def authenticate_gcp(key):
-#     credentials, _ = google.auth.default()
-#     credentials.refresh(gauth_requests.Request())
-#     if getattr(credentials, "id_token", None) is None:
-#         credentials = compute_engine.IDTokenCredentials(gauth_requests.Request(), "my-audience", use_metadata_identity_endpoint=True)
-#         credentials.refresh(gauth_requests.Request())
-#         headers = {"authorization": f"Bearer {credentials.token}"}
-#     else:
-#         headers = {"authorization": f"Bearer {credentials.id_token}"}
-#     # print(headers)  # This header dict can be used to make authorized requests!
 
-
-def upload_from_directory(local_directory_path: str, dest_bucket_name: str, dest_blob_name: str, project: str = "nube-velo-prod"):
-
-    try:
-        client = storage.Client()
-    except Exception as e:
-        print(e)
-        raise
-
+def upload_from_directory(client, local_directory_path: str, dest_bucket_name: str, dest_blob_name: str, project: str = "nube-velo-prod"):
     rel_paths = glob.glob(local_directory_path + "/**", recursive=True)
     bucket = client.get_bucket(dest_bucket_name)
 

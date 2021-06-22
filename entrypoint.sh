@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
-export GOOGLE_APPLICATION_CREDENTIALS='/key.json'
+
+# echo $INPUT_SERVICE_ACCOUNT_KEY | base64 -d > /key.json && cat key.json
+# export GOOGLE_APPLICATION_CREDENTIALS="/key.json"
 
 ls -la
 pwd
