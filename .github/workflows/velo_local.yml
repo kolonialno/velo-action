@@ -6,7 +6,6 @@ on:
 
 env:
   IMAGE: eu.gcr.io/nube-hub/velo-action
-  TEST: test
 
 jobs:
   test_action_in_repo:

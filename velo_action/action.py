@@ -59,7 +59,7 @@ def action(args):
 
         path = str(args.github_workspace + "/.deploy")
         logging.info(f"Repo root path is {args.github_workspace}")
-        logging.info(f"Looging for a .deploy folder in {path}...")
+        logging.info(f"Looking for a .deploy folder in {path}...")
         assert Path(path).is_dir()
 
         version = gv.generate_version(path=args.github_workspace)

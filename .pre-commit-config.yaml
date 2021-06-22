@@ -7,18 +7,6 @@ repos:
         args:
           - '--config-file=.yamllint'
 
-  - repo: git://github.com/igorshubovych/markdownlint-cli
-    rev: 'v0.27.1'
-    hooks:
-      - id: markdownlint
-        args:
-          - '--config=.markdownlint.yaml'
-
-  - repo: git://github.com/antonbabenko/pre-commit-terraform
-    rev: 'v1.50.0' # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
-    hooks:
-      - id: terraform_fmt
-
   - repo: https://github.com/psf/black
     rev: 21.5b1 # Replace by any tag/version: https://github.com/psf/black/tags
     hooks:

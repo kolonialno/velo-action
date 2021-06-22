@@ -12,7 +12,7 @@ class Gitversion:
 
     def _gitversion_cli_exists(self):
         try:
-            _ = subprocess.run("gitversion", shell=True, capture_output=True)
+            result = subprocess.run("gitversion", stdout=subprocess.PIPE, shell=False, capture_output=False)
         except:
             raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.")
         return True

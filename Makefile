@@ -17,6 +17,10 @@ test_image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker run -it --rm --name velo-action eu.gcr.io/nube-hub/velo-action:dev -- poetry run pytest test -c pytest.ini -v
 
+image_no_cache:
+	docker build --no-cache -t eu.gcr.io/nube-hub/velo-action:dev .
+	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
+
 image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
@@ -25,7 +29,7 @@ run: image
 	docker-compose run --rm velo-action
 
 bash: image
-	docker-compose run --rm velo-action --entrypoint bash
+	docker-compose run --rm --entrypoint bash velo-action
 
 staging: version
 	velo deploy-local-dir --version $(VERSION) --project-name velo-action --environment staging --tempdir-behavior existing_folder --tempdir-existing-folder deploy --local_dir .deploy

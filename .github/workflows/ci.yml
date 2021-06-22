@@ -38,12 +38,6 @@ jobs:
       - run: poetry run pylint --rcfile=.pylintrc --fail-under=7 velo_action
       - run: poetry run mypy --config-file=.mypy.ini velo_action
 
-      - name: Run markdownlint
-        uses: avto-dev/markdown-lint@v1.5.0
-        with:
-          config: ".markdownlint.yaml"
-          args: .
-
   test:
     runs-on: ubuntu-latest
     steps:
