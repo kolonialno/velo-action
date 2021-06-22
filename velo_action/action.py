@@ -76,9 +76,6 @@ def action(args):
         except binascii.Error:
             logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
-        logging.info("Authenticating using Google Service Account Key")
-        # credentials = utils.authenticate_gcp(google_service_account_key_json)
-
         logging.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
         utils.upload_from_directory(path, args.velo_artifact_bucket, f"{args.project}/{version}")
 
