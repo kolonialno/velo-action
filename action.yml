@@ -62,6 +62,7 @@ runs:
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_cli_server }}
     - ${{ inputs.octopus_cli_api_key }}
+    - ${{ inputs.velo_artifacts_bucket_name }}
 
 branding:
   icon: award
