@@ -2,8 +2,9 @@ import subprocess
 import os
 import logging
 import json
+from pathlib import Path
 
-from velo_action.action import BASE_DIR
+logger = logging.getLogger(name="gitversion")
 
 
 class Gitversion:
@@ -24,10 +25,7 @@ class Gitversion:
         return version
 
     def _create_gitversion_config_file(self, path):
-        gitversion = """
-            ---
-            mode: Mainline
-            """
+        gitversion = "---\nmode: Mainline\n"
         try:
             f = open(path, "w")
             try:
@@ -35,7 +33,8 @@ class Gitversion:
             finally:
                 f.close()
         except IOError as e:
-            logging.error(f"Could not create GitVersion.yml file at {path}", exc_info=e)
+            logger.error(exc_info=e)
+            raise Exception(f"Could not create file at {path}", exc_info=e)
 
     def generate_version(self, path):
         """Generate a GitVersion version
@@ -45,25 +44,21 @@ class Gitversion:
         If GitVersion.yml is not found, one will be generated with the Mainline mode.
         https://gitversion.readthedocs.io/en/latest/input/docs/reference/versioning-modes/mainline-development/
         """
-        assert os.path.isdir(path)
-
         gitversion_path = path + "/GitVersion.yml"
-
         if not os.path.isfile(gitversion_path):
-            logging.warning("GitVersion.yml not found.")
-            logging.warning("Creating GitVersion.yml with mode: Mainline.")
+            logger.warning("GitVersion.yml not found.")
+            logger.warning("Creating GitVersion.yml with mode: Mainline.")
             self._create_gitversion_config_file(gitversion_path)
 
-        assert os.path.isfile(gitversion_path)
-        result = subprocess.run("gitversion", stdout=subprocess.PIPE, cwd=path)
-        logging.debug(f"Gitversion raw={result}")
+        if not os.path.isfile(gitversion_path):
+            raise Exception("Did not find a 'GitVersion.yml' in repo root.")
 
-        if result.returncode != 0:
-            logging.info(f"Process exited with return code {result.returncode}")
-            raise Exception(f"Cannot find the .git directory at path {gitversion_path}")
-
+        process = subprocess.run("gitversion", cwd=path, capture_output=True)
+        if process.returncode != 0:
+            logger.warning(f"Process exited with return code {process.returncode}")
+            raise Exception(f"gitversion error: {process.stderr}")
         else:
-            temp = result.stdout.decode("utf8")
+            temp = process.stdout.decode("utf8")
             gitversion = json.loads(temp)
             version = gitversion.get("SemVer")
             return version

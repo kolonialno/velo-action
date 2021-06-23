@@ -1,5 +1,8 @@
 import os
 import glob
+import logging
+
+logger = logging.getLogger(name="gcp")
 
 
 def upload_from_directory(client, local_directory_path: str, dest_bucket_name: str, dest_blob_name: str, project: str = "nube-velo-prod"):
@@ -12,7 +15,3 @@ def upload_from_directory(client, local_directory_path: str, dest_bucket_name: s
         if os.path.isfile(local_file):
             blob = bucket.blob(remote_path)
             blob.upload_from_filename(local_file)
-
-
-def github_action_output(key, value):
-    os.system(f'echo "::set-output name={key}::{value}"')

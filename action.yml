@@ -15,23 +15,27 @@ inputs:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
       formatted private key which can be exported from the Cloud Console.
-    required: true
+    required: false
 
   octopus_cli_server:
     description: |-
       Octpous deploy server url.
-    default: "https://octopusdeploy.prod.nube.tech"
-    required: true
+    required: false
 
   octopus_cli_api_key:
     description: |-
       Octpous deploy server API key.
-    required: true
+    required: false
+
+  velo_artifacts_bucket_name:
+    description: |-
+      Name of the bucket used by Velo to store deploy artifacts.
+    required: false
 
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
-    default: DEBUG
+    default: INFO
     required: false
 
   mode:

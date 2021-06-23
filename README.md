@@ -1,15 +1,13 @@
 # Velo action
 
-This actions generates a semantic version using [GitVersion](https://gitversion.net/docs/) and triggers a deploy to [Octopus Deploy](https://octopusdeploy.prod.nube.tech/app#/Spaces-1).
+This actions generates a semantic version using [GitVersion](https://gitversion.net/docs/) and triggers a deploy to Octopus Deploy.
 
 This action does the following:
 
-- Generate gitversion > appversion.json
-  generate releasenotes.md
-  generate appversion.txt
-- build and push image (support multiarch builds)
-- upload files to velo bucket
-- trigger octo deploy-release
+- Generate a semantic versioning using gitversion
+- Upload build artifacts to the Velo bucket
+- Create a release in Octopus Deploy
+- Triggers a deploy of the release
 
 ## Usage
 
@@ -22,7 +20,6 @@ This action does the following:
     mode: ''
 
     # Octopus Deploy project to target when creating a release and deploying it.
-    # The project must exist at https://octopusdeploy.prod.nube.tech/app#/Spaces-1
     project: ''
 
     # A Google Service account key to use for authentication. This should be the JSON
@@ -30,7 +27,6 @@ This action does the following:
     service_account_key: '${{ secrets.VELO_CI_KEY }}'
 
     # URL to the Octopus Deploy Server
-    # Default: "https://octopusdeploy.prod.nube.tech"
     octopus_cli_server: '${{ secrets.VELO_CI_OCTOPUS_URL }}'
 
     # Octpous deploy server API key. The API key is a Github Secret, can be used as

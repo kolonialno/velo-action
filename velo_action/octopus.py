@@ -3,15 +3,17 @@ import logging
 import json
 import os
 
+logger = logging.getLogger(name="octopus")
+
 
 class Octopus:
-    def __init__(self, apiKey=None, server="https://octopusdeploy.prod.nube.tech", baseSpaceId=None):
+    def __init__(self, apiKey: str, server: str, baseSpaceId: str = "Spaces-1") -> None:
         self.apiKey = apiKey
         self.server = server
         self.baseSpaceId = baseSpaceId
         self._octo_cli_exists()
 
-    def _releaseNotes(self):
+    def _releaseNotes(self) -> json:
         commit_id = os.getenv("GITHUB_SHA")
         branch_name = os.getenv("GITHUB_REF")
         return {"commit_id": commit_id, "branch_name": branch_name}
@@ -41,12 +43,12 @@ class Octopus:
         exists = False
         for release in releases:
             if release.get("Version") == version:
-                logging.info(f"Release {version} already exists. Skipping...")
+                logger.info(f"Release {version} already exists. Skipping...")
                 exists = True
                 break
 
         if not exists:
-            logging.info("Creating release")
+            logger.info("Creating release")
             result = subprocess.run(
                 args=[
                     "octo",
@@ -62,7 +64,7 @@ class Octopus:
             )
 
     def deployRelease(self, project, version, environment):
-        logging.info("Deploying release")
+        logger.info("Deploying release")
         result = subprocess.run(
             args=[
                 "octo",

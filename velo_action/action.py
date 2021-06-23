@@ -12,9 +12,10 @@ import binascii
 from google.oauth2 import service_account
 from google.cloud import storage
 
-from velo_action import octopus, utils, gitversion
+from velo_action import octopus, github, gcp, gitversion
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+logger = logging.getLogger(name="action")
 
 
 def parse_args():
@@ -22,59 +23,61 @@ def parse_args():
 
     parser.add_argument("--mode", "-m", env_var="INPUT_MODE", default="VERSION", type=str, required=False)
     parser.add_argument("--environment", env_var="ENVIRONMENT", default="staging", type=str, required=False)
-    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", default=logging.INFO, type=str, required=False)
+    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", type=str, required=False)
 
     # workdir used by Github Actions.
     # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#workdir
-    parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", default="/github/workspace", type=str, required=False)
+    parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", type=str, required=False)
 
     if os.getenv("INPUT_MODE") == "DEPLOY":
+        parser.add_argument("--project", env_var="INPUT_PROJECT", type=str, required=True)
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
         parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
-        parser.add_argument("--project", env_var="INPUT_PROJECT", type=str, required=True)
-
-        parser.add_argument("--velo_artifact_bucket", env_var="VELO_ARTIFACT_BUCKET", default="nube-velo-prod-deploy-artifacts", type=str, required=False)
+        parser.add_argument("--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=False)
 
     args = parser.parse_args()
     args.mode = args.mode.upper()
 
-    if args.log_level not in ["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"]:
-        logging.basicConfig(level=logging.INFO)
+    log_levels = ["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"]
+    if args.log_level not in log_levels:
+        raise Exception(f"INPUT_PYTHON_LOGGING_LEVEL must be one of {log_levels} got '{args.log_level}'")
+
+    logger.info(f"Settings log level to {args.log_level}")
+    logging.basicConfig(level=args.log_level)
+
     return args
 
 
 def action(args):
-    logging.info("Velo Deploy Action")
+    logger.info("Velo Deploy Action")
+    logger.info(f"Mode: {args.mode}")
+    logger.info(f"Repo root path is {args.github_workspace}")
+
     gv = gitversion.Gitversion()
+    version = gv.generate_version(path=args.github_workspace)
 
-    logging.info(f"Mode: {args.mode}")
-    if args.mode == "VERSION":
-        version = gv.generate_version(path=args.github_workspace)
-        utils.github_action_output("version", version)
+    github.actions_output("version", version)
 
-    elif args.mode == "DEPLOY":
-        octopus_cli_server = os.getenv("INPUT_OCTOPUS_CLI_SERVER")
-        octopus_cli_api_key = os.getenv("INPUT_OCTOPUS_CLI_API_KEY")
+    if args.mode == "DEPLOY":
 
-        path = str(args.github_workspace + "/.deploy")
-        logging.info(f"Repo root path is {args.github_workspace}")
-        logging.info(f"Looking for a .deploy folder in {path}...")
-        assert Path(path).is_dir()
+        deploy_folder = str(args.github_workspace + "/.deploy")
+        if not Path(deploy_folder).is_dir():
+            raise Exception("Did not find a '.deploy' folder in repo root.")
 
         version = gv.generate_version(path=args.github_workspace)
 
-        octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
+        octo = octopus.Octopus(apiKey=args.octopus_cli_api_key, server=args.octopus_cli_server)
 
         google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
         if google_service_account_key is None:
-            logging.error("Please set a Google Service Account Key.")
+            logger.error("Please set a Google Service Account Key.")
             sys.exit(1)
 
         try:
             google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
         except binascii.Error:
-            logging.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+            logger.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
         credentials = service_account.Credentials.from_service_account_info(google_service_account_key_json)
 
@@ -86,13 +89,13 @@ def action(args):
             print(e)
             raise
 
-        logging.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
-        utils.upload_from_directory(client, path, args.velo_artifact_bucket, f"{args.project}/{version}")
+        logger.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
+        gcp.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.project}/{version}")
 
-        logging.info(f"Creating a release for project {args.project} with version {version}")
+        logger.info(f"Creating a release for project {args.project} with version {version}")
         octo.creatRelease(args.project, version)
 
-        logging.info(f"Deploying release for project {args.project} with version {version}")
+        logger.info(f"Deploying release for project {args.project} with version {version}")
         octo.deployRelease(args.project, version, args.environment)
 
 
