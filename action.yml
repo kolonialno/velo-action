@@ -31,7 +31,7 @@ inputs:
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
-    default: INFO
+    default: DEBUG
     required: false
 
   mode:

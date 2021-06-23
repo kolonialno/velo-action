@@ -56,11 +56,12 @@ class Gitversion:
 
         assert os.path.isfile(gitversion_path)
         result = subprocess.run("gitversion", stdout=subprocess.PIPE, cwd=path).stdout.decode("utf8")
-
         logging.debug(f"Gitversion raw={result}")
 
-        if result == "":
+        if result.returncode != 0:
+            logging.info(f"Process exited with return code {result.returncode}")
             raise Exception(f"Cannot find the .git directory at path {gitversion_path}")
+
         else:
             gitversion = json.loads(result)
             version = gitversion.get("SemVer")

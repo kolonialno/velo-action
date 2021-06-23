@@ -26,7 +26,6 @@ jobs:
       - name: Velo Version
         id: velo_version
         uses: ./
-        # uses: kolonialno/
         with:
           mode: VERSION
 

@@ -6,8 +6,6 @@ cd $GITHUB_WORKSPACE
 export MODE=$INPUT_MODE
 echo MODE=$INPUT_MODE
 
-gitversion
-
 echo "After gitversion"
 
 gitversion > appversion.json
