@@ -7,4 +7,4 @@ ls -la
 pwd
 which python
 
-python /app/velo_action/action.py
+/usr/local/bin/python /app/velo_action/action.py

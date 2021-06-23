@@ -33,7 +33,8 @@ ENV GITHUB_WORKSPACE '/github/workspace/'
 
 RUN mkdir -p $GITHUB_WORKSPACE /app
 
-ENV PYTHONPATH $GITHUB_WORKSPACE/velo_action
+ENV PYTHONPATH /app/
+
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 # Keeps Python from generating .pyc files in the container
