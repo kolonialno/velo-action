@@ -1,6 +1,4 @@
 import sys
-
-print(sys.path)
 import os
 import os.path
 import logging
@@ -30,7 +28,7 @@ def parse_args():
     parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", type=str, required=False)
 
     if os.getenv("INPUT_MODE") == "DEPLOY":
-        parser.add_argument("--project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True)
+        parser.add_argument("--octopus_project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True)
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
         parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
@@ -85,13 +83,13 @@ def action(args):
             raise
 
         logger.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
-        gcp.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.project}/{version}")
+        gcp.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.octopus_project}/{version}")
 
-        logger.info(f"Creating a release for project '{args.project}' with version '{version}'")
-        octo.creatRelease(args.project, version)
+        logger.info(f"Creating a release for project '{args.octopus_project}' with version '{version}'")
+        octo.creatRelease(args.octopus_project, version)
 
-        logger.info(f"Deploying release for project '{args.project}' with version '{version}'")
-        octo.deployRelease(args.project, version, args.environment)
+        logger.info(f"Deploying release for project '{args.octopus_project}' with version '{version}'")
+        octo.deployRelease(args.octopus_project, version, args.environment)
 
 
 if __name__ == "__main__":
