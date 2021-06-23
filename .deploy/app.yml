@@ -1,0 +1,18 @@
+---
+vars:
+  target_cluster_region: europe-west4
+  target_cluster_name: k8s-{{ environment }}
+  target_cluster_project_id: nube-k8s-{{ environment }}
+  k8s_namespace: infra
+  owner: cloud-platform
+  gcp_project_id: nube-velo-{{ environment }}
+
+deploy_spec:
+  - app: velo
+    component: terraform
+    enabled: true
+    deploy_type: TerraformApplyV1
+    src_dir: terraform
+    terraform_version: 1.0.0
+    var_files:
+      - "values.json"
