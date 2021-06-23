@@ -29,37 +29,37 @@ RUN wget --quiet https://github.com/GitTools/GitVersion/releases/download/$GITVE
     && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
 
 
-ENV GITHUB_WORKSPACE '/github/workspace'
+ENV GITHUB_WORKSPACE '/github/workspace/'
 
 RUN mkdir -p $GITHUB_WORKSPACE /app
 
-# ENV PYTHONPATH $GITHUB_WORKSPACE/velo_action
-# # Turns off buffering for easier container logging
-# ENV PYTHONUNBUFFERED=1
-# # Keeps Python from generating .pyc files in the container
-# ENV PYTHONDONTWRITEBYTECODE 1
-# ENV POETRY_VERSION=$POETRY_VERSION
+ENV PYTHONPATH $GITHUB_WORKSPACE/velo_action
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV POETRY_VERSION=$POETRY_VERSION
 
-# # Separate dependencies from the rest of the app to
-# # take advantage of cached builds
-# COPY pyproject.toml /app/pyproject.toml
-# COPY poetry.lock /app/poetry.lock
-# COPY poetry.toml /app/poetry.toml
+# Separate dependencies from the rest of the app to
+# take advantage of cached builds
+COPY pyproject.toml /app/pyproject.toml
+COPY poetry.lock /app/poetry.lock
+COPY poetry.toml /app/poetry.toml
 
-# # When using image as devcontainer have the option to install dev dependencies
-# ARG POETRY_INSTALL_ARGS='--no-dev'
+# When using image as devcontainer have the option to install dev dependencies
+ARG POETRY_INSTALL_ARGS='--no-dev'
 
-# RUN set -e \
-#     && cd /app \
-#     && pip install poetry==$POETRY_VERSION \
-#     # && poetry config virtualenvs.create false \
-#     && poetry install --no-interaction --no-ansi $POETRY_INSTALL_ARGS \
-#     && cd ..
+RUN set -e \
+    && cd /app \
+    && pip install poetry==$POETRY_VERSION \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi $POETRY_INSTALL_ARGS \
+    && cd ..
 
-# COPY velo_action/ /app/velo_action/
+COPY velo_action/ /app/velo_action/
 
 COPY entrypoint.sh /entrypoint.sh
 COPY velo-action.sh /velo-action.sh
 
 RUN chmod +x /entrypoint.sh /velo-action.sh
-ENTRYPOINT ["/velo-action.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

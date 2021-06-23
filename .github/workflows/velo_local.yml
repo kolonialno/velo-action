@@ -13,8 +13,12 @@ jobs:
     name: Test Velo action using local file
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # all history for all branches and tags.
+          path: velo-action
 
       - uses: google-github-actions/setup-gcloud@v0.2.0
+        if: ${{ !env.ACT }}  # Do not wait then testing locally using act
         with:
           service_account_key: ${{ secrets.VELO_CI_KEY }}
           project_id: nube-velo-prod
