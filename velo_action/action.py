@@ -70,7 +70,7 @@ def action(args):
         octo = octopus.Octopus(apiKey=args.octopus_cli_api_key, server=args.octopus_cli_server)
 
         try:
-            google_service_account_key_json = json.loads(base64.b64decode(args.google_service_account_key.encode("ascii")).decode("ascii"))
+            google_service_account_key_json = json.loads(base64.b64decode(args.service_account_key.encode("ascii")).decode("ascii"))
         except binascii.Error:
             logger.debug("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
@@ -81,16 +81,16 @@ def action(args):
         try:
             client = storage.Client(credentials=scoped_credentials)
         except Exception as e:
-            print(e)
+            logger.error(exc_info=e)
             raise
 
         logger.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
         gcp.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.project}/{version}")
 
-        logger.info(f"Creating a release for project {args.project} with version {version}")
+        logger.info(f"Creating a release for project '{args.project}' with version '{version}'")
         octo.creatRelease(args.project, version)
 
-        logger.info(f"Deploying release for project {args.project} with version {version}")
+        logger.info(f"Deploying release for project '{args.project}' with version '{version}'")
         octo.deployRelease(args.project, version, args.environment)
 
 

@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(name="gcp")
 
 
-def upload_from_directory(client, local_directory_path: str, dest_bucket_name: str, dest_blob_name: str, project: str = "nube-velo-prod"):
+def upload_from_directory(client, local_directory_path: str, dest_bucket_name: str, dest_blob_name: str):
     rel_paths = glob.glob(local_directory_path + "/**", recursive=True)
     bucket = client.get_bucket(dest_bucket_name)
 
