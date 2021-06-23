@@ -1,16 +1,69 @@
 ---
-name: 'Velo'
-description: 'Velo deploy action'
+name: Velo
+author: Cloud-platform
+description: Velo deploy action
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  version:
+    description: Version to tag image with. This will overwrite the automatically generated gitversion.
+    required: false
+
+  octopus_project:
+    description: Name of the project in Octopus Deploy
     required: true
-    default: 'World'
+
+  service_account_key:
+    description: |-
+      A Google Service account key to use for authentication. This should be the JSON
+      formatted private key which can be exported from the Cloud Console.
+    required: false
+
+  octopus_cli_server:
+    description: |-
+      Octpous deploy server url.
+    required: false
+
+  octopus_cli_api_key:
+    description: |-
+      Octpous deploy server API key.
+    required: false
+
+  velo_artifacts_bucket_name:
+    description: |-
+      Name of the bucket used by Velo to store deploy artifacts.
+    required: false
+
+  python_logging_level:
+    description: |-
+      Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
+    default: INFO
+    required: false
+
+  mode:
+    description: |-
+      Use VERSION or DEPLOY.
+
+      VERSION will generate a gitversion string and output this for the docker build step.
+      Deploy will save artifacts in the nube-velo-prod-deploy-artifacts bucket and trigger a depoy in Octopus deploy.
+    default: VERSION
+    required: true
+
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  version:
+    description: |-
+      Version string.
+
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: docker
+  image: Dockerfile  # Uses Docerfile in repo root
   args:
-    - ${{ inputs.who-to-greet }}
+    - ${{ inputs.version }}
+    - ${{ inputs.mode }}
+    - ${{ inputs.service_account_key }}
+    - ${{ inputs.octopus_project }}
+    - ${{ inputs.octopus_cli_server }}
+    - ${{ inputs.octopus_cli_api_key }}
+    - ${{ inputs.velo_artifacts_bucket_name }}
+
+branding:
+  icon: award
+  color: green
