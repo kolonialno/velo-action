@@ -8,7 +8,7 @@ env:
   IMAGE: eu.gcr.io/nube-hub/velo-action
 
 jobs:
-  test_action_in_repo:
+  test_action_local:
     runs-on: ubuntu-18.04
     name: Test Velo action using local file
     steps:
@@ -42,12 +42,26 @@ jobs:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
-          running-workflow-name: test_action_in_repo
+          running-workflow-name: test_action_local
           check-name: CI done
+
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.NUBE_HUB_GCR_KEY }}
+          project_id: nube-hub
+          export_default_credentials: true
+
+      - run: gcloud auth configure-docker -q
 
       - run: |
           docker push ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }}
           docker push ${{ env.IMAGE }}:latest
+
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          project_id: nube-velo-prod
+          export_default_credentials: true
 
       - name: Velo Deploy
         id: velo_deploy

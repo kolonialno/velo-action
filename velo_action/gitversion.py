@@ -58,6 +58,7 @@ class Gitversion:
             raise Exception("Did not find a 'GitVersion.yml' in repo root.")
 
         process = subprocess.run("gitversion", cwd=path, capture_output=True)
+
         if process.returncode != 0:
             logger.warning(f"Process exited with return code {process.returncode}")
             raise Exception(f"gitversion error: {process.stderr}")

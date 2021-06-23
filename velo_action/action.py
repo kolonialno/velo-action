@@ -34,7 +34,7 @@ def parse_args():
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
         parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
-        parser.add_argument("--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=False)
+        parser.add_argument("--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=True)
 
     args = parser.parse_args()
     args.mode = args.mode.upper()
@@ -69,15 +69,10 @@ def action(args):
 
         octo = octopus.Octopus(apiKey=args.octopus_cli_api_key, server=args.octopus_cli_server)
 
-        google_service_account_key = os.getenv("INPUT_SERVICE_ACCOUNT_KEY")
-        if google_service_account_key is None:
-            logger.error("Please set a Google Service Account Key.")
-            sys.exit(1)
-
         try:
-            google_service_account_key_json = json.loads(base64.b64decode(google_service_account_key.encode("ascii")).decode("ascii"))
+            google_service_account_key_json = json.loads(base64.b64decode(args.google_service_account_key.encode("ascii")).decode("ascii"))
         except binascii.Error:
-            logger.warning("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
+            logger.debug("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
         credentials = service_account.Credentials.from_service_account_info(google_service_account_key_json)
 
