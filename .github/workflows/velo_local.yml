@@ -19,7 +19,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v0.2.0
         if: ${{ !env.ACT }}  # Do not wait then testing locally using act
         with:
-          service_account_key: ${{ secrets.VELO_CI_KEY }}
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
           project_id: nube-velo-prod
           export_default_credentials: true
 

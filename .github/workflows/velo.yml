@@ -16,7 +16,7 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          service_account_key: ${{ secrets.VELO_CI_KEY }}
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
           project_id: nube-velo-prod
           export_default_credentials: true
 
@@ -41,8 +41,9 @@ jobs:
           running-workflow-name: test_velo_action_main
           check-name: CI done
 
-      - name: Push all image tags to registry
-        run: docker push ${{ env.IMAGE }}
+      - run: |
+          docker push ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }}
+          docker push ${{ env.IMAGE }}:latest
 
       - name: Velo Deploy
         id: velo_deploy
@@ -51,4 +52,5 @@ jobs:
           mode: DEPLOY
           octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}
           octopus_cli_api_key: ${{ secrets.VELO_CI_OCTOPUS_API_KEY }}
-          service_account_key: ${{ secrets.VELO_CI_KEY }}
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          velo_artifacts_bucket_name: ${{ secrets.VELO_ARTIFACTS_BUCKET_NAME_PROD }}
