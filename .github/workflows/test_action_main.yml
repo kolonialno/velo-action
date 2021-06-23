@@ -14,19 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
-          project_id: nube-velo-prod
-          export_default_credentials: true
-
       - name: Velo Version
         id: velo_version
         uses: kolonialno/velo-action@velo-action
         with:
           mode: VERSION
 
-      - run: gcloud auth configure-docker -q
       - run: |
           docker build -t eu.gcr.io/nube-hub/velo-action:${{ steps.velo_version.outputs.version }} .
           docker tag eu.gcr.io/nube-hub/velo-action:${{ steps.velo_version.outputs.version }} ${{ env.IMAGE }}:latest
@@ -41,9 +34,23 @@ jobs:
           running-workflow-name: test_velo_action_main
           check-name: CI done
 
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.NUBE_HUB_GCR_KEY }}
+          project_id: nube-hub
+          export_default_credentials: true
+
+      - run: gcloud auth configure-docker -q
+
       - run: |
           docker push ${{ env.IMAGE }}:${{ steps.velo_version.outputs.version }}
           docker push ${{ env.IMAGE }}:latest
+
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          project_id: nube-velo-prod
+          export_default_credentials: true
 
       - name: Velo Deploy
         id: velo_deploy

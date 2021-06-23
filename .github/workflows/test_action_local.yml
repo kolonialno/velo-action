@@ -1,4 +1,4 @@
-name: Test Velo-action from local path
+name: Test Velo-action locally
 on:
   push:
     branches-ignore:
