@@ -55,7 +55,7 @@ class Gitversion:
             self._create_gitversion_config_file(gitversion_path)
 
         assert os.path.isfile(gitversion_path)
-        result = subprocess.run("gitversion", stdout=subprocess.PIPE, cwd=path).stdout.decode("utf8")
+        result = subprocess.run("gitversion", stdout=subprocess.PIPE, cwd=path)
         logging.debug(f"Gitversion raw={result}")
 
         if result.returncode != 0:
@@ -63,6 +63,7 @@ class Gitversion:
             raise Exception(f"Cannot find the .git directory at path {gitversion_path}")
 
         else:
+            result.stdout.decode("utf8")
             gitversion = json.loads(result)
             version = gitversion.get("SemVer")
             return version
