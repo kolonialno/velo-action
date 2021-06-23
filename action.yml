@@ -7,8 +7,8 @@ inputs:
     description: Version to tag image with. This will overwrite the automatically generated gitversion.
     required: false
 
-  project:
-    description: project
+  octopus_project:
+    description: Name of the project in Octopus Deploy
     required: true
 
   service_account_key:
@@ -57,9 +57,9 @@ runs:
   image: Dockerfile  # Uses Docerfile in repo root
   args:
     - ${{ inputs.version }}
-    - ${{ inputs.project }}
     - ${{ inputs.mode }}
     - ${{ inputs.service_account_key }}
+    - ${{ inputs.octopus_project }}
     - ${{ inputs.octopus_cli_server }}
     - ${{ inputs.octopus_cli_api_key }}
     - ${{ inputs.velo_artifacts_bucket_name }}

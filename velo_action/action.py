@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", type=str, required=False)
 
     if os.getenv("INPUT_MODE") == "DEPLOY":
-        parser.add_argument("--project", env_var="INPUT_PROJECT", type=str, required=True)
+        parser.add_argument("--project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True)
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
         parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
