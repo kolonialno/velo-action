@@ -25,6 +25,9 @@ image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
 
+push:
+	docker push eu.gcr.io/nube-hub/velo-action:dev
+
 run: image
 	docker-compose run --rm velo-action
 

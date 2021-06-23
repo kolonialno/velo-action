@@ -56,5 +56,5 @@ jobs:
           mode: DEPLOY
           octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}
           octopus_cli_api_key: ${{ secrets.VELO_CI_OCTOPUS_API_KEY }}
-          service_account_key: ${{ secrets.VELO_CI_KEY }}
-          velo_artifacts_bucket_name: ${{ secrets.VELO_ARTIFACTS_BUCKET_NAME }}
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          velo_artifacts_bucket_name: ${{ secrets.VELO_ARTIFACTS_BUCKET_NAME_PROD }}

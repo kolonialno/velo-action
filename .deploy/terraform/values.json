@@ -1,5 +1,0 @@
-{
-  "gcp_project_id": "{{ gcp_project_id }}",
-  "environment": "{{ environment }}",
-  "cluster_project_id": "{{ target_cluster_project_id }}"
-}

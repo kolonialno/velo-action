@@ -1,2 +1,1 @@
-export OCTOPUS_CLI_SERVER=
-export OCTOPUS_CLI_API_KEY=
+dotenv

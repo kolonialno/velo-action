@@ -29,3 +29,5 @@ deploy
 .vscode
 .idea
 key.json
+appversion.txt
+appversion.json
