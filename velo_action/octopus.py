@@ -7,13 +7,13 @@ logger = logging.getLogger(name="octopus")
 
 
 class Octopus:
-    def __init__(self, apiKey: str, server: str, baseSpaceId: str = "Spaces-1") -> None:
+    def __init__(self, apiKey: str = None, server: str = None, baseSpaceId: str = "Spaces-1") -> None:
         self.apiKey = apiKey
         self.server = server
         self.baseSpaceId = baseSpaceId
         self._octo_cli_exists()
 
-    def _releaseNotes(self) -> json:
+    def _releaseNotes(self):
         commit_id = os.getenv("GITHUB_SHA")
         branch_name = os.getenv("GITHUB_REF")
         return {"commit_id": commit_id, "branch_name": branch_name}

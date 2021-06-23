@@ -20,8 +20,12 @@ class Gitversion:
 
     def _version(self):
         """Version of the Gitversion CLI installed"""
-        result = subprocess.run("gitversion /version", shell=True, capture_output=True)
-        version = str(result.stdout.decode("utf8")).rstrip("\n")
+        process = subprocess.run("gitversion /version", shell=True, capture_output=True)
+        if process.returncode != 0:
+            logger.warning(f"Process exited with return code {process.returncode}")
+            raise Exception(f"gitversion error: {process.stderr}")
+
+        version = str(process.stdout.decode("utf8")).rstrip("\n")
         return version
 
     def _create_gitversion_config_file(self, path):
