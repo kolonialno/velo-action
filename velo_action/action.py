@@ -64,6 +64,7 @@ def action(args):
             raise Exception("Did not find a '.deploy' folder in repo root.")
 
         version = gv.generate_version(path=args.github_workspace)
+        logger.info(f"Gitversion={version}")
 
         octo = octopus.Octopus(apiKey=args.octopus_cli_api_key, server=args.octopus_cli_server)
 
