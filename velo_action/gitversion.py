@@ -63,7 +63,7 @@ class Gitversion:
             raise Exception(f"Cannot find the .git directory at path {gitversion_path}")
 
         else:
-            result.stdout.decode("utf8")
-            gitversion = json.loads(result)
+            temp = result.stdout.decode("utf8")
+            gitversion = json.loads(temp)
             version = gitversion.get("SemVer")
             return version
