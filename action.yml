@@ -50,7 +50,7 @@ outputs:
 
 runs:
   using: docker
-  image: eu.gcr.io/nube-hub/velo-action:latest
+  image: docker://eu.gcr.io/nube-hub/velo-action:latest
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
