@@ -11,7 +11,7 @@ update:
 	poetry update
 
 tests:
-	poetry run pytest test -c pytest.ini -v
+	poetry run pytest test -c pytest.ini -v -m "not docker"
 
 test_image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
