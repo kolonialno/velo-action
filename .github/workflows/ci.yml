@@ -65,8 +65,8 @@ jobs:
         run: |
           poetry install
 
-      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
-        id: pytests
+      # - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+      #   id: pytests
 
   build:
     runs-on: ubuntu-20.04
