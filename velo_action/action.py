@@ -39,18 +39,10 @@ def parse_args():
     if (args.create_release or args.deploy) == "True":
         parser.add_argument("--octopus_project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True, help="Name of the project in Octopus Deploy to target.")
         parser.add_argument("--octopus_tenants", env_var="INPUT_OCTOPUS_TENANTS", type=str, required=False, help="Name of the tenants to deploy to, seperated by a comma.")
-        # parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
-        # parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
-        # parser.add_argument(
-        #     "--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=True, help="Name of the bucket where Velo stores deploy artifacts."
-        # )
-        parser.add_argument(
-            "--environments", env_var="INPUT_ENVIRONMENTS", type=str, required=False, choices=["prod", "staging"], help="Name of the environments to deploy to, seperated by comma."
-        )
-
+        parser.add_argument("--environments", env_var="INPUT_ENVIRONMENTS", type=str, required=False, help="Name of the environments to deploy to, seperated by comma.")
         args = parser.parse_args()
-
+        args.environments = args.environments.split(",")
         args.octopus_tenants = args.octopus_tenants.split(",")
 
     return args

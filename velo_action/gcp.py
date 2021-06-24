@@ -3,8 +3,7 @@ import logging
 import json
 import base64
 import binascii
-from google.cloud import storage
-from google.cloud import secretmanager
+from google.cloud import secretmanager, storage
 from functools import lru_cache
 from google.oauth2 import service_account
 

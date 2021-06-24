@@ -14,6 +14,12 @@ class Octopus:
         self._octo_cli_exists()
         self.octa_env_vars = {"OCTOPUS_CLI_API_KEY": self.apiKey, "OCTOPUS_CLI_SERVER": self.server}
 
+        # test connection to server
+        try:
+            proc_utils.execute_process("octo list-environments", log_cmd=False, env_vars=self.octa_env_vars, log_stdout=False)
+        except:
+            raise Exception(f"Could not connect to Octopus deploy server at {self.server}")
+
     def _release_notes(self):
         commit_id = os.getenv("GITHUB_SHA")
         branch_name = os.getenv("GITHUB_REF")
@@ -21,13 +27,13 @@ class Octopus:
 
     def _octo_cli_exists(self):
         try:
-            proc_utils.execute_process("octo", log_stdout=False)
+            proc_utils.execute_process("octo", log_cmd=False, log_stdout=False)
         except:
             raise Exception("Octopus Cli 'octo' is not installed. See https://octopus.com/downloads/octopuscli for instructions")
         return True
 
     def _version(self):
-        result = proc_utils.execute_process("octo --version", log_stdout=False)
+        result = proc_utils.execute_process("octo --version", log_cmd=False, log_stdout=False)
         version = result[0]
         return version
 

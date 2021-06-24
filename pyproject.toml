@@ -8,11 +8,11 @@ authors = ["Anders Liland <anders.liland@oda.com>"]
 python = ">=3.8,<3.10"
 semantic-version = "^2.8"
 gitversion = "^2.1"
-google-auth = "^1.32"
-google = "^3.0"
 appdirs = "^1.4"
-google-cloud-storage = "^1.38"
 envargparse = "^1.0.0"
+google = "^3.0"
+google-auth = "^1.32"
+google-cloud-storage = "^1.38"
 google-cloud-secret-manager = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
