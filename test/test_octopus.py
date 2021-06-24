@@ -3,10 +3,11 @@ import os
 from velo_action import octopus
 
 
-def test_releaseNotes():
+@pytest.mark.docker
+def test_release_notes():
 
     octo = octopus.Octopus()
-    releaseNotes = octo._releaseNotes()
+    releaseNotes = octo._release_notes()
 
     assert "commit_id" in releaseNotes
     assert "branch_name" in releaseNotes

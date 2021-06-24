@@ -11,41 +11,37 @@ inputs:
     description: Name of the project in Octopus Deploy
     required: true
 
+  environments:
+    description: The environment(s) to deploy the release to. String with environment names seperated by a comma. Example 'staging,prod'.
+    required: false
+
+  octopus_tenants:
+    description: Tenants to deploy the release to. String with tenant names seperated by a comma. Example 'fc:osl1,fc:rd1'
+    required: false
+
   service_account_key:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
       formatted private key which can be exported from the Cloud Console.
     required: false
 
-  octopus_cli_server:
-    description: |-
-      Octpous deploy server url.
-    required: false
-
-  octopus_cli_api_key:
-    description: |-
-      Octpous deploy server API key.
-    required: false
-
-  velo_artifacts_bucket_name:
-    description: |-
-      Name of the bucket used by Velo to store deploy artifacts.
-    required: false
-
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
-    default: INFO
     required: false
+    default: INFO
 
-  mode:
+  create_release:
     description: |-
-      Use VERSION or DEPLOY.
+      Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
+    required: false
+    default: 'False'
 
-      VERSION will generate a gitversion string and output this for the docker build step.
-      Deploy will save artifacts in the nube-velo-prod-deploy-artifacts bucket and trigger a depoy in Octopus deploy.
-    default: VERSION
-    required: true
+  deploy:
+    description: |-
+      Deploy a Octopus release. If this is set to true 'create_release' is set to True.
+    required: false
+    default: 'False'
 
 outputs:
   version:
@@ -57,12 +53,12 @@ runs:
   image: Dockerfile  # Uses Docerfile in repo root
   args:
     - ${{ inputs.version }}
-    - ${{ inputs.mode }}
+    - ${{ inputs.create_release }}
+    - ${{ inputs.deploy }}
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_project }}
-    - ${{ inputs.octopus_cli_server }}
-    - ${{ inputs.octopus_cli_api_key }}
-    - ${{ inputs.velo_artifacts_bucket_name }}
+    - ${{ inputs.octopus_tenants }}
+    - ${{ inputs.environments }}
 
 branding:
   icon: award
