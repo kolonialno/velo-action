@@ -40,7 +40,7 @@ jobs:
       - run: poetry run mypy --config-file=.mypy.ini velo_action
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
 
@@ -69,14 +69,25 @@ jobs:
         id: pytests
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # all history for all branches and tags.
 
-      - uses: kolonialno/velo-action@split-release-deploy
+      - uses: kolonialno/velo-action@main
         id: velo
+
+      - run: |
+          docker build -t ${{ env.IMAGE }}:${{ steps.velo.outputs.version }} .
+
+  push:
+    runs-on: ubuntu-20.04
+    needs: ['lint', 'test', 'build']
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # all history for all branches and tags.
 
       - uses: google-github-actions/setup-gcloud@v0.2.0
         with:
@@ -86,17 +97,17 @@ jobs:
 
       - run: |
           gcloud auth configure-docker -q
-          docker build -t ${{ env.IMAGE }}:${{ steps.velo.outputs.version }} .
           docker tag ${{ env.IMAGE }}:${{ steps.velo.outputs.version }} ${{ env.IMAGE }}:latest
           docker push ${{ env.IMAGE }}
 
   ci-done:
     # Gather job which Velo can wait on.
     name: CI done
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - lint
       - test
       - build
+      - push
     steps:
       - run: echo "CI done!"

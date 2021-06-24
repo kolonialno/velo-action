@@ -1,0 +1,43 @@
+name: CD
+on:
+  push:
+
+env:
+  IMAGE: eu.gcr.io/nube-hub/velo-action
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # all history for all branches and tags.
+
+      - name: Velo Version
+        id: velo
+        uses: ./
+
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          project_id: nube-hub
+          export_default_credentials: true
+
+      - name: Wait on CI
+        uses: lewagon/wait-on-check-action@v0.2
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          running-workflow-name: deploy
+          check-name: CI done
+
+      - name: Velo Deploy
+        uses: ./
+        with:
+          environment: staging
+          octopus_project: velo-action
+          octopus_cli_server: ${{ secrets.VELO_CI_OCTOPUS_URL }}
+          octopus_cli_api_key: ${{ secrets.VELO_CI_OCTOPUS_API_KEY }}
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          velo_artifacts_bucket_name: ${{ secrets.VELO_ARTIFACTS_BUCKET_NAME_PROD }}
