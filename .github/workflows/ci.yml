@@ -75,6 +75,12 @@ jobs:
         with:
           fetch-depth: 0  # all history for all branches and tags.
 
+      - uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          project_id: nube-hub
+          export_default_credentials: true
+
       - uses: ./
         id: velo
 
