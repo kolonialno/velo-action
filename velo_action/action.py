@@ -44,7 +44,7 @@ def parse_args():
     args.github_workspace = valid_path(args.github_workspace)
     logging.basicConfig(level=args.log_level)
 
-    if args.create_release or args.deploy:
+    if (args.create_release or args.deploy) is True:
         parser.add_argument("--octopus_project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True, help="Name of the project in Octopus Deploy to target.")
         parser.add_argument("--octopus_tenants", env_var="INPUT_OCTOPUS_TENANTS", type=str, required=False, help="Name of the tenants to deploy to, seperated by a comma.")
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
