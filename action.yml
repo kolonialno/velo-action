@@ -11,8 +11,8 @@ inputs:
     description: Name of the project in Octopus Deploy
     required: true
 
-  environment:
-    description: The environment in Octopus Deploy to deploy to.
+  environments:
+    description: The environment(s) to deploy the release to. String with environment names seperated by a comma. Example 'staging,prod'.
     required: false
 
   octopus_tenants:
@@ -43,18 +43,20 @@ inputs:
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
-    default: INFO
     required: false
+    default: INFO
 
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
     required: false
+    default: 'False'
 
   deploy:
     description: |-
       Deploy a Octopus release. If this is set to true 'create_release' is set to True.
     required: false
+    default: 'False'
 
 outputs:
   version:
@@ -71,7 +73,7 @@ runs:
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_project }}
     - ${{ inputs.octopus_tenants }}
-    - ${{ inputs.environment }}
+    - ${{ inputs.environments }}
     - ${{ inputs.octopus_cli_server }}
     - ${{ inputs.octopus_cli_api_key }}
     - ${{ inputs.velo_artifacts_bucket_name }}

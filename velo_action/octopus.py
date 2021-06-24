@@ -60,19 +60,19 @@ class Octopus:
 
         if not exists:
             cmd = f"octo create-release --version={version} --project={project} --releaseNotes={releaseNotes} --helpOutputFormat=Json"
-            proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False)
+            proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=True)
 
-    def deploy_release(self, version, environment, project, tenants=None):
+    def deploy_release(self, version, project, environments, tenants=None):
 
-        cmd = f"octo deploy-release --project={project} --version={version} --deployTo={environment} --helpOutputFormat=Json"
+        for env in environments:
+            cmd = f"octo deploy-release --project={project} --version={version} --deployTo={env} --helpOutputFormat=Json"
+            if tenants:
+                octo_tenants = self.list_tenants()
+                for tenant in tenants:
+                    if tenant not in octo_tenants:
+                        raise Exception(f"Tenant '{tenant}' does not exist in Octopus Deploy, found '{octo_tenants}'.")
 
-        if tenants:
-            octo_tenants = self.list_tenants()
-            for tenant in tenants:
-                if tenant not in octo_tenants:
-                    raise Exception(f"Tenant '{tenant}' does not exist in Octopus Deploy, found '{octo_tenants}'.")
-
-                cmd_tenant = f"--tenant={tenant}"
-                proc_utils.execute_process(cmd + " " + cmd_tenant, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
-        else:
-            proc_utils.execute_process(cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
+                    cmd_tenant = f"--tenant={tenant}"
+                    proc_utils.execute_process(cmd + " " + cmd_tenant, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
+            else:
+                proc_utils.execute_process(cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=True)

@@ -17,42 +17,49 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(name="action")
 
 
+def valid_path(arg):
+    try:
+        path = Path(arg)
+        return path
+    except:
+        raise Exception(f"{arg} is an invalid path.")
+
+
 def parse_args():
     parser = envargparse.EnvArgParser(prog="Velo Action")
 
-    parser.add_argument("--create_release", env_var="INPUT_CREATE_RELEASE", type=str, required=False)
-    parser.add_argument("--deploy", env_var="INPUT_DEPLOY", type=str, required=False)
-    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", type=str, required=False)
+    parser.add_argument(
+        "--create_release", env_var="INPUT_CREATE_RELEASE", type=str, default=False, required=False, choices=["True", "False"], help="If true, create a release in Octopus deploy"
+    )
+    parser.add_argument("--deploy", env_var="INPUT_DEPLOY", type=str, required=False, default=False, choices=["True", "False"], help="If true, deploy a relese Octopus deploy")
+    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", type=str, required=False, choices=["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"])
 
     # workdir used by Github Actions.
     # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#workdir
-    parser.add_argument("--github_workspace", env_var="GITHUB_WORKSPACE", type=str, required=False)
+    parser.add_argument(
+        "--github_workspace", env_var="GITHUB_WORKSPACE", type=valid_path, required=False, help="Path to the root folder in the repo to deploy. Must contain a .git folder."
+    )
 
-    if os.getenv("INPUT_CREATE_RELEASE") or os.getenv("INPUT_DEPLOY"):
-        parser.add_argument("--octopus_project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True)
-        parser.add_argument("--octopus_tenants", env_var="INPUT_OCTOPUS_TENANTS", type=str, required=False)
+    args = parser.parse_args()
+    args.github_workspace = valid_path(args.github_workspace)
+    logging.basicConfig(level=args.log_level)
+
+    if args.create_release or args.deploy:
+        parser.add_argument("--octopus_project", env_var="INPUT_OCTOPUS_PROJECT", type=str, required=True, help="Name of the project in Octopus Deploy to target.")
+        parser.add_argument("--octopus_tenants", env_var="INPUT_OCTOPUS_TENANTS", type=str, required=False, help="Name of the tenants to deploy to, seperated by a comma.")
         parser.add_argument("--octopus_cli_server", env_var="INPUT_OCTOPUS_CLI_SERVER", type=str, required=True)
         parser.add_argument("--octopus_cli_api_key", env_var="INPUT_OCTOPUS_CLI_API_KEY", type=str, required=True)
         parser.add_argument("--service_account_key", env_var="INPUT_SERVICE_ACCOUNT_KEY", type=str, required=True)
-        parser.add_argument("--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=True)
-        parser.add_argument("--environment", env_var="INPUT_ENVIRONMENT", type=str, required=False)
+        parser.add_argument(
+            "--velo_artifact_bucket", env_var="INPUT_VELO_ARTIFACTS_BUCKET_NAME", type=str, required=True, help="Name of the bucket where Velo stores deploy artifacts."
+        )
+        parser.add_argument(
+            "--environments", env_var="INPUT_ENVIRONMENTS", type=str, required=False, choices=["prod", "staging"], help="Name of the environments to deploy to, seperated by comma."
+        )
 
-    args = parser.parse_args()
+        args = parser.parse_args()
 
-    valid_envs = ["PROD", "STAGING"]
-    if str(args.environment).upper() not in valid_envs:
-        raise Exception(f"Environment must be one of {valid_envs}, not {args.environment} ")
-
-    args.octopus_tenants = args.octopus_tenants.split(",")
-
-    log_levels = ["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"]
-    if args.log_level not in log_levels:
-        raise Exception(f"INPUT_PYTHON_LOGGING_LEVEL must be one of {log_levels} got '{args.log_level}'")
-
-    args.github_workspace = Path(args.github_workspace)
-
-    logger.info(f"Settings log level to {args.log_level}")
-    logging.basicConfig(level=args.log_level)
+        args.octopus_tenants = args.octopus_tenants.split(",")
 
     return args
 
@@ -103,7 +110,7 @@ def action(args):
     if args.deploy:
         logger.info(f"Deploying release for project '{args.octopus_project}' with version '{version}'")
 
-        octo.deploy_release(version=version, environment=args.environment, project=args.octopus_project, tenants=args.octopus_tenants)
+        octo.deploy_release(version=version, environments=args.environments, project=args.octopus_project, tenants=args.octopus_tenants)
 
 
 if __name__ == "__main__":

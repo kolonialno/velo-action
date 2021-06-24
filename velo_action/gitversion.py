@@ -13,13 +13,13 @@ class Gitversion:
 
     def _gitversion_cli_exists(self):
         try:
-            proc_utils.execute_process("gitversion", log_stdout=False)
+            proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False)
         except:
             raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.")
         return True
 
     def _version(self):
-        result = proc_utils.execute_process("gitversion /version", log_stdout=False)
+        result = proc_utils.execute_process("gitversion /version", log_cmd=False, log_stdout=False)
         version = result[0]
         return version
 
