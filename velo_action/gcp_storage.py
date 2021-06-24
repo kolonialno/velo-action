@@ -2,7 +2,7 @@ import os
 import glob
 import logging
 
-logger = logging.getLogger(name="gcp")
+logger = logging.getLogger(name="gcp_storage")
 
 
 def upload_from_directory(client, path, dest_bucket_name, dest_blob_name):

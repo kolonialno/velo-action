@@ -10,7 +10,7 @@ import envargparse
 from google.oauth2 import service_account
 from google.cloud import storage
 
-from velo_action import proc_utils, octopus, github, gcp, gitversion
+from velo_action import proc_utils, octopus, github, gcp_storage, gitversion
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -102,7 +102,7 @@ def action(args):
         octo.list_tenants()
 
         logger.info(f"Uploading artifacts to {args.velo_artifact_bucket}")
-        gcp.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.octopus_project}/{version}")
+        gcp_storage.upload_from_directory(client, deploy_folder, args.velo_artifact_bucket, f"{args.octopus_project}/{version}")
 
         logger.info(f"Creating a release for project '{args.octopus_project}' with version '{version}'")
         octo.create_release(version=version, project=args.octopus_project)

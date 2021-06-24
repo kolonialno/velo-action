@@ -3,6 +3,7 @@ import os
 from velo_action import octopus
 
 
+@pytest.mark.docker
 def test_release_notes():
 
     octo = octopus.Octopus()
