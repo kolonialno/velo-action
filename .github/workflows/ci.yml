@@ -75,7 +75,7 @@ jobs:
         with:
           fetch-depth: 0  # all history for all branches and tags.
 
-      - uses: kolonialno/velo-action@main
+      - uses: ./
         id: velo
 
       - run: |
