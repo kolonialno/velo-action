@@ -11,6 +11,14 @@ inputs:
     description: Name of the project in Octopus Deploy
     required: true
 
+  environment:
+    description: The environment in Octopus Deploy to deploy to.
+    required: false
+
+  octopus_tenants:
+    description: Tenants to deploy the release to. String with tenant names seperated by a comma. Example 'fc:osl1,fc:rd1'
+    required: false
+
   service_account_key:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
@@ -38,14 +46,15 @@ inputs:
     default: INFO
     required: false
 
-  mode:
+  create_release:
     description: |-
-      Use VERSION or DEPLOY.
+      Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
+    required: false
 
-      VERSION will generate a gitversion string and output this for the docker build step.
-      Deploy will save artifacts in the nube-velo-prod-deploy-artifacts bucket and trigger a depoy in Octopus deploy.
-    default: VERSION
-    required: true
+  deploy:
+    description: |-
+      Deploy a Octopus release. If this is set to true 'create_release' is set to True.
+    required: false
 
 outputs:
   version:
@@ -57,9 +66,12 @@ runs:
   image: Dockerfile  # Uses Docerfile in repo root
   args:
     - ${{ inputs.version }}
-    - ${{ inputs.mode }}
+    - ${{ inputs.create_release }}
+    - ${{ inputs.deploy }}
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_project }}
+    - ${{ inputs.octopus_tenants }}
+    - ${{ inputs.environment }}
     - ${{ inputs.octopus_cli_server }}
     - ${{ inputs.octopus_cli_api_key }}
     - ${{ inputs.velo_artifacts_bucket_name }}

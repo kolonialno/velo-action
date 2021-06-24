@@ -1,8 +1,6 @@
-import subprocess
-import os
 import logging
 import json
-from pathlib import Path
+from velo_action import proc_utils
 
 logger = logging.getLogger(name="gitversion")
 
@@ -10,35 +8,20 @@ logger = logging.getLogger(name="gitversion")
 class Gitversion:
     def __init__(self):
         self._gitversion_cli_exists()
+        self.version = self._version()
+        logger.info(f"Gitversion version={self.version}")
 
     def _gitversion_cli_exists(self):
         try:
-            result = subprocess.run("gitversion", stdout=subprocess.PIPE, shell=False, capture_output=False)
+            proc_utils.execute_process("gitversion", log_stdout=False)
         except:
             raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.")
         return True
 
     def _version(self):
-        """Version of the Gitversion CLI installed"""
-        process = subprocess.run("gitversion /version", shell=True, capture_output=True)
-        if process.returncode != 0:
-            logger.warning(f"Process exited with return code {process.returncode}")
-            raise Exception(f"gitversion error: {process.stderr}")
-
-        version = str(process.stdout.decode("utf8")).rstrip("\n")
+        result = proc_utils.execute_process("gitversion /version", log_stdout=False)
+        version = result[0]
         return version
-
-    def _create_gitversion_config_file(self, path):
-        gitversion = "---\nmode: Mainline\n"
-        try:
-            f = open(path, "w")
-            try:
-                f.write(gitversion)
-            finally:
-                f.close()
-        except IOError as e:
-            logger.error(exc_info=e)
-            raise Exception(f"Could not create file at {path}", exc_info=e)
 
     def generate_version(self, path):
         """Generate a GitVersion version
@@ -48,22 +31,16 @@ class Gitversion:
         If GitVersion.yml is not found, one will be generated with the Mainline mode.
         https://gitversion.readthedocs.io/en/latest/input/docs/reference/versioning-modes/mainline-development/
         """
-        gitversion_path = path + "/GitVersion.yml"
-        if not os.path.isfile(gitversion_path):
-            logger.warning("GitVersion.yml not found.")
-            logger.warning("Creating GitVersion.yml with mode: Mainline.")
-            self._create_gitversion_config_file(gitversion_path)
+        gitversion_config_file = path / "GitVersion.yml"
+        if not (gitversion_config_file).is_file():
+            logger.warning(f"GitVersion.yml not found in {path}.")
+            logger.info("Creating GitVersion.yml with mode: Mainline.")
 
-        if not os.path.isfile(gitversion_path):
-            raise Exception("Did not find a 'GitVersion.yml' in repo root.")
+            gitversion = "---\nmode: Mainline\n"
+            with open(gitversion_config_file, "w") as f:
+                f.write(gitversion)
 
-        process = subprocess.run("gitversion", cwd=path, capture_output=True)
-
-        if process.returncode != 0:
-            logger.warning(f"Process exited with return code {process.returncode}")
-            raise Exception(f"gitversion error: {process.stderr}")
-        else:
-            temp = process.stdout.decode("utf8")
-            gitversion = json.loads(temp)
-            version = gitversion.get("SemVer")
-            return version
+        result = proc_utils.execute_process("gitversion", log_stdout=False, cwd=path)
+        version = json.loads("".join(result))
+        semver = version.get("SemVer")
+        return semver
