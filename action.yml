@@ -25,21 +25,6 @@ inputs:
       formatted private key which can be exported from the Cloud Console.
     required: false
 
-  # octopus_cli_server:
-  #   description: |-
-  #     Octpous deploy server url.
-  #   required: false
-
-  # octopus_cli_api_key:
-  #   description: |-
-  #     Octpous deploy server API key.
-  #   required: false
-
-  # velo_artifacts_bucket_name:
-  #   description: |-
-  #     Name of the bucket used by Velo to store deploy artifacts.
-  #   required: false
-
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
@@ -74,9 +59,6 @@ runs:
     - ${{ inputs.octopus_project }}
     - ${{ inputs.octopus_tenants }}
     - ${{ inputs.environments }}
-    # - ${{ inputs.octopus_cli_server }}
-    # - ${{ inputs.octopus_cli_api_key }}
-    # - ${{ inputs.velo_artifacts_bucket_name }}
 
 branding:
   icon: award
