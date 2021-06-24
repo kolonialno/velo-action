@@ -13,6 +13,7 @@ google = "^3.0"
 appdirs = "^1.4"
 google-cloud-storage = "^1.38"
 envargparse = "^1.0.0"
+google-cloud-secret-manager = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

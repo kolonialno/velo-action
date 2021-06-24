@@ -40,7 +40,7 @@ class Gitversion:
             with open(gitversion_config_file, "w") as f:
                 f.write(gitversion)
 
-        result = proc_utils.execute_process("gitversion", log_stdout=False, cwd=path)
+        result = proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=path)
         version = json.loads("".join(result))
         semver = version.get("SemVer")
         return semver
