@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(name="gcp")
 
 
-def upload_from_directory(client, path: str, dest_bucket_name: str, dest_blob_name: str):
+def upload_from_directory(client, path, dest_bucket_name, dest_blob_name):
 
     rel_paths = []
     for p in path.rglob("*"):
