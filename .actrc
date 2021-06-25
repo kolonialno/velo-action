@@ -1,0 +1,6 @@
+--platform ubuntu-latest=lucasalt/act_base:latest ubuntu-20.04=lucasalt/act_base:latest ubuntu-18.04=nektos/act-environments-ubuntu:18.04 ubuntu-18.04-full=nektos/act-environments-ubuntu:18.04-full
+--workflows .github/workflows
+--secret-file .env
+--defaultbranch main
+--directory .
+--reuse

@@ -1,0 +1,17 @@
+---
+extends: default
+rules:
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-start: disable # yq removes the marker :(
+  indentation:
+    spaces: 2
+  line-length: disable
+  truthy:
+    check-keys: false
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+ignore: |
+  .git

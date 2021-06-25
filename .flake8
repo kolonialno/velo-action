@@ -1,0 +1,10 @@
+[flake8]
+ignore = E203,F841,F401,F811,W503,E402,F811,E722,B001, B009,W605
+max-line-length = 180
+select = C,E,F,W,B,B950
+exclude =
+    .git,
+    .tox,
+    .venv,
+    __pycache__,
+    fabfile

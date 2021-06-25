@@ -1,0 +1,21 @@
+---
+repos:
+  - repo: git://github.com/adrienverge/yamllint
+    rev: 'v1.26.1'
+    hooks:
+      - id: yamllint
+        args:
+          - '--config-file=.yamllint'
+
+  - repo: https://github.com/psf/black
+    rev: 21.5b1 # Replace by any tag/version: https://github.com/psf/black/tags
+    hooks:
+      - id: black
+        language_version: python3
+        args: ["--config=pyproject.toml"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: '3.9.2'
+    hooks:
+      - id: flake8
+        args: ["--config=.flake8"]
