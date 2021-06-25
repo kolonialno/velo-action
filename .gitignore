@@ -16,6 +16,7 @@ __pypackages__/
 # Environments
 .env
 .venv
+Makefile
 
 # mypy
 .mypy_cache/

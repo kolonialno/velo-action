@@ -7,8 +7,9 @@ logger = logging.getLogger(name="gitversion")
 
 class Gitversion:
     def __init__(self, repo_path):
-        self._gitversion_cli_exists()
         self.path = repo_path
+
+        self._gitversion_cli_exists()
         self.version = self._version()
         logger.info(f"Gitversion version={self.version}")
 

@@ -17,16 +17,22 @@ test_image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 	docker run -it --rm --name velo-action eu.gcr.io/nube-hub/velo-action:dev -- poetry run pytest test -c pytest.ini -v
 
-image_no_cache:
-	docker build --no-cache -t eu.gcr.io/nube-hub/velo-action:dev .
+image: build
 	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
+	docker tag eu.gcr.io/nube-hub/velo-action:dev ghcr.io/kolonialno/velo-action:latest
+	docker tag eu.gcr.io/nube-hub/velo-action:dev odacom/velo-action:latest
 
-image:
+build:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
-	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
 
-push:
-	docker push eu.gcr.io/nube-hub/velo-action:dev
+build_no_cache:
+	docker build --no-cache -t eu.gcr.io/nube-hub/velo-action:dev .
+
+push: image
+	# docker push eu.gcr.io/nube-hub/velo-action:dev
+	# docker push eu.gcr.io/nube-hub/velo-action:latest
+	# docker push ghcr.io/kolonialno/velo-action:latest
+	docker push odacom/velo-action:latest
 
 run: image
 	docker-compose run --rm velo-action
