@@ -50,7 +50,7 @@ outputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/kolonialno/velo-action:latest
+  image: docker://odacom/velo-action:latest
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
