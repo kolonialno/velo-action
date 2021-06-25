@@ -66,7 +66,7 @@ class Octopus:
 
         if not exists:
             cmd = f"octo create-release --version={version} --project={project} --releaseNotes={releaseNotes} --helpOutputFormat=Json"
-            proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=True)
+            proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False)
 
     def deploy_release(self, version, project, environments, tenants=None):
 
@@ -81,4 +81,4 @@ class Octopus:
                     cmd_tenant = f"--tenant={tenant}"
                     proc_utils.execute_process(cmd + " " + cmd_tenant, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
             else:
-                proc_utils.execute_process(cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=True)
+                proc_utils.execute_process(cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
