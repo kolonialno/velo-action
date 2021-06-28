@@ -16,8 +16,8 @@ class Gitversion:
     def _gitversion_cli_exists(self):
         try:
             proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=self.path)
-        except:
-            raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.")
+        except Exception as e:
+            raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.") from e
         return True
 
     def _version(self):
@@ -39,8 +39,8 @@ class Gitversion:
             logger.info("Creating GitVersion.yml with mode: Mainline.")
 
             gitversion = "---\nmode: Mainline\n"
-            with open(gitversion_config_file, "w") as f:
-                f.write(gitversion)
+            with open(gitversion_config_file, "w") as file:
+                file.write(gitversion)
 
         result = proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=self.path)
         version = json.loads("".join(result))

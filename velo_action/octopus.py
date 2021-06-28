@@ -1,29 +1,23 @@
 import logging
 import json
-import os
 from velo_action import proc_utils
 
 logger = logging.getLogger(name="octopus")
 
 
 class Octopus:
-    def __init__(self, apiKey: str = None, server: str = None, baseSpaceId: str = "Spaces-1") -> None:
-        self.apiKey = apiKey
+    def __init__(self, api_key: str = None, server: str = None, base_space_id: str = "Spaces-1") -> None:
+        self.api_key = api_key
         self.server = server
-        self.baseSpaceId = baseSpaceId
+        self.base_space_id = base_space_id
         self._octo_cli_exists()
-        self.octa_env_vars = {"OCTOPUS_CLI_API_KEY": self.apiKey, "OCTOPUS_CLI_SERVER": self.server}
+        self.octa_env_vars = {"OCTOPUS_CLI_API_KEY": self.api_key, "OCTOPUS_CLI_SERVER": self.server}
 
         # test connection to server
         try:
             proc_utils.execute_process("octo list-environments", log_cmd=False, env_vars=self.octa_env_vars, log_stdout=False)
         except:
             raise Exception(f"Could not connect to Octopus deploy server at {self.server}")
-
-    def _release_notes(self):
-        commit_id = os.getenv("GITHUB_SHA")
-        branch_name = os.getenv("GITHUB_REF")
-        return {"commit_id": commit_id, "branch_name": branch_name}
 
     def _octo_cli_exists(self):
         try:
@@ -51,10 +45,7 @@ class Octopus:
         releases = releases_list[0].get("Releases")
         return releases
 
-    def create_release(self, version, project, releaseNotes=None):
-        if releaseNotes:
-            releaseNotes = str(self._release_notes())
-
+    def create_release(self, version, project, release_notes=None):
         releases = self.list_releases(project)
         exists = False
         if releases:
@@ -65,7 +56,7 @@ class Octopus:
                     break
 
         if not exists:
-            cmd = f"octo create-release --version={version} --project={project} --releaseNotes={releaseNotes} --helpOutputFormat=Json"
+            cmd = f"octo create-release --version={version} --project={project} --releaseNotes='{release_notes}' --helpOutputFormat=Json"
             proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False)
 
     def deploy_release(self, version, project, environments, tenants=None):

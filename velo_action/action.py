@@ -1,4 +1,6 @@
+import os
 import logging
+import json
 from pathlib import Path
 import envargparse
 from velo_action import octopus, github, gcp, gitversion
@@ -30,20 +32,24 @@ def parse_args():
     parser.add_argument("--octopus_tenants", env_var="INPUT_OCTOPUS_TENANTS", type=str, required=False, help="Name of the tenants to deploy to, seperated by a comma.")
     parser.add_argument("--environments", env_var="INPUT_ENVIRONMENTS", type=str, required=False, help="Name of the environments to deploy to, seperated by comma.")
 
+    parser.add_argument("--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, required=False)
+    parser.add_argument("--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, required=False)
+    parser.add_argument("--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, required=False)
+
     args = parser.parse_args()
 
     args.github_workspace = valid_path(args.github_workspace)
     logging.basicConfig(level=args.log_level)
 
     if args.create_release == "True":
-        assert args.octopus_project != "None"
+        assert args.octopus_project != "None", "octopus_project input argument must be specified."
 
     if args.deploy == "True":
-        assert args.environments != "None"
+        assert args.environments != "None", "environments input argument must be specified."
         args.environments = args.environments.split(",")
         args.create_release = "True"
 
-        assert args.service_account_key != "None"
+        assert args.service_account_key != "None", "service_account_key input argument must be specified."
 
         if args.octopus_tenants != "None":
             args.octopus_tenants = args.octopus_tenants.split(",")
@@ -71,18 +77,25 @@ def action(args):
 
         g = gcp.Gcp(args.service_account_key)
         project_name = "nube-velo-prod"
-        octopus_cli_server = g.lookup_data("velo-ci-octopus-server", project_name)
-        octopus_cli_api_key = g.lookup_data("velo-ci-octopus-api-key", project_name)
-        velo_artifact_bucket = g.lookup_data("velo-ci-artifacts-bucket-name", project_name)
+        octopus_cli_server = g.lookup_data(args.octopus_cli_server_secret, project_name)
+        octopus_cli_api_key = g.lookup_data(args.octopus_cli_api_key_secret, project_name)
+        velo_artifact_bucket = g.lookup_data(args.velo_artifact_bucket_secret, project_name)
 
-        octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
+        octo = octopus.Octopus(api_key=octopus_cli_api_key, server=octopus_cli_server)
 
     if args.create_release == "True":
         logger.info(f"Uploading artifacts to {velo_artifact_bucket}")
         g.upload_from_directory(deploy_folder, velo_artifact_bucket, f"{args.octopus_project}/{version}")
 
+        commit_id = os.getenv("GITHUB_SHA")
+        branch_name = os.getenv("GITHUB_REF")
+        assert commit_id is not None, "The environment variable GITHUB_SHA must be present."
+        assert len(commit_id) == 40, "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
+        assert branch_name is not None, "The environment variable GITHUB_REF must be present, and contain the git branch name."
+        release_notes = f'{json.dumps({"commit_id": commit_id, "branch_name": branch_name})}'
+
         logger.info(f"Creating a release for project '{args.octopus_project}' with version '{version}'")
-        octo.create_release(version=version, project=args.octopus_project)
+        octo.create_release(version=version, project=args.octopus_project, release_notes=release_notes)
 
     if args.deploy == "True":
         logger.info(f"Deploying release for project '{args.octopus_project}' with version '{version}'")

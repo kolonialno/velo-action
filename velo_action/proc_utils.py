@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 import logging
-import errno
 import re
 from functools import lru_cache
 

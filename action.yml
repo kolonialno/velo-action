@@ -1,7 +1,7 @@
 ---
 name: Velo
-author: Cloud-platform
-description: Velo deploy action
+author: Oda
+description: Velo
 inputs:
   version:
     description: Version to tag image with. This will overwrite the automatically generated gitversion.
@@ -48,6 +48,24 @@ inputs:
     required: false
     default: 'False'
 
+  octopus_cli_server_secret:
+    description: |-
+      Name of the GCP secret containing the Octopus Deploy server url.
+    required: false
+    default: 'velo_action_octopus_server'
+
+  octopus_cli_api_key_secret:
+    description: |-
+      Name of the GCP secret containing the Octopus Deploy api key.
+    required: false
+    default: 'velo_action_octopus_api_key'
+
+  velo_artifact_bucket_secret:
+    description: |-
+      Name of the GCP secret containing the name of the Velo actifact bucket.
+    required: false
+    default: 'velo_action_artifacts_bucket_name'
+
 outputs:
   version:
     description: |-
@@ -63,7 +81,9 @@ runs:
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_project }}
     - ${{ inputs.octopus_tenants }}
-    - ${{ inputs.environments }}
+    - ${{ inputs.octopus_cli_server_secret }}
+    - ${{ inputs.octopus_cli_api_key_secret }}
+    - ${{ inputs.velo_artifact_bucket_secret }}
 
 branding:
   icon: award
