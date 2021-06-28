@@ -60,7 +60,5 @@ RUN set -e \
 COPY velo_action/ /app/velo_action/
 
 COPY entrypoint.sh /entrypoint.sh
-COPY velo-action.sh /velo-action.sh
-
 RUN chmod +x /entrypoint.sh /velo-action.sh
 ENTRYPOINT ["/entrypoint.sh"]

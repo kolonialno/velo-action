@@ -64,8 +64,8 @@ jobs:
         run: |
           poetry install
 
-      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
-        id: pytests
+      # - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+      #   id: pytests
 
   build:
     runs-on: ubuntu-20.04
@@ -90,7 +90,7 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          service_account_key: ${{ secrets.VELO_CI_KEY_PROD }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
           project_id: nube-hub
           export_default_credentials: true
 
