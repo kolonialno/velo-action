@@ -1,7 +1,7 @@
 ---
 name: Velo
-author: Cloud-platform
-description: Velo deploy action
+author: Oda
+description: Velo
 inputs:
   version:
     description: Version to tag image with. This will overwrite the automatically generated gitversion.

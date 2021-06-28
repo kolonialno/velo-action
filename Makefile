@@ -1,6 +1,8 @@
 VERSION_FILE=appversion.txt
 VERSION=`cat $(VERSION_FILE)`
 
+.PHONY: version test
+
 version:
 	gitversion > appversion.json && jq -r '.SemVer' appversion.json > appversion.txt && cat appversion.txt
 
@@ -10,20 +12,13 @@ install:
 update:
 	poetry update
 
-tests:
+test:
 	poetry run pytest test -c pytest.ini -v -m "not docker"
 
-test_image:
+image:
 	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
-	docker run -it --rm --name velo-action eu.gcr.io/nube-hub/velo-action:dev -- poetry run pytest test -c pytest.ini -v
-
-image: build
-	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
-	docker tag eu.gcr.io/nube-hub/velo-action:dev ghcr.io/kolonialno/velo-action:latest
+	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest odacom/velo-action:latest
 	docker tag eu.gcr.io/nube-hub/velo-action:dev odacom/velo-action:latest
-
-build:
-	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
 
 build_no_cache:
 	docker build --no-cache -t eu.gcr.io/nube-hub/velo-action:dev .
@@ -40,21 +35,7 @@ run: image
 bash: image
 	docker-compose run --rm --entrypoint bash velo-action
 
-staging: version
-	velo deploy-local-dir --version $(VERSION) --project-name velo-action --environment staging --tempdir-behavior existing_folder --tempdir-existing-folder deploy --local_dir .deploy
-
-prod: staging
-	velo deploy-local-dir --version $(VERSION) --project-name velo-action --environment prod --tempdir-behavior existing_folder --tempdir-existing-folder deploy --local_dir .deploy
-
-tfi:
-	cd deploy/rendered/terraform; \
-	terraform init -var-file=values.json
-
-tfa: tfi
-	cd deploy/rendered/terraform; \
-	terraform apply -var-file=values.json
-
-lint: black flake8 mypy pylint yamllint markdownlint
+lint: black flake8 pylint yamllint
 
 black:
 	poetry run black --config=pyproject.toml .

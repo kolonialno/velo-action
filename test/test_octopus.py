@@ -7,10 +7,10 @@ from velo_action import octopus
 def test_release_notes():
 
     octo = octopus.Octopus()
-    releaseNotes = octo._release_notes()
+    release_notes = octo._release_notes()
 
-    assert "commit_id" in releaseNotes
-    assert "branch_name" in releaseNotes
+    assert "commit_id" in release_notes
+    assert "branch_name" in release_notes
 
 
 @pytest.mark.docker

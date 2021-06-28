@@ -36,8 +36,7 @@ jobs:
 
       - run: poetry run black --check --config=pyproject.toml .
       - run: poetry run flake8 --config='.flake8' .
-      # - run: poetry run pylint --rcfile=.pylintrc --fail-under=7 velo_action
-      # - run: poetry run mypy --config-file=.mypy.ini velo_action
+      - run: poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
 
   test:
     runs-on: ubuntu-20.04
@@ -65,8 +64,8 @@ jobs:
         run: |
           poetry install
 
-      # - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
-      #   id: pytests
+      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+        id: pytests
 
   build:
     runs-on: ubuntu-20.04

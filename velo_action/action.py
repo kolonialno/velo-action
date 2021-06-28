@@ -1,3 +1,4 @@
+import os
 import logging
 from pathlib import Path
 import envargparse
@@ -75,14 +76,18 @@ def action(args):
         octopus_cli_api_key = g.lookup_data("velo-ci-octopus-api-key", project_name)
         velo_artifact_bucket = g.lookup_data("velo-ci-artifacts-bucket-name", project_name)
 
-        octo = octopus.Octopus(apiKey=octopus_cli_api_key, server=octopus_cli_server)
+        octo = octopus.Octopus(api_key=octopus_cli_api_key, server=octopus_cli_server)
 
     if args.create_release == "True":
         logger.info(f"Uploading artifacts to {velo_artifact_bucket}")
         g.upload_from_directory(deploy_folder, velo_artifact_bucket, f"{args.octopus_project}/{version}")
 
+        commit_id = os.getenv("GITHUB_SHA")
+        branch_name = os.getenv("GITHUB_REF")
+        release_notes = {"commit_id": commit_id, "branch_name": branch_name}
+
         logger.info(f"Creating a release for project '{args.octopus_project}' with version '{version}'")
-        octo.create_release(version=version, project=args.octopus_project)
+        octo.create_release(version=version, project=args.octopus_project, release_notes=release_notes)
 
     if args.deploy == "True":
         logger.info(f"Deploying release for project '{args.octopus_project}' with version '{version}'")
