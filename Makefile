@@ -16,12 +16,11 @@ test:
 	poetry run pytest test -c pytest.ini -v -m "not docker"
 
 image:
-	docker build -t eu.gcr.io/nube-hub/velo-action:dev .
-	docker tag eu.gcr.io/nube-hub/velo-action:dev act-github-actions-velo:latest
-	docker tag eu.gcr.io/nube-hub/velo-action:dev odacom/velo-action:latest
+	docker build -t odacom/velo-action:dev .
+	docker tag odacom/velo-action:dev odacom/velo-action:latest
 
 build_no_cache:
-	docker build --no-cache -t eu.gcr.io/nube-hub/velo-action:dev .
+	docker build --no-cache -t odacom/velo-action:dev .
 
 push: image
 	docker push -a odacom/velo-action
