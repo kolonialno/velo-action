@@ -1,0 +1,50 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Determine version
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          grep VERSION $GITHUB_ENV
+
+      - name: Update image version in action.yml
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval -i '.runs.image = "docker://odacom/velo-action:${{ env.VERSION }}"' action.yml
+
+      - name: Wait on CI
+        uses: lewagon/wait-on-check-action@master
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 20
+          running-workflow-name: "release"
+          check-name: "Build done"
+
+      - name: Commit action.yml
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: Release-action
+          message: 'Update action image tag to ${{ env.VERSION }}'
+          add: action.yml
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: velo-action ${{ env.VERSION }}
+          draft: false
+          prerelease: false

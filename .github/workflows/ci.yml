@@ -1,6 +1,9 @@
-name: CI - Lint & test
+name: CI
 
 on: push
+
+env:
+  IMAGE: odacom/velo-action
 
 jobs:
   lint:
@@ -71,3 +74,44 @@ jobs:
       - test
     steps:
       - run: echo "CI done!"
+
+  build_and_push:
+    runs-on: ubuntu-20.04
+    name: Build & push
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # all history for all branches and tags.
+
+      - uses: ./
+        id: velo
+
+      - run: |
+          docker build -t "${{ env.IMAGE }}:${{ steps.velo.outputs.version }}" .
+          docker tag "${{ env.IMAGE }}:${{ steps.velo.outputs.version }}" ${{ env.IMAGE }}:latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Wait on lint and test
+        uses: lewagon/wait-on-check-action@v0.2
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          running-workflow-name: build_and_push
+          check-name: CI done
+
+      - run: |
+          docker push --all-tags ${{ env.IMAGE }}
+
+  ci_build_done:
+    name: Build done
+    runs-on: ubuntu-20.04
+    needs:
+      - build_and_push
+    steps:
+      - run: echo "Build image and pushed!"

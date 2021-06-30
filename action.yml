@@ -1,30 +1,29 @@
----
 name: Velo
 author: Oda
 description: Velo
 inputs:
   version:
-    description: Version used to generate release and tag image. This will overwrite the automatically generated gitversion.
+    description: |-
+      Version used to generate release and tag image.
+      This will overwrite the automatically generated gitversion.
     required: false
     default: None
-
   project:
     description: Name of the project in Octopus Deploy to deploy to.
     required: true
     default: None
-
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
       If an environment in 'deploy_to_environments' is set, and the release does not exists, on will be created.
     required: false
     default: 'False'
-
   deploy_to_environments:
-    description: If specified trigger a deployment to the environment. Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
+    description: |-
+      If specified trigger a deployment to the environment.
+      Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
     required: false
     default: None
-
   tenants:
     description: |-
       If specified trigger a deploy to the spesified tenants.
@@ -32,43 +31,36 @@ inputs:
       Will only deploy to environments listed in the 'deploy_to_environments' variable.
     required: false
     default: None
-
   service_account_key:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
       formatted private key which can be exported from the Cloud Console.
     required: false
     default: None
-
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
     required: false
     default: INFO
-
   octopus_cli_server_secret:
     description: |-
       Name of the GCP secret containing the Octopus Deploy server url.
     required: false
     default: 'velo_action_octopus_server'
-
   octopus_cli_api_key_secret:
     description: |-
       Name of the GCP secret containing the Octopus Deploy api key.
     required: false
     default: 'velo_action_octopus_api_key'
-
   velo_artifact_bucket_secret:
     description: |-
       Name of the GCP secret containing the name of the Velo actifact bucket.
     required: false
     default: 'velo_action_artifacts_bucket_name'
-
 outputs:
   version:
     description: |-
       Version used to crate release and tag image.
-
 runs:
   using: docker
   image: docker://odacom/velo-action:latest
