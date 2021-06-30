@@ -4,10 +4,12 @@ export docker_image="docker://odacom/velo-action:${VERSION}" && echo $docker_ima
 
 yq eval -i '.runs.image = env(docker_image)' action.yml
 
-git tag "v${VERSION}" --force
-
 git add action.yml
 git commit -m "Release v${VERSION}"
+
+# must commit before tag
+git tag "v${VERSION}"
+
 git push
 git push --tags origin
 
