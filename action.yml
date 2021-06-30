@@ -71,7 +71,7 @@ outputs:
 
 runs:
   using: docker
-  image: docker://odacom/velo-action:0.1.3
+  image: docker://odacom/velo-action:latest
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
