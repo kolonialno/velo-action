@@ -4,22 +4,32 @@ author: Oda
 description: Velo
 inputs:
   version:
-    description: Version to tag image with. This will overwrite the automatically generated gitversion.
+    description: Version used to generate release and tag image. This will overwrite the automatically generated gitversion.
     required: false
     default: None
 
-  octopus_project:
-    description: Name of the project in Octopus Deploy
+  project:
+    description: Name of the project in Octopus Deploy to deploy to.
     required: true
     default: None
 
-  environments:
-    description: The environment(s) to deploy the release to. String with environment names seperated by a comma. Example 'staging,prod'.
+  create_release:
+    description: |-
+      Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
+      If an environment in 'deploy_to_environments' is set, and the release does not exists, on will be created.
+    required: false
+    default: 'False'
+
+  deploy_to_environments:
+    description: If specified trigger a deployment to the environment. Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
     required: false
     default: None
 
-  octopus_tenants:
-    description: Tenants to deploy the release to. String with tenant names seperated by a comma. Example 'fc:osl1,fc:rd1'
+  tenants:
+    description: |-
+      If specified trigger a deploy to the spesified tenants.
+      Can be multiple values by seperating tenant names by a comma. Example 'fc:osl1,fc:rd1'.
+      Will only deploy to environments listed in the 'deploy_to_environments' variable.
     required: false
     default: None
 
@@ -35,18 +45,6 @@ inputs:
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
     required: false
     default: INFO
-
-  create_release:
-    description: |-
-      Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
-    required: false
-    default: 'False'
-
-  deploy:
-    description: |-
-      Deploy a Octopus release. If this is set to true 'create_release' is set to True.
-    required: false
-    default: 'False'
 
   octopus_cli_server_secret:
     description: |-
@@ -69,7 +67,7 @@ inputs:
 outputs:
   version:
     description: |-
-      Version string.
+      Version used to crate release and tag image.
 
 runs:
   using: docker
@@ -77,14 +75,9 @@ runs:
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
-    - ${{ inputs.deploy }}
+    - ${{ inputs.project }}
+    - ${{ inputs.tenants }}
     - ${{ inputs.service_account_key }}
-    - ${{ inputs.octopus_project }}
-    - ${{ inputs.octopus_tenants }}
     - ${{ inputs.octopus_cli_server_secret }}
     - ${{ inputs.octopus_cli_api_key_secret }}
     - ${{ inputs.velo_artifact_bucket_secret }}
-
-branding:
-  icon: award
-  color: green

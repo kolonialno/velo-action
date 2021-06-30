@@ -1,10 +1,6 @@
-name: CI
-on:
-  push: {}
+name: CI - Lint & test
 
-env:
-  PIP_DISABLE_PIP_VERSION_CHECK: 1
-  IMAGE: odacom/velo-action
+on: push
 
 jobs:
   lint:
@@ -67,38 +63,11 @@ jobs:
       # - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
       #   id: pytests
 
-  build:
-    runs-on: ubuntu-20.04
-    needs: ['lint', 'test']
-    name: build & push
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # all history for all branches and tags.
-
-      - uses: ./
-        id: velo
-
-      - run: |
-          docker build -t "${{ env.IMAGE }}:${{ steps.velo.outputs.version }}" .
-          docker tag "${{ env.IMAGE }}:${{ steps.velo.outputs.version }}" ${{ env.IMAGE }}:latest
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - run: |
-          docker push --all-tags ${{ env.IMAGE }}
-
   ci-done:
-    # Gather job which Velo can wait on.
     name: CI done
     runs-on: ubuntu-20.04
     needs:
       - lint
       - test
-      - build
     steps:
       - run: echo "CI done!"
