@@ -15,7 +15,7 @@ inputs:
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
-      If an environment in 'deploy_to_environments' is set, and the release does not exists, on will be created.
+      If an environment in 'deploy_to_environments' is set, and the release does not exists, one will be created.
     required: false
     default: 'False'
   deploy_to_environments:
