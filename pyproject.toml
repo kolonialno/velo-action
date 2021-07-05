@@ -21,7 +21,7 @@ black = "^21.5b2"
 flake8 = "^3.8"
 flake8-bugbear = "^21.4"
 mypy = "^0.910"
-pylint = "^2.7"
+pylint = "^2.9"
 pytest-mock = "^3.6"
 
 [build-system]
