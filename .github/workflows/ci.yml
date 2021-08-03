@@ -88,7 +88,7 @@ jobs:
         with:
           registry: europe-west4-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.VELO_ACTION_GSA_KEY_JSON_PROD }}
+          password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
       - uses: docker/build-push-action@v2
         with:
