@@ -1,6 +1,19 @@
 # A Github Action Dockerfile has some requirements that needs to be followed
 # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
 # TLDR; no WORKDIR, must run as USER root
+#  docker run --rm -it --entrypoint /bin/bash eu.gcr.io/nube-hub/velo
+FROM eu.gcr.io/nube-hub/velo as velo
+
+ARG POETRY_VERSION='1.1.6'
+
+RUN set -e \
+    && cd /opt/deploy_tools \
+    && pip install poetry pex==2.1.40 \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi \
+    && poetry run pex . -o bin/velo -e velo.cmd_line >> /dev/null \
+    && bin/velo --help
+
 FROM python:3.9 as python
 
 ARG OCTOPUSCLI_VERSION='7.4.3256'
@@ -28,7 +41,6 @@ RUN wget --quiet https://github.com/GitTools/GitVersion/releases/download/$GITVE
     && mv /tmp/** /usr/local/bin \
     && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
 
-
 ENV GITHUB_WORKSPACE '/github/workspace/'
 
 RUN mkdir -p $GITHUB_WORKSPACE /app
@@ -53,9 +65,13 @@ ARG POETRY_INSTALL_ARGS='--no-dev'
 RUN set -e \
     && cd /app \
     && pip install poetry==$POETRY_VERSION \
+    && pip install pex \
     && poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi $POETRY_INSTALL_ARGS \
     && cd ..
+
+COPY --from=velo /opt/deploy_tools/bin/velo /bin/velo
+
 
 COPY velo_action/ /app/velo_action/
 COPY entrypoint.sh /entrypoint.sh

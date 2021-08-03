@@ -19,6 +19,10 @@ image:
 	docker build -t odacom/velo-action:dev .
 	docker tag odacom/velo-action:dev odacom/velo-action:latest
 
+image_public:
+	docker tag odacom/velo-action:dev europe-west4-docker.pkg.dev/nube-artifacts/oda-docker-public/velo-action:dev
+	docker push europe-west4-docker.pkg.dev/nube-artifacts/oda-docker-public/velo-action:dev
+
 build_no_cache:
 	docker build --no-cache -t odacom/velo-action:dev .
 

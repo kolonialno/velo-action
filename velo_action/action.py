@@ -3,7 +3,9 @@ import logging
 import json
 from pathlib import Path
 import envargparse
-from velo_action import octopus, github, gcp, gitversion
+from velo_action import octopus, gcp, gitversion
+import github
+from github import Github, Workflow
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(name="action")
@@ -111,9 +113,18 @@ def parse_args():
     return args
 
 
+def actions_output(key, value):
+    logger.info(f"Setting Github actions output: {key}={value}")
+    os.system(f'echo "::set-output name={key}::{value}"')
+
+
 def action(args):
     logger.info("Starting Velo-action")
     logger.info(f"Repo root path is '{args.github_workspace}'")
+
+    g = Github("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")
+    w = Workflow()
+    # w.create_dispatch(ref='master')
 
     if args.version is None:
         version = args.version
@@ -125,7 +136,7 @@ def action(args):
         version = args.version
         logger.info(f"Manually overriding version to {version}")
 
-    github.actions_output("version", version)
+    actions_output("version", version)
 
     if args.create_release or args.deploy_to_environments:
 

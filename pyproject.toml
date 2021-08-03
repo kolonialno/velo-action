@@ -14,6 +14,7 @@ google = "^3.0"
 google-auth = "^1.32"
 google-cloud-storage = "^1.38"
 google-cloud-secret-manager = "^2.5.0"
+PyGithub = "^1.55"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
