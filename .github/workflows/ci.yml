@@ -8,7 +8,7 @@ env:
 jobs:
   lint:
     runs-on: ubuntu-20.04
-    name: Lint
+    name: lint
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
 
   test:
     runs-on: ubuntu-20.04
-    name: Test
+    name: test
     steps:
       - uses: actions/checkout@v2
 
@@ -70,7 +70,7 @@ jobs:
 
   build:
     runs-on: ubuntu-20.04
-    name: Build & push
+    name: build & push
     needs:
       - "lint"
       - "test"
