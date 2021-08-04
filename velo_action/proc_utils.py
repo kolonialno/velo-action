@@ -26,7 +26,7 @@ def execute_process(
     proc_env_vars = os.environ.copy()
     proc_env_vars = {**proc_env_vars, **env_vars}
     if log_cmd:
-        logger.info(f"Running {cmd}")
+        logger.info(f"Running '{cmd}'")
     if log_envvars:
         logger.info("envvars")
         logger.info(proc_env_vars)

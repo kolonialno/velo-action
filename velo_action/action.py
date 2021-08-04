@@ -82,7 +82,10 @@ def parse_args():
     parser.add_argument("--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, default="None", required=False)
     parser.add_argument("--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, default="None", required=False)
     parser.add_argument("--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, default="None", required=False)
-
+    parser.add_argument("--progress", env_var="INPUT_PROGRESS", type=str, default="True", required=False, help="Show progress of the deployment.")
+    parser.add_argument(
+        "--wait_for_deployment", env_var="INPUT_WAIT_FOR_DEPLOYMENT", type=str, default="True", required=False, help="Whether to wait synchronously for deployment to finish."
+    )
     args = parser.parse_args()
 
     args.github_workspace = valid_path(args.github_workspace)
@@ -108,6 +111,11 @@ def parse_args():
         args.tenants = args.tenants.split(",")
     else:
         args.tenants = []
+
+    args.progress = True if args.progress == "True" else False
+    args.wait_for_deployment = True if args.wait_for_deployment == "True" else False
+    args.version = None if args.version == "None" else args.version
+
     return args
 
 
@@ -117,14 +125,12 @@ def action(args):
 
     if args.version is None:
         version = args.version
-        logger.info(f"Manually overriding version to {version}")
         gv = gitversion.Gitversion(repo_path=args.github_workspace)
         version = gv.generate_version()
-        logger.info(f"Gitversion={version}")
     else:
         version = args.version
-        logger.info(f"Manually overriding version to {version}")
 
+    logger.info(f"Version: {version}")
     github.actions_output("version", version)
 
     if args.create_release or args.deploy_to_environments:
@@ -141,7 +147,7 @@ def action(args):
         octo = octopus.Octopus(api_key=octopus_cli_api_key, server=octopus_cli_server)
 
     if args.create_release:
-        logger.info(f"Uploading artifacts to {velo_artifact_bucket}")
+        logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
         g.upload_from_directory(deploy_folder, velo_artifact_bucket, f"{args.project}/{version}")
 
         commit_id = os.getenv("GITHUB_SHA")
@@ -157,8 +163,16 @@ def action(args):
     if args.deploy_to_environments:
 
         for env in args.deploy_to_environments:
-            logger.info(f"Deploying '{args.project}' version '{version}' to '{env}'")
-            octo.deploy_release(version=version, environment=env, project=args.project, tenants=args.tenants)
+            octo.deploy_release(
+                version=version,
+                environment=env,
+                project=args.project,
+                tenants=args.tenants,
+                progress=args.progress,
+                wait_for_deployment=args.wait_for_deployment,
+                deployAt=args.deployAt,
+                noDeployAfter=args.noDeployAfter,
+            )
 
 
 if __name__ == "__main__":
