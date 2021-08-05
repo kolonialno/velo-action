@@ -7,18 +7,18 @@ inputs:
       Version used to generate release and tag image.
       This will overwrite the automatically generated gitversion.
     required: false
-    #default: None
+    default: None
   project:
     description: |-
       Name of the project in Octopus Deploy to deploy to.
     required: true
-    #default: None
+    default: None
   workspace:
     description: |-
       Path to the folder containing the .deploy folder. Default is the root of the repository.
       The folder must be in a Git repository for GitVersion to work, unless you manually specify the version parameter.
     required: false
-    #default: None
+    default: None
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
@@ -30,14 +30,14 @@ inputs:
       If specified trigger a deployment to the environment.
       Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
     required: false
-    #default: None
+    default: None
   tenants:
     description: |-
       If specified trigger a deploy to the spesified tenants.
       Can be multiple values by seperating tenant names by a comma. Example 'fc:osl1,fc:rd1'.
       Will only deploy to environments listed in the 'deploy_to_environments' variable.
     required: false
-    #default: None
+    default: None
   progress:
     description: |-
       Show progress of the deployment in Octopus Deploy.
@@ -53,7 +53,7 @@ inputs:
       A Google Service account key to use for authentication. This should be the JSON
       formatted private key which can be exported from the Cloud Console.
     required: false
-    #default: None
+    default: None
   python_logging_level:
     description: |-
       Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
