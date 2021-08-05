@@ -163,7 +163,6 @@ def action(args):
     if args.deploy_to_environments:
         args.create_release = True
 
-
     logging.basicConfig(level=args.log_level)
 
     logger.info("Starting Velo-action")
