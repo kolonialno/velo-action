@@ -12,7 +12,7 @@ logger = logging.getLogger(name="action")
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
 
-GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE"),
+GITHUB_WORKSPACE = (os.getenv("GITHUB_WORKSPACE"),)
 
 
 def valid_path(arg):
@@ -126,6 +126,7 @@ def parse_args():
     args = parser.parse_args()
 
     if not args.workspace:
+        # EnvArgParser doesnt seem to accept variables in its "default" attribute, so this is the only way :-(
         args.workspace = os.getenv("GITHUB_WORKSPACE")
     args.workspace = valid_path(args.workspace)
     args.create_release = bool(strtobool(args.create_release))
