@@ -43,7 +43,7 @@ def parse_args():
         "--version",
         env_var="INPUT_VERSION",
         type=str,
-        default="None",
+        default=None,
         required=False,
         help="Version used to generate release and tag image. \
               This will overwrite the automatically generated gitversion if spesified.",
@@ -53,6 +53,7 @@ def parse_args():
         env_var="INPUT_PYTHON_LOGGING_LEVEL",
         type=str,
         required=False,
+        default="INFO",
         choices=["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"],
     )
     parser.add_argument(
@@ -60,6 +61,7 @@ def parse_args():
         env_var="INPUT_CREATE_RELEASE",
         type=str,
         required=False,
+        default="False",
         choices=["True", "False"],
         help="If true, create a release in Octopus deploy",
     )
@@ -67,7 +69,7 @@ def parse_args():
         "--workspace",
         env_var="INPUT_WORKSPACE",
         type=valid_path,
-        required=False,
+        required=True,
         help="Path to the root folder in the repo to deploy. \
               Must contain a .git folder for gitversion to work.",
     )
@@ -75,7 +77,6 @@ def parse_args():
         "--project",
         env_var="INPUT_PROJECT",
         type=str,
-        default="None",
         required=False,
         help="Name of the project in Octopus Deploy to deploy to.",
     )
@@ -83,7 +84,6 @@ def parse_args():
         "--tenants",
         env_var="INPUT_TENANTS",
         type=str,
-        default="None",
         required=False,
         help="Name of the tenants to deploy to. String seperated by a comma. Example: 'tenant1,tenant2'.",
     )
@@ -91,7 +91,7 @@ def parse_args():
         "--deploy_to_environments",
         env_var="INPUT_DEPLOY_TO_ENVIRONMENTS",
         type=str,
-        default="None",
+        default=None,
         required=False,
         help="If specified trigger a deployment to the environment. \
               Can be multiple values seperated by a comma. Example 'staging,prod'.",
@@ -122,24 +122,24 @@ def parse_args():
         type=str,
         default="True",
         required=False,
+        choices=["True", "False"],
         help="Whether to wait synchronously for deployment in Octopus Deploy to finish.",
     )
     args = parser.parse_args()
 
     args.workspace = valid_path(args.workspace)
-    args.create_release = strtobool(args.create_release)
-    args.progress = strtobool(args.progress)
-    args.wait_for_deployment = strtobool(args.wait_for_deployment)
-    args.version = None if args.version == "None" else args.version
+    args.create_release = bool(strtobool(args.create_release))
+    args.progress = bool(strtobool(args.progress))
+    args.wait_for_deployment = bool(strtobool(args.wait_for_deployment))
 
-    if args.deploy_to_environments != "None":
+    if args.deploy_to_environments:
         args.deploy_to_environments = args.deploy_to_environments.split(",")
         args.create_release = True
-        assert args.service_account_key != "None", "service_account_key input argument must be specified."
+        assert args.service_account_key, "service_account_key input argument must be specified."
     else:
         args.deploy_to_environments = None
 
-    if args.tenants != "None":
+    if args.tenants:
         args.tenants = args.tenants.split(",")
     else:
         args.tenants = []
