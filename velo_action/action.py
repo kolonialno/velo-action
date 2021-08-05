@@ -154,6 +154,7 @@ def action(args):
     logging.basicConfig(level=args.log_level)
 
     logger.info("Starting Velo-action")
+    logger.info(f"service account: {args.service_account_key[:15]}")
 
     if args.version is None:
         gv = gitversion.Gitversion(path=args.workspace)
