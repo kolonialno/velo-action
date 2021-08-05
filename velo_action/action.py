@@ -100,21 +100,20 @@ def parse_args():
         "--service_account_key",
         env_var="INPUT_SERVICE_ACCOUNT_KEY",
         type=str,
-        default="None",
         required=False,
         help="A Google Service Account key, either base64 encoded or as json.",
     )
+    parser.add_argument("--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, required=False)
+    parser.add_argument("--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, required=False)
+    parser.add_argument("--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, required=False)
     parser.add_argument(
-        "--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, default="None", required=False
-    )
-    parser.add_argument(
-        "--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, default="None", required=False
-    )
-    parser.add_argument(
-        "--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, default="None", required=False
-    )
-    parser.add_argument(
-        "--progress", env_var="INPUT_PROGRESS", type=str, default="True", required=False, help="Show progress of the deployment."
+        "--progress",
+        env_var="INPUT_PROGRESS",
+        type=str,
+        default="True",
+        choices=["True", "False"],
+        required=False,
+        help="Show progress of the deployment.",
     )
     parser.add_argument(
         "--wait_for_deployment",
@@ -134,10 +133,8 @@ def parse_args():
 
     if args.deploy_to_environments:
         args.deploy_to_environments = args.deploy_to_environments.split(",")
-        args.create_release = True
-        assert args.service_account_key, "service_account_key input argument must be specified."
     else:
-        args.deploy_to_environments = None
+        args.deploy_to_environments = []
 
     if args.tenants:
         args.tenants = args.tenants.split(",")
@@ -148,12 +145,15 @@ def parse_args():
 
 
 def action(args):
+    # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
+    if args.deploy_to_environments:
+        args.create_release = True
+
     logging.basicConfig(level=args.log_level)
 
     logger.info("Starting Velo-action")
 
     if args.version is None:
-        version = args.version
         gv = gitversion.Gitversion(path=args.workspace)
         version = gv.generate_version()
     else:
@@ -167,6 +167,15 @@ def action(args):
         if not Path(deploy_folder).is_dir():
             raise Exception(f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'.")
 
+        if not args.service_account_key:
+            raise ValueError("gcp service account key not specified")
+        if not args.octopus_cli_server_secret:
+            raise ValueError("octopus server secret not specified")
+        if not args.octopus_cli_api_key_secret:
+            raise ValueError("octopus api key secret not specified")
+        if not args.velo_artifact_bucket_secret:
+            raise ValueError("artifact bucket secret not specified")
+
         g = gcp.Gcp(args.service_account_key)
         octopus_cli_server = g.lookup_data(args.octopus_cli_server_secret, VELO_PROJECT_NAME)
         octopus_cli_api_key = g.lookup_data(args.octopus_cli_api_key_secret, VELO_PROJECT_NAME)
@@ -174,34 +183,35 @@ def action(args):
 
         octo = octopus.Octopus(api_key=octopus_cli_api_key, server=octopus_cli_server)
 
-    if args.create_release:
-        logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
-        g.upload_from_directory(deploy_folder, velo_artifact_bucket, f"{args.project}/{version}")
+        if args.create_release:
+            logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
+            g.upload_from_directory(deploy_folder, velo_artifact_bucket, f"{args.project}/{version}")
 
-        commit_id = os.getenv("GITHUB_SHA")
-        branch_name = os.getenv("GITHUB_REF")
-        assert commit_id is not None, "The environment variable GITHUB_SHA must be present."
-        assert (
-            len(commit_id) == 40
-        ), "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
-        assert branch_name is not None, "The environment variable GITHUB_REF must be present, and contain the git branch name."
+            commit_id = os.getenv("GITHUB_SHA")
+            branch_name = os.getenv("GITHUB_REF")
+            assert commit_id is not None, "The environment variable GITHUB_SHA must be present."
+            assert (
+                len(commit_id) == 40
+            ), "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
+            assert (
+                branch_name is not None
+            ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
 
-        release_notes = f'{json.dumps({"commit_id": commit_id, "branch_name": branch_name})}'
+            release_notes = f'{json.dumps({"commit_id": commit_id, "branch_name": branch_name})}'
 
-        logger.info(f"Creating a release for project '{args.project}' with version '{version}'")
-        octo.create_release(version=version, project=args.project, release_notes=release_notes)
+            logger.info(f"Creating a release for project '{args.project}' with version '{version}'")
+            octo.create_release(version=version, project=args.project, release_notes=release_notes)
 
-    if args.deploy_to_environments:
-
-        for env in args.deploy_to_environments:
-            octo.deploy_release(
-                version=version,
-                environment=env,
-                project=args.project,
-                tenants=args.tenants,
-                progress=args.progress,
-                wait_for_deployment=args.wait_for_deployment,
-            )
+        if args.deploy_to_environments:
+            for env in args.deploy_to_environments:
+                octo.deploy_release(
+                    version=version,
+                    environment=env,
+                    project=args.project,
+                    tenants=args.tenants,
+                    progress=args.progress,
+                    wait_for_deployment=args.wait_for_deployment,
+                )
 
 
 if __name__ == "__main__":
