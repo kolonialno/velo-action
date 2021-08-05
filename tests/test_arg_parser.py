@@ -1,4 +1,16 @@
+import pytest
 from velo_action.action import parse_args
+
+
+def test_assume_fail_arg_parser_noworkspace(monkeypatch):
+    with pytest.raises(Exception):
+        args = parse_args()
+
+
+def test_assume_fail_arg_parser_errorworkspace(monkeypatch):
+    monkeypatch.setenv("INPUT_WORKSPACE", "does_not_exist")
+    with pytest.raises(Exception):
+        args = parse_args()
 
 
 def test_arg_parser_workspace(monkeypatch):
@@ -6,7 +18,17 @@ def test_arg_parser_workspace(monkeypatch):
     args = parse_args()
     assert True is True
     assert args.create_release is False
-    assert args.deploy_to_environments is None
+    assert args.deploy_to_environments == []
+    assert args.log_level == "INFO"
+    assert args.create_release is False
+
+
+def test_arg_parser_github_workspace(monkeypatch):
+    monkeypatch.setenv("GITHUB_WORKSPACE", ".")
+    args = parse_args()
+    assert True is True
+    assert args.create_release is False
+    assert args.deploy_to_environments == []
     assert args.log_level == "INFO"
     assert args.create_release is False
 
@@ -18,7 +40,7 @@ def test_arg_parser_workspace_project_create_release(monkeypatch):
     args = parse_args()
     assert True is True
     assert args.create_release is True
-    assert args.deploy_to_environments is None
+    assert args.deploy_to_environments == []
 
 
 def test_arg_parser_workspace_project_deploy_and_wait(monkeypatch):

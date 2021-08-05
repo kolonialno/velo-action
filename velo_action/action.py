@@ -12,13 +12,14 @@ logger = logging.getLogger(name="action")
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
 
+GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE"),
+
 
 def valid_path(arg):
-    try:
-        path = Path(arg)
-        return path
-    except:
-        raise Exception(f"{arg} is an invalid path.")
+    path = Path(arg)
+    if not path.is_dir():
+        raise ValueError(f"path {path} is not a dir")
+    return path
 
 
 def parse_args():
@@ -67,8 +68,6 @@ def parse_args():
     parser.add_argument(
         "--workspace",
         env_var="INPUT_WORKSPACE",
-        type=valid_path,
-        default=os.getenv("GITHUB_WORKSPACE"),
         required=False,
         help="Path to the root folder in the repo to deploy. \
               Must contain a .git folder for gitversion to work.",
@@ -126,6 +125,8 @@ def parse_args():
     )
     args = parser.parse_args()
 
+    if not args.workspace:
+        args.workspace = os.getenv("GITHUB_WORKSPACE")
     args.workspace = valid_path(args.workspace)
     args.create_release = bool(strtobool(args.create_release))
     args.progress = bool(strtobool(args.progress))
