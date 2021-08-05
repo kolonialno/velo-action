@@ -167,7 +167,8 @@ def action(args):
     logging.basicConfig(level=args.log_level)
 
     logger.info("Starting Velo-action")
-    logger.info(f"service account: {args.service_account_key[:15]}")
+    if args.service_account_key:
+        logger.info(f"service account: {args.service_account_key[:15]}")
     logger.info(f"deploy_to_environments: {args.deploy_to_environments}")
     logger.info(f"create_release: {args.create_release}")
 
