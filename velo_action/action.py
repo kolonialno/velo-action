@@ -11,7 +11,6 @@ logger = logging.getLogger(name="action")
 
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
-GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE", default="/github/workspace/")
 
 
 def valid_path(arg):
@@ -69,7 +68,8 @@ def parse_args():
         "--workspace",
         env_var="INPUT_WORKSPACE",
         type=valid_path,
-        required=True,
+        default=os.getenv("GITHUB_WORKSPACE"),
+        required=False,
         help="Path to the root folder in the repo to deploy. \
               Must contain a .git folder for gitversion to work.",
     )
