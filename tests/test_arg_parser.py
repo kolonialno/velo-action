@@ -76,3 +76,14 @@ def test_arg_parser_workspace_project_deploy_multi_env(monkeypatch):
     assert True is True
     assert args.create_release is True
     assert args.deploy_to_environments == ["staging", "prod"]
+
+
+def test_arg_parser_none_values(monkeypatch):
+    monkeypatch.setenv("INPUT_WORKSPACE", ".")
+    monkeypatch.setenv("INPUT_VERSION", "None")
+    monkeypatch.setenv("INPUT_PROJECT", "None")
+    monkeypatch.setenv("INPUT_TENANTS", "None")
+    args = parse_args()
+    assert args.version is None
+    assert args.project is None
+    assert args.project is None

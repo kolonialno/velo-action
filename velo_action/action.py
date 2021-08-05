@@ -194,6 +194,8 @@ def action(args):
             raise ValueError("octopus api key secret not specified")
         if not args.velo_artifact_bucket_secret:
             raise ValueError("artifact bucket secret not specified")
+        if not args.project:
+            raise ValueError("project not specified")
 
         g = gcp.Gcp(args.service_account_key)
         octopus_cli_server = g.lookup_data(args.octopus_cli_server_secret, VELO_PROJECT_NAME)
