@@ -3,16 +3,28 @@ from velo_action.gcp import Gcp
 import pytest
 
 
-@pytest.mark.skip("manually activate")
+def has_encoded_key():
+    if os.getenv("INPUT_SERVICE_ACCOUNT_KEY"):
+        return True
+    return False
+
+
+def has_unencoded_key():
+    if os.getenv("INPUT_SERVICE_ACCOUNT_KEY_JSON"):
+        return True
+    return False
+
+
+@pytest.mark.skipif(not has_encoded_key(), reason="no encoded key present in env")
 def test_gcp_encoded():
     """paste in a base64-encoded service account json here to test"""
-    g = Gcp('')
+    g = Gcp(os.getenv("INPUT_SERVICE_ACCOUNT_KEY"))
 
 
-@pytest.mark.skip("manually activate")
+@pytest.mark.skipif(not has_unencoded_key(), reason="no unencoded key present in env")
 def test_gcp_un_encoded():
     """paste in a regular json-formatted service account string (no encoding) here to test:"""
-    service_account_json = ""
+    service_account_json = os.getenv("INPUT_SERVICE_ACCOUNT_KEY_JSON")
 
     service_account_json = service_account_json.replace(os.linesep, "")
     g = Gcp(service_account_json)
