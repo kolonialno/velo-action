@@ -3,6 +3,7 @@ import logging
 import json
 from pathlib import Path
 import envargparse
+from distutils.util import strtobool
 from velo_action import octopus, github, gcp, gitversion
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,6 +11,7 @@ logger = logging.getLogger(name="action")
 
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
+GITHUB_WORKSPACE = os.getenv("GITHUB_WORKSPACE", default="/github/workspace/")
 
 
 def valid_path(arg):
@@ -43,18 +45,40 @@ def parse_args():
         type=str,
         default="None",
         required=False,
-        help="Version used to generate release and tag image. This will overwrite the automatically generated gitversion if spesified.",
+        help="Version used to generate release and tag image. \
+              This will overwrite the automatically generated gitversion if spesified.",
     )
-    parser.add_argument("--log_level", env_var="INPUT_PYTHON_LOGGING_LEVEL", type=str, required=False, choices=["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"])
-    parser.add_argument("--create_release", env_var="INPUT_CREATE_RELEASE", type=str, required=False, choices=["True", "False"], help="If true, create a release in Octopus deploy")
     parser.add_argument(
-        "--github_workspace",
-        env_var="GITHUB_WORKSPACE",
+        "--log_level",
+        env_var="INPUT_PYTHON_LOGGING_LEVEL",
+        type=str,
+        required=False,
+        choices=["CRITICAL", "FATAL", "ERROR", "WARN", "WARNING", "INFO", "DEBUG"],
+    )
+    parser.add_argument(
+        "--create_release",
+        env_var="INPUT_CREATE_RELEASE",
+        type=str,
+        required=False,
+        choices=["True", "False"],
+        help="If true, create a release in Octopus deploy",
+    )
+    parser.add_argument(
+        "--workspace",
+        env_var="INPUT_WORKSPACE",
         type=valid_path,
         required=False,
-        help="Path to the root folder in the repo to deploy. Must contain a .git folder for gitversion to work.",
-    )  # workdir used by Github Actions,https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions#workdir
-    parser.add_argument("--project", env_var="INPUT_PROJECT", type=str, default="None", required=False, help="Name of the project in Octopus Deploy to deploy to.")
+        help="Path to the root folder in the repo to deploy. \
+              Must contain a .git folder for gitversion to work.",
+    )
+    parser.add_argument(
+        "--project",
+        env_var="INPUT_PROJECT",
+        type=str,
+        default="None",
+        required=False,
+        help="Name of the project in Octopus Deploy to deploy to.",
+    )
     parser.add_argument(
         "--tenants",
         env_var="INPUT_TENANTS",
@@ -69,7 +93,8 @@ def parse_args():
         type=str,
         default="None",
         required=False,
-        help="If specified trigger a deployment to the environment. Can be multiple values seperated by a comma. Example 'staging,prod'.",
+        help="If specified trigger a deployment to the environment. \
+              Can be multiple values seperated by a comma. Example 'staging,prod'.",
     )
     parser.add_argument(
         "--service_account_key",
@@ -79,26 +104,33 @@ def parse_args():
         required=False,
         help="A Google Service Account key, either base64 encoded or as json.",
     )
-    parser.add_argument("--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, default="None", required=False)
-    parser.add_argument("--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, default="None", required=False)
-    parser.add_argument("--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, default="None", required=False)
-    parser.add_argument("--progress", env_var="INPUT_PROGRESS", type=str, default="True", required=False, help="Show progress of the deployment.")
     parser.add_argument(
-        "--wait_for_deployment", env_var="INPUT_WAIT_FOR_DEPLOYMENT", type=str, default="True", required=False, help="Whether to wait synchronously for deployment to finish."
+        "--octopus_cli_server_secret", env_var="INPUT_OCTOPUS_CLI_SERVER_SECRET", type=str, default="None", required=False
+    )
+    parser.add_argument(
+        "--octopus_cli_api_key_secret", env_var="INPUT_OCTOPUS_CLI_API_KEY_SECRET", type=str, default="None", required=False
+    )
+    parser.add_argument(
+        "--velo_artifact_bucket_secret", env_var="INPUT_VELO_ARTIFACT_BUCKET_SECRET", type=str, default="None", required=False
+    )
+    parser.add_argument(
+        "--progress", env_var="INPUT_PROGRESS", type=str, default="True", required=False, help="Show progress of the deployment."
+    )
+    parser.add_argument(
+        "--wait_for_deployment",
+        env_var="INPUT_WAIT_FOR_DEPLOYMENT",
+        type=str,
+        default="True",
+        required=False,
+        help="Whether to wait synchronously for deployment in Octopus Deploy to finish.",
     )
     args = parser.parse_args()
 
-    args.github_workspace = valid_path(args.github_workspace)
-    logging.basicConfig(level=args.log_level)
-
-    if args.version == "None":
-        args.version = None
-
-    if args.create_release == "True":
-        assert args.project != "None", "project input argument must be specified."
-        args.create_release = True
-    else:
-        args.create_release = False
+    args.workspace = valid_path(args.workspace)
+    args.create_release = strtobool(args.create_release)
+    args.progress = strtobool(args.progress)
+    args.wait_for_deployment = strtobool(args.wait_for_deployment)
+    args.version = None if args.version == "None" else args.version
 
     if args.deploy_to_environments != "None":
         args.deploy_to_environments = args.deploy_to_environments.split(",")
@@ -112,20 +144,17 @@ def parse_args():
     else:
         args.tenants = []
 
-    args.progress = True if args.progress == "True" else False
-    args.wait_for_deployment = True if args.wait_for_deployment == "True" else False
-    args.version = None if args.version == "None" else args.version
-
     return args
 
 
 def action(args):
+    logging.basicConfig(level=args.log_level)
+
     logger.info("Starting Velo-action")
-    logger.info(f"Repo root path is '{args.github_workspace}'")
 
     if args.version is None:
         version = args.version
-        gv = gitversion.Gitversion(repo_path=args.github_workspace)
+        gv = gitversion.Gitversion(path=args.workspace)
         version = gv.generate_version()
     else:
         version = args.version
@@ -134,10 +163,9 @@ def action(args):
     github.actions_output("version", version)
 
     if args.create_release or args.deploy_to_environments:
-
-        deploy_folder = args.github_workspace / VELO_DEPLOY_FOLDER_NAME
+        deploy_folder = args.workspace / VELO_DEPLOY_FOLDER_NAME
         if not Path(deploy_folder).is_dir():
-            raise Exception(f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in repo root: {deploy_folder}.")
+            raise Exception(f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'.")
 
         g = gcp.Gcp(args.service_account_key)
         octopus_cli_server = g.lookup_data(args.octopus_cli_server_secret, VELO_PROJECT_NAME)
@@ -153,8 +181,11 @@ def action(args):
         commit_id = os.getenv("GITHUB_SHA")
         branch_name = os.getenv("GITHUB_REF")
         assert commit_id is not None, "The environment variable GITHUB_SHA must be present."
-        assert len(commit_id) == 40, "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
+        assert (
+            len(commit_id) == 40
+        ), "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
         assert branch_name is not None, "The environment variable GITHUB_REF must be present, and contain the git branch name."
+
         release_notes = f'{json.dumps({"commit_id": commit_id, "branch_name": branch_name})}'
 
         logger.info(f"Creating a release for project '{args.project}' with version '{version}'")
@@ -170,8 +201,6 @@ def action(args):
                 tenants=args.tenants,
                 progress=args.progress,
                 wait_for_deployment=args.wait_for_deployment,
-                deployAt=args.deployAt,
-                noDeployAfter=args.noDeployAfter,
             )
 
 

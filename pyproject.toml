@@ -31,7 +31,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 target-version = ['py39']
 safe = true
-line-length = 180
+line-length = 130
 include = '\.pyi?$'
 exclude = '''
 /(

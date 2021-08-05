@@ -53,7 +53,9 @@ class Gcp:
         if not version:
             version = self.get_highest_version(key, project_id)
         # noinspection PyTypeChecker
-        secret = secrets_client.access_secret_version(request={"name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"}).payload.data.decode("utf-8")
+        secret = secrets_client.access_secret_version(
+            request={"name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"}
+        ).payload.data.decode("utf-8")
 
         return secret
 

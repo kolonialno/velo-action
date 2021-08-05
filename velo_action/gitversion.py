@@ -6,18 +6,21 @@ logger = logging.getLogger(name="gitversion")
 
 
 class Gitversion:
-    def __init__(self, repo_path):
-        self.path = repo_path
+    def __init__(self, path):
+        self.path = path
 
         self._gitversion_cli_exists()
         self.version = self._version()
-        logger.info(f"Gitversion version={self.version}")
+        logger.debug(f"Gitversion version={self.version}")
 
     def _gitversion_cli_exists(self):
         try:
             proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=self.path)
         except Exception as e:
-            raise Exception("Gitversion Cli 'gitversion' is not installed. See https://gitversion.net/docs/usage/cli/installation for instructions.") from e
+            raise Exception(
+                "Gitversion Cli 'gitversion' is not installed. \
+                 See https://gitversion.net/docs/usage/cli/installation for instructions."
+            ) from e
         return True
 
     def _version(self):

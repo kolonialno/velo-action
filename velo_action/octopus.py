@@ -56,10 +56,22 @@ class Octopus:
                     break
 
         if not exists:
-            cmd = f"octo create-release --version={version} --project={project} --releaseNotes='{release_notes}' --helpOutputFormat=Json"
+            cmd = f"octo create-release \
+                --version={version} \
+                --project={project} \
+                --releaseNotes='{release_notes}' \
+                --helpOutputFormat=Json"
             proc_utils.execute_process(cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False)
 
-    def deploy_release(self, version, project, environment, tenants=None, progress=None, wait_for_deployment=None, deployAt=None, noDeployAfter=None):
+    def deploy_release(
+        self,
+        version,
+        project,
+        environment,
+        tenants=None,
+        progress=None,
+        wait_for_deployment=None,
+    ):
         args = ["--helpOutputFormat=Json"]
         if progress:
             args.append("--progress")
@@ -75,7 +87,9 @@ class Octopus:
                     raise Exception(f"Tenant '{tenant}' does not exist in Octopus Deploy, found '{octo_tenants}'.")
 
                 cmd_tenant = f"--tenant={tenant}"
-                proc_utils.execute_process(cmd + " " + cmd_tenant, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
+                proc_utils.execute_process(
+                    cmd + " " + cmd_tenant, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False
+                )
                 logger.info(f"Deploying '{project}' '{tenant}' version '{version}' to '{environment}'")
         else:
             proc_utils.execute_process(cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False)
