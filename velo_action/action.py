@@ -155,8 +155,6 @@ def parse_args():
     else:
         args.tenants = []
 
-    arg
-
     return args
 
 
