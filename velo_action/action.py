@@ -22,6 +22,12 @@ def valid_path(arg):
     return path
 
 
+def check_for_none(arg):
+    if arg and arg == "None":
+        return None
+    return arg
+
+
 def parse_args():
     """[Parse input arguments]
 
@@ -90,7 +96,6 @@ def parse_args():
         "--deploy_to_environments",
         env_var="INPUT_DEPLOY_TO_ENVIRONMENTS",
         type=str,
-        default=None,
         required=False,
         help="If specified trigger a deployment to the environment. \
               Can be multiple values seperated by a comma. Example 'staging,prod'.",
@@ -125,6 +130,13 @@ def parse_args():
     )
     args = parser.parse_args()
 
+    args.version = check_for_none(args.version)
+    args.workspace = check_for_none(args.workspace)
+    args.project = check_for_none(args.project)
+    args.tenants = check_for_none(args.tenants)
+    args.deploy_to_environments = check_for_none(args.deploy_to_environments)
+    args.service_account_key = check_for_none(args.service_account_key)
+
     if not args.workspace:
         # EnvArgParser doesnt seem to accept variables in its "default" attribute, so this is the only way :-(
         args.workspace = os.getenv("GITHUB_WORKSPACE")
@@ -142,6 +154,8 @@ def parse_args():
         args.tenants = args.tenants.split(",")
     else:
         args.tenants = []
+
+    arg
 
     return args
 

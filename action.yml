@@ -13,12 +13,12 @@ inputs:
       Name of the project in Octopus Deploy to deploy to.
     required: true
     default: None
-  #workspace:
-  #  description: |-
-  #    Path to the folder containing the .deploy folder. Default is the root of the repository.
-  #    The folder must be in a Git repository for GitVersion to work, unless you manually specify the version parameter.
-  #  required: false
-  #  default: None
+  workspace:
+    description: |-
+      Path to the folder containing the .deploy folder. Default is the root of the repository.
+      The folder must be in a Git repository for GitVersion to work, unless you manually specify the version parameter.
+    required: false
+    default: None
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.

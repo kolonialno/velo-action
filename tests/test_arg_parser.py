@@ -38,7 +38,6 @@ def test_arg_parser_workspace_project_create_release(monkeypatch):
     monkeypatch.setenv("INPUT_PROJECT", "testproject")
     monkeypatch.setenv("INPUT_CREATE_RELEASE", "True")
     args = parse_args()
-    assert True is True
     assert args.create_release is True
     assert args.deploy_to_environments == []
 
