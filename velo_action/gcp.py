@@ -12,16 +12,16 @@ logger = logging.getLogger(name="gcp")
 
 class Gcp:
     def __init__(self, service_account_key):
-        google_service_account_key_json = None
+        google_service_account_key_json_str = None
         try:
-            google_service_account_key_json = json.loads(base64.b64decode(service_account_key.encode("ascii")).decode("ascii"))
-        except binascii.Error:
+            google_service_account_key_json_str = base64.b64decode(service_account_key.encode("ascii")).decode("ascii")
+        except Exception as e:
             logger.debug("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
-        if google_service_account_key_json:
-            service_account_info = google_service_account_key_json
+        if google_service_account_key_json_str:
+            service_account_info = json.loads(google_service_account_key_json_str)
         else:
-            service_account_info = service_account_key
+            service_account_info = json.loads(service_account_key)
         credentials = service_account.Credentials.from_service_account_info(service_account_info)
         self.scoped_credentials = credentials.with_scopes(["https://www.googleapis.com/auth/cloud-platform"])
 
