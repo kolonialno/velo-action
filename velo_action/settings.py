@@ -1,5 +1,5 @@
 from typing import Optional, List, Union
-from pydantic import BaseSettings, ValidationError, validator
+from pydantic import BaseSettings, ValidationError, validator, root_validator
 import os
 from pathlib import Path
 
