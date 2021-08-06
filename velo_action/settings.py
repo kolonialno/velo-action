@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     Every githu action input, specified in action.yml, is also set do default string 'None'.
     Otherview you would get an env var in the container with no value, causing an error.
     """
+
     class Config:
         env_prefix = "INPUT_"
 
