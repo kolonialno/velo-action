@@ -8,7 +8,7 @@ HAS_GITHUB_WORKSPACE = True if os.getenv("GITHUB_WORKSPACE") else False
 
 @pytest.mark.skipif(HAS_GITHUB_WORKSPACE, reason="GITHUB_WORKSPACE is set, skipping this")
 def test_assume_fail_arg_parser_noworkspace(monkeypatch):
-    """Will be skipped when running in GH Action, since GITHUB_WORKSPACE is set by the environment"""
+    """Will be skipped when running in GH Action, since GITHUB_WORKSPACE is likely set by the environment"""
     with pytest.raises(ValidationError):
         s = Settings()
 

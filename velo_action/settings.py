@@ -51,7 +51,15 @@ class Settings(BaseSettings):
             return "/github/workspace"
         return v
 
-    @validator("version", "log_level", "project", "service_account_key", "octopus_cli_server_secret", "octopus_cli_api_key_secret", "velo_artifact_bucket_secret")
+    @validator(
+        "version",
+        "log_level",
+        "project",
+        "service_account_key",
+        "octopus_cli_server_secret",
+        "octopus_cli_api_key_secret",
+        "velo_artifact_bucket_secret",
+    )
     def check_not_str_none(cls, v):
         """normalise the input from github actions so we get _real_ none-values"""
         if v == "None":
