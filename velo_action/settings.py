@@ -39,11 +39,13 @@ class Settings(BaseSettings):
             return val.split(",")
         return val
 
-    @validator("workspace")
+    @validator("workspace", pre=True)
     def lookup_from_alternative_envvar(cls, v):
         alt_lookup = os.getenv("GITHUB_WORKSPACE")
         if not v and alt_lookup:
             return alt_lookup
+        elif not v:
+            return "/github/workspace"
         return v
 
     @validator("version", "workspace", "project", "tenants", "deploy_to_environments", "service_account_key")
