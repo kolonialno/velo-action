@@ -38,7 +38,7 @@ def action(input_args: Settings):
     if input_args.create_release or input_args.deploy_to_environments:
         deploy_folder = Path.joinpath(Path(input_args.workspace), VELO_DEPLOY_FOLDER_NAME)
 
-        if not Path(deploy_folder).is_dir():
+        if not deploy_folder.is_dir():
             raise Exception(f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{input_args.workspace}'.")
 
         if not input_args.service_account_key:
