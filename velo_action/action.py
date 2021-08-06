@@ -1,7 +1,8 @@
-import os
-import logging
 import json
+import logging
+import os
 from pathlib import Path
+
 from velo_action import octopus, github, gcp, gitversion
 from velo_action.settings import Settings
 
@@ -26,7 +27,7 @@ def action(input_args: Settings):
     logger.info(f"create_release: {input_args.create_release}")
 
     if input_args.version is None:
-        gv = gitversion.Gitversion(path=input_args.workspace)
+        gv = gitversion.Gitversion(path=Path(input_args.workspace))
         version = gv.generate_version()
     else:
         version = input_args.version

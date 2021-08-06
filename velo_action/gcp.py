@@ -1,10 +1,10 @@
-import os
-import logging
-import json
 import base64
-import binascii
-from google.cloud import secretmanager, storage
+import json
+import logging
+import os
 from functools import lru_cache
+
+from google.cloud import secretmanager, storage
 from google.oauth2 import service_account
 
 logger = logging.getLogger(name="gcp")

@@ -1,12 +1,13 @@
 import logging
 import json
 from velo_action import proc_utils
+from pathlib import Path
 
 logger = logging.getLogger(name="gitversion")
 
 
 class Gitversion:
-    def __init__(self, path):
+    def __init__(self, path: Path):
         self.path = path
 
         self._gitversion_cli_exists()
@@ -36,8 +37,8 @@ class Gitversion:
         If GitVersion.yml is not found, one will be generated with the Mainline mode.
         https://gitversion.readthedocs.io/en/latest/input/docs/reference/versioning-modes/mainline-development/
         """
-        gitversion_config_file = self.path / "GitVersion.yml"
-        if not (gitversion_config_file).is_file():
+        gitversion_config_file = Path.joinpath(self.path, "GitVersion.yml")
+        if not gitversion_config_file.is_file():
             logger.warning(f"GitVersion.yml not found in {self.path}.")
             logger.info("Creating GitVersion.yml with mode: Mainline.")
 
