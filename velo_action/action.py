@@ -36,7 +36,8 @@ def action(input_args: Settings):
     github.actions_output("version", version)
 
     if input_args.create_release or input_args.deploy_to_environments:
-        deploy_folder = Path.joinpath(Path(input_args.workspace), "VELO_DEPLOY_FOLDER_NAME")
+        deploy_folder = Path.joinpath(Path(input_args.workspace), VELO_DEPLOY_FOLDER_NAME)
+
         if not Path(deploy_folder).is_dir():
             raise Exception(f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{input_args.workspace}'.")
 
