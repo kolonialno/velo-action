@@ -43,13 +43,15 @@ class Settings(BaseSettings):
     @validator("workspace", pre=True)
     def lookup_from_alternative_envvar(cls, v):
         alt_lookup = os.getenv("GITHUB_WORKSPACE")
+        if v == "None":
+            v = None
         if not v and alt_lookup:
             return alt_lookup
         elif not v:
             return "/github/workspace"
         return v
 
-    @validator("version", "workspace", "project", "tenants", "deploy_to_environments", "service_account_key")
+    @validator("version", "log_level", "project", "service_account_key", "octopus_cli_server_secret", "octopus_cli_api_key_secret", "velo_artifact_bucket_secret")
     def check_not_str_none(cls, v):
         """normalise the input from github actions so we get _real_ none-values"""
         if v == "None":

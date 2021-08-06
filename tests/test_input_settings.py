@@ -19,6 +19,13 @@ def test_assume_fail_arg_parser_errorworkspace(monkeypatch):
         s = Settings()
 
 
+def test_assume_fail_arg_parser_fallback_workspace(monkeypatch):
+    monkeypatch.setenv("INPUT_WORKSPACE", "None")
+    monkeypatch.setenv("GITHUB_WORKSPACE", ".")
+    s = Settings()
+    assert s.workspace == "."
+
+
 def test_arg_parser_workspace(monkeypatch):
     monkeypatch.setenv("INPUT_WORKSPACE", ".")
     s = Settings()
