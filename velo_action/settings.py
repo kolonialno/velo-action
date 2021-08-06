@@ -70,7 +70,10 @@ class Settings(BaseSettings):
 
     @validator("tenants", "deploy_to_environments")
     def check_list_not_str_none(cls, v):
-        """normalise the input from github actions so we get _real_ none-values"""
+        """
+        normalise the input from github actions so we get _real_ none-values
+        the combination of github actions' string unputr and pydantics parsing of list fields makes this one a bit shitty.
+        """
         if v == "None":
             return []
         elif v == "":
