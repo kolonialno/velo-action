@@ -75,6 +75,8 @@ class Settings(BaseSettings):
             return []
         elif v == "":
             return []
+        elif v == ["None"]:
+            return []
         return v
 
     @validator("workspace")

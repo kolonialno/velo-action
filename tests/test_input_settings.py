@@ -53,6 +53,15 @@ def test_arg_parser_workspace_project_create_release(monkeypatch):
     assert s.deploy_to_environments == []
 
 
+def test_arg_parser_workspace_project_none_environments(monkeypatch):
+    monkeypatch.setenv("INPUT_WORKSPACE", ".")
+    monkeypatch.setenv("INPUT_PROJECT", "testproject")
+    monkeypatch.setenv("INPUT_DEPLOY_TO_ENVIRONMENTS", "None")
+    s = Settings()
+    assert s.create_release is False
+    assert s.deploy_to_environments == []
+
+
 def test_arg_parser_workspace_project_deploy_and_wait(monkeypatch):
     monkeypatch.setenv("INPUT_WORKSPACE", ".")
     monkeypatch.setenv("INPUT_PROJECT", "testproject")
