@@ -9,9 +9,9 @@ def test_gitversion_version():
 
     Must only run in velo-action container where gitversion is installed.
     """
-    repo_path = Path(__file__).resolve().parent.parent
+    path = Path(__file__).resolve().parent.parent
 
-    gv = gitversion.Gitversion(repo_path)
+    gv = gitversion.Gitversion(path)
 
     assert gv._gitversion_cli_exists()
     assert gv._version() == "1.0.0"

@@ -9,8 +9,15 @@ inputs:
     required: false
     default: None
   project:
-    description: Name of the project in Octopus Deploy to deploy to.
+    description: |-
+      Name of the project in Octopus Deploy to deploy to.
     required: true
+    default: None
+  workspace:
+    description: |-
+      Path to the folder containing the .deploy folder. Default is the root of the repository.
+      The folder must be in a Git repository for GitVersion to work, unless you manually specify the version parameter.
+    required: false
     default: None
   create_release:
     description: |-
@@ -31,6 +38,16 @@ inputs:
       Will only deploy to environments listed in the 'deploy_to_environments' variable.
     required: false
     default: None
+  progress:
+    description: |-
+      Show progress of the deployment in Octopus Deploy.
+    required: false
+    default: 'False'
+  wait_for_deployment:
+    description: |-
+      Whether to wait synchronously for deployment in Octopus Deploy to finish.
+    required: false
+    default: 'False'
   service_account_key:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
@@ -69,6 +86,8 @@ runs:
     - ${{ inputs.create_release }}
     - ${{ inputs.project }}
     - ${{ inputs.tenants }}
+    - ${{ inputs.progress }}
+    - ${{ inputs.wait_for_deployment }}
     - ${{ inputs.service_account_key }}
     - ${{ inputs.octopus_cli_server_secret }}
     - ${{ inputs.octopus_cli_api_key_secret }}

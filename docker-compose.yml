@@ -10,6 +10,5 @@ services:
     image: act-github-actions-velo:latest
     env_file: .env
     environment:
-      GITHUB_WORKSPACE: '/github/workspace'  # Overrides .env file used when debugging outside container
     volumes:
       - ${PWD}:/github/workspace

@@ -3,70 +3,84 @@ name: CI
 on: push
 
 env:
-  IMAGE: europe-west4-docker.pkg.dev/nube-artifacts/nube-docker-public/velo-action
+  IMAGE: europe-docker.pkg.dev/nube-artifacts/nube-container-images/velo-action
 
 jobs:
   lint:
     runs-on: ubuntu-20.04
     name: lint
+    strategy:
+      matrix:
+        check:
+          - pylint --rcfile=.pylintrc --fail-under=8 --output-format=parseable --reports=no velo_action
+          - black --check --config=pyproject.toml .
+          - flake8 --config='.flake8' .
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Cache environment
-        id: cached_poetry
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-velo-action-${{ runner.os }}--${{ hashFiles('**/poetry.lock') }}
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
 
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.9.4"
-          architecture: "x64"
+          python-version: ${{ steps.versions.outputs.python }}
 
-      - run: |
-          pip install poetry==1.1.6
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+      - name: Set up Poetry
+        uses: snok/install-poetry@v1.1.7
+        with:
+          version: ${{ steps.versions.outputs.poetry }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
-      - if: steps.cached_poetry.outputs.cache-hit != 'true'
+      - name: Load Poetry cache
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Run linter
         run: |
-          poetry install
-
-      - run: poetry run black --check --config=pyproject.toml .
-      - run: poetry run flake8 --config='.flake8' .
-      - run: poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
-
+          poetry run ${{ matrix.check }}
   test:
     runs-on: ubuntu-20.04
     name: test
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache environment
-        id: cached_poetry
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-velo-action-${{ runner.os }}--${{ hashFiles('**/poetry.lock') }}
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
 
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.9.4"
-          architecture: "x64"
+          python-version: ${{ steps.versions.outputs.python }}
 
-      - run: |
-          pip install poetry==1.1.6
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+      - name: Set up Poetry
+        uses: snok/install-poetry@v1.1.7
+        with:
+          version: ${{ steps.versions.outputs.poetry }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
-      - if: steps.cached_poetry.outputs.cache-hit != 'true'
-        run: |
-          poetry install
+      - name: Load Poetry cache
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2.1.6
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
-      # - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
-      #   id: pytests
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+        id: pytests
 
   build:
     runs-on: ubuntu-20.04
@@ -90,10 +104,11 @@ jobs:
           username: _json_key
           password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
-      - uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
-          cache-from: type=registry
-          cache-to: type=registry
+      #disabling this until the artifact rename stuff is fixed.
+      #- uses: docker/build-push-action@v2
+      #  with:
+      #    context: .
+      #    push: true
+      #    tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
+      #    cache-from: type=registry
+      #    cache-to: type=registry

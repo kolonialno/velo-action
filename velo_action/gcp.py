@@ -1,10 +1,10 @@
-import os
-import logging
-import json
 import base64
-import binascii
-from google.cloud import secretmanager, storage
+import json
+import logging
+import os
 from functools import lru_cache
+
+from google.cloud import secretmanager, storage
 from google.oauth2 import service_account
 
 logger = logging.getLogger(name="gcp")
@@ -12,13 +12,17 @@ logger = logging.getLogger(name="gcp")
 
 class Gcp:
     def __init__(self, service_account_key):
-
+        google_service_account_key_json_str = None
         try:
-            google_service_account_key_json = json.loads(base64.b64decode(service_account_key.encode("ascii")).decode("ascii"))
-        except binascii.Error:
+            google_service_account_key_json_str = base64.b64decode(service_account_key.encode("ascii")).decode("ascii")
+        except Exception as e:
             logger.debug("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
 
-        credentials = service_account.Credentials.from_service_account_info(google_service_account_key_json)
+        if google_service_account_key_json_str:
+            service_account_info = json.loads(google_service_account_key_json_str)
+        else:
+            service_account_info = json.loads(service_account_key)
+        credentials = service_account.Credentials.from_service_account_info(service_account_info)
         self.scoped_credentials = credentials.with_scopes(["https://www.googleapis.com/auth/cloud-platform"])
 
     @lru_cache
@@ -53,7 +57,9 @@ class Gcp:
         if not version:
             version = self.get_highest_version(key, project_id)
         # noinspection PyTypeChecker
-        secret = secrets_client.access_secret_version(request={"name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"}).payload.data.decode("utf-8")
+        secret = secrets_client.access_secret_version(
+            request={"name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"}
+        ).payload.data.decode("utf-8")
 
         return secret
 
