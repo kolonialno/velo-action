@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     octopus_cli_api_key_secret: str = None
     velo_artifact_bucket_secret: str = None
     progress: bool = True
-    wait_for_deployment: bool = True
+    wait_for_deployment: bool = False
 
     @validator("deploy_to_environments", "tenants", pre=True)
     def validate(cls, val):
