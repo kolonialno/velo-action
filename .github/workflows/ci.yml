@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  IMAGE: eu.gcr.io/nube-hub/auth-proxy
+  IMAGE: odacom/velo-action/auth-proxy
 
 jobs:
   lint:
