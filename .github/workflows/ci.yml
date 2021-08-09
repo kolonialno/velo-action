@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  IMAGE: odacom/velo-action/auth-proxy
+  IMAGE: odacom/velo-action
 
 jobs:
   lint:
