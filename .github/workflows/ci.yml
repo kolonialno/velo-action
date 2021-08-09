@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  IMAGE: europe-docker.pkg.dev/nube-artifacts/nube-container-images/velo-action
+  IMAGE: eu.gcr.io/nube-hub/auth-proxy
 
 jobs:
   lint:
@@ -104,11 +104,10 @@ jobs:
           username: _json_key
           password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
-      #disabling this until the artifact rename stuff is fixed.
-      #- uses: docker/build-push-action@v2
-      #  with:
-      #    context: .
-      #    push: true
-      #    tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
-      #    cache-from: type=registry
-      #    cache-to: type=registry
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
+          cache-from: type=registry
+          cache-to: type=registry
