@@ -1,6 +1,7 @@
 def fill_default_envvars(monkeypatch):
     """set all envvars so that local .env files won't affect test runs"""
     monkeypatch.setenv("INPUT_VERSION", "None")
+    monkeypatch.setenv("INPUT_WORKSPACE", "None")
     monkeypatch.setenv("INPUT_PROJECT", "None")
     monkeypatch.setenv("INPUT_CREATE_RELEASE", "False")
     monkeypatch.setenv("INPUT_DEPLOY_TO_ENVIRONMENTS", "None")
