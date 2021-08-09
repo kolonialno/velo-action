@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     This means every argument is parsed as a string.
     To replicate this behaviour when debugging locally all default values is also set to the string 'None'.
 
-    Every githu action input, specified in action.yml, is also set do default string 'None'.
-    Otherview you would get an env var in the container with no value, causing an error.
+    Every github action input, specified in action.yml, is also set do default string 'None'.
+    Otherwise you would get an env var in the container with no value, causing an error.
     """
 
     class Config:
@@ -72,7 +72,7 @@ class Settings(BaseSettings):
     def check_list_not_str_none(cls, v):
         """
         normalise the input from github actions so we get _real_ none-values
-        the combination of github actions' string unputr and pydantics parsing of list fields makes this one a bit shitty.
+        the combination of github actions' string input and pydantics parsing of list fields makes this one a bit shitty.
         """
         if v == "None":
             return []
