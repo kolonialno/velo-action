@@ -1,5 +1,10 @@
 def fill_default_envvars(monkeypatch):
-    """set all envvars so that local .env files won't affect test runs"""
+    """
+    set all envvars so that local .env files won't affect test runs.
+    These envvars should correspond to the defaults in `action.yml`
+    in order to give a realistic test environment
+
+    """
     monkeypatch.setenv("INPUT_VERSION", "None")
     monkeypatch.setenv("INPUT_WORKSPACE", "None")
     monkeypatch.setenv("INPUT_PROJECT", "None")
