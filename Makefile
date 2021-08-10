@@ -4,7 +4,8 @@ VERSION=`cat $(VERSION_FILE)`
 .PHONY: version tests
 
 version:
-	gitversion > appversion.json && jq -r '.SemVer' appversion.json > appversion.txt && cat appversion.txt
+	gitversion /showvariable SemVer > appversion.txt
+	echo $(VERSION)
 
 install:
 	poetry install
@@ -16,8 +17,7 @@ tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
 image:
-	docker build -t odacom/velo-action:dev .
-	docker tag odacom/velo-action:dev odacom/velo-action:latest
+	docker build -t odacom/velo-action:latest .
 
 build_no_cache:
 	docker build --no-cache -t odacom/velo-action:dev .

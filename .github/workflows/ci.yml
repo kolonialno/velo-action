@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  IMAGE: europe-docker.pkg.dev/nube-artifacts/nube-container-images/velo-action
+  IMAGE: odacom/velo-action
 
 jobs:
   lint:
@@ -47,6 +47,7 @@ jobs:
       - name: Run linter
         run: |
           poetry run ${{ matrix.check }}
+
   test:
     runs-on: ubuntu-20.04
     name: test
@@ -98,17 +99,16 @@ jobs:
 
       - uses: docker/setup-buildx-action@v1
 
-      - uses: docker/login-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          registry: europe-west4-docker.pkg.dev
-          username: _json_key
-          password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      #disabling this until the artifact rename stuff is fixed.
-      #- uses: docker/build-push-action@v2
-      #  with:
-      #    context: .
-      #    push: true
-      #    tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
-      #    cache-from: type=registry
-      #    cache-to: type=registry
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
+          cache-from: type=registry
+          cache-to: type=registry
