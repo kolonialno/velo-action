@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # all history for all branches and tags.
+          fetch-depth: 0  # reguired for GitVersion
 
       - uses: ./
         id: velo
