@@ -13,6 +13,7 @@ If for instance `runs.image: odacom/velo-action:latest` then the current commit 
 A release therfore includes the following steps:
 
 
+1. Checkout the
 1. Get the current version
     ```bash
     gitversion /showvariable SemVer
@@ -37,6 +38,9 @@ A release therfore includes the following steps:
     docker build -t odacom/velo-action:$(gitversion /showvariable SemVer) .
     docker push odacom/velo-action:$(gitversion /showvariable SemVer)
     ```
+
+    ***NOTE***: Credentials for the DockerHub repo odacom can be found in 1Password, vault DevOps with the name `velo-action (dockerhub)`. 
+    Authenticate as the `velo-action` user by running `docker login`.
 
 5. Push the commit. Now the image set in `action.yml` in the commit above exists, such that the github action CI will run.
 
