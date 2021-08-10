@@ -13,45 +13,48 @@ If for instance `runs.image: odacom/velo-action:latest` then the current commit 
 A release therfore includes the following steps:
 
 
-1. Checkout the
-1. Get the current version
-    ```bash
-    gitversion /showvariable SemVer
-    ```
+1. These steps can be run from any branch. But take notics that the version generated from the main branch in in the format `x.x.x`, without any branch name. 
+   Its easies to run these steps from the main branch. 
 
-1. Update the `runs.image` field in `action.yml` to the current version +1. Since the commit with the update increments the version by 1.
-    Should look something like this
+1. Update the `runs.image` field in `action.yml` to use a pinned docker image in a public registry. Currently we are using DockerHub where we have a organization named `odacom`. 
+   The `image tag` must be set to
+   
+   ```bash
+   gitversion /showvariable SemVer
+   ```
+
+   The `action.yml` should look something like this
 
     ```yaml
     ...
     runs:
         using: docker
-        image: odacom/velo-action:0.2.14
+        image: docker://odacom/velo-action:x.x.x  # example 0.2.14
     ...
     ```
 
-2.  Commit `action.yml` file, but do not push.
-
-4. Build the image locally and push to registry
+1. Build the image
 
     ```bash
     docker build -t odacom/velo-action:$(gitversion /showvariable SemVer) .
     docker push odacom/velo-action:$(gitversion /showvariable SemVer)
     ```
 
-    ***NOTE***: Credentials for the DockerHub repo odacom can be found in 1Password, vault DevOps with the name `velo-action (dockerhub)`. 
+    ***NOTE***: Credentials for the DockerHub repo odacom can be found in [1Password](https://tienda.1password.com/signin), `DevOps` vault, with the name `velo-action (dockerhub)`. 
     Authenticate as the `velo-action` user by running `docker login`.
 
-5. Push the commit. Now the image set in `action.yml` in the commit above exists, such that the github action CI will run.
+1. Update the `changelog.md` with the changes for this release.
 
-6. Update the `changelog.md`
+1. Commit the `action.yml` anb `changelog.md` files and push the commit to the `main` branch.
 
 7. Manually create a release in Github, on the commit you just pushed.
    The relese will add a tag to the commit.
-   Tag with a `v` prefix. Example `vx.x.x`.
-   Add a description of changes. Same as from the changelog.
+   Tag with a `v` prefix. Example `v0.2.14`. This shall be the same version as the docker image pushed to odacom.
+   Add the entry you made in `changelog.md` to the release description.
 
-8. Change the `runs.image` field in `action.yml` back to Dockerfile. This makes the future commits build the image before running the action, ensuring the latest version is tested.
+8. Revert the changes to enable debugging on the next apps.
+   Change the `runs.image` field in `action.yml` back to `Dockerfile``.
+   This makes the future commits build the image before running the action, ensuring the latest version is tested.
 
     ```yaml
     ...
