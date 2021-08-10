@@ -2,8 +2,25 @@
 version: 2
 updates:
   - package-ecosystem: pip
-    directory: "/"
+    directory: '/'
     schedule:
-      interval: weekly
-      time: "04:00"
-    open-pull-requests-limit: 3
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: docker
+    directory: '/'
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: terraform
+    directory: '/'
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
