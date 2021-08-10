@@ -94,7 +94,7 @@ jobs:
         with:
           fetch-depth: 0  # reguired for GitVersion
 
-      - uses: ./
+      - uses: kolonialno/velo-action@v0.2.6
         id: velo
 
       - uses: docker/setup-buildx-action@v1

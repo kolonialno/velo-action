@@ -80,7 +80,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: Dockerfile
+  image: docker://odacom/velo-action:0.2.14
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
