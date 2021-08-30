@@ -1,53 +1,67 @@
 # Release
 
-A release of Velo-action consist of to components:
+A release of Velo-action consists of to components
+
 - velo-action docker image
-- a github release, based on a tagged commit
+- a github release
 
-In `action.yml` at `runs.image` you have to specify the correct image version.
+To create a new release of velo-action follow the steps below
 
-The problem is that for the next commit after a release we want  `runs.image: Dockerfile` to ensure the action uses builds the latest image, and verifies it.
+1. These steps must be run from the default branch, which is `main`.
+   The version generated from the main branch is in the format `x.x.x`.
 
-If for instance `runs.image: odacom/velo-action:latest` then the current commit of the velo-action would actually test the previous commit, which is tagged as latest.
+2. Update the field `runs.image` in the `action.yml` file.
+   The field determines what image the action will use.
+   The action must be in a [public repository](https://github.com/github/roadmap/issues/74) and the image in a public image registry.
 
-A release therfore includes the following steps:
+   Currently we are using [DockerHub](https://hub.docker.com/repository/docker/odacom/velo-action) where we have an organization named `odacom`.
 
-
-1. Get the current version
-    ```bash
-    gitversion /showvariable SemVer
-    ```
-
-1. Update the `runs.image` field in `action.yml` to the current version +1. Since the commit with the update increments the version by 1.
-    Should look something like this
+   The `action.yml` should look something like this
 
     ```yaml
     ...
     runs:
         using: docker
-        image: odacom/velo-action:0.2.14
+        image: docker://odacom/velo-action:x.x.x  # example 0.2.14
     ...
     ```
 
-2.  Commit `action.yml` file, but do not push.
+    where the version `x.x.x` must be replaced with the result of (on the main branch)
 
-4. Build the image locally and push to registry
+    ```bash
+    gitversion /showvariable SemVer
+    ```
+
+3. Build and push the image by running
 
     ```bash
     docker build -t odacom/velo-action:$(gitversion /showvariable SemVer) .
     docker push odacom/velo-action:$(gitversion /showvariable SemVer)
     ```
 
-5. Push the commit. Now the image set in `action.yml` in the commit above exists, such that the github action CI will run.
+    ***NOTE***: Credentials for the DockerHub repo odacom can be found in [1Password](https://tienda.1password.com/signin), `DevOps` vault, with the name `velo-action (dockerhub)`.
 
-6. Update the `changelog.md`
+    Authenticate as the `velo-action` user by running `docker login`, and supplying the username and password.
 
-7. Manually create a release in Github, on the commit you just pushed.
-   The relese will add a tag to the commit.
-   Tag with a `v` prefix. Example `vx.x.x`.
-   Add a description of changes. Same as from the changelog.
+4. Update the `changelog.md` with the changes for this release.
 
-8. Change the `runs.image` field in `action.yml` back to Dockerfile. This makes the future commits build the image before running the action, ensuring the latest version is tested.
+5. Commit the `action.yml` and the `changelog.md` files and push the commit to the `main` branch.
+
+6. Manually [create a release in Github](https://github.com/kolonialno/velo-action/releases), on the commit you just pushed.
+
+   Tag the release commit with the same version as the image.
+
+   Prefix a `v` in front of the semantic version.
+
+   Example `v0.2.14`.
+
+   Add the entry you made in `changelog.md` to the release description.
+
+7. Revert the changes to enable debugging on the next apps.
+
+   Change the `runs.image` field in `action.yml` back to `Dockerfile`.
+
+   This makes the future commits build the image before running the action, ensuring the latest version is tested.
 
     ```yaml
     ...

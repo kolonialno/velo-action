@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ steps.versions.outputs.python }}
 
       - name: Set up Poetry
-        uses: snok/install-poetry@v1.1.7
+        uses: snok/install-poetry@v1.1.8
         with:
           version: ${{ steps.versions.outputs.poetry }}
           virtualenvs-create: true
@@ -63,7 +63,7 @@ jobs:
           python-version: ${{ steps.versions.outputs.python }}
 
       - name: Set up Poetry
-        uses: snok/install-poetry@v1.1.7
+        uses: snok/install-poetry@v1.1.8
         with:
           version: ${{ steps.versions.outputs.poetry }}
           virtualenvs-create: true
@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # all history for all branches and tags.
+          fetch-depth: 0  # reguired for GitVersion
 
       - uses: kolonialno/velo-action@v0.2.6
         id: velo

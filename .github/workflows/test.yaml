@@ -1,0 +1,18 @@
+name: Test
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    name: velo-action
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # reguired for GitVersion
+
+      - uses: ./  # Test the action in root of the repo
+        id: velo
+
+      - run: echo version=${{ steps.velo.outputs.version }}
