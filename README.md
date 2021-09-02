@@ -8,4 +8,4 @@ This repo is public since Github actions does not yet [support actions in privat
 
 - [Usage instruction](https://github.com/kolonialno/velo). Found in Velo repo.
 - [How to perform a new release](../velo-action/docs/release.md)
-- [Changelog](../velo-action/changelog.md)
+- [Changelog](../main/changelog.md)
