@@ -16,7 +16,9 @@ class Gitversion:
 
     def _gitversion_cli_exists(self):
         try:
-            proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=self.path)
+            proc_utils.execute_process(
+                "gitversion", log_cmd=False, log_stdout=False, cwd=self.path
+            )
         except Exception as e:
             raise Exception(
                 "Gitversion Cli 'gitversion' is not installed. \
@@ -25,7 +27,9 @@ class Gitversion:
         return True
 
     def _version(self):
-        result = proc_utils.execute_process("gitversion /version", log_cmd=False, log_stdout=False, cwd=self.path)
+        result = proc_utils.execute_process(
+            "gitversion /version", log_cmd=False, log_stdout=False, cwd=self.path
+        )
         version = result[0]
         return version
 
@@ -46,7 +50,9 @@ class Gitversion:
             with open(gitversion_config_file, "w") as file:
                 file.write(gitversion)
 
-        result = proc_utils.execute_process("gitversion", log_cmd=False, log_stdout=False, cwd=self.path)
+        result = proc_utils.execute_process(
+            "gitversion", log_cmd=False, log_stdout=False, cwd=self.path
+        )
         version = json.loads("".join(result))
         semver = version.get("SemVer")
         return semver

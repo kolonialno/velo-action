@@ -44,7 +44,14 @@ def execute_process(
         proc_stdout = sys.stdout
     else:
         proc_stdout = subprocess.PIPE
-    process = subprocess.Popen(cmd, shell=True, stdout=proc_stdout, stderr=proc_stdout, env=proc_env_vars, cwd=cwd)
+    process = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdout=proc_stdout,
+        stderr=proc_stdout,
+        env=proc_env_vars,
+        cwd=cwd,
+    )
     line_out = []
     with process.stdout:
         for line in iter(process.stdout.readline, b""):
@@ -65,5 +72,8 @@ def execute_process(
             if log_stderr:
                 logger.error(process.stderr.read())
         if fail_on_non_zero_exit:
-            raise ValueError(f"Process exited with code {process.returncode}. " "Check logs for details.")
+            raise ValueError(
+                f"Process exited with code {process.returncode}. "
+                "Check logs for details."
+            )
     return out
