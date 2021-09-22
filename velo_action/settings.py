@@ -25,8 +25,12 @@ class Settings(BaseSettings):
     create_release: bool = False
     workspace: str = None  # both INPUT_WORKSPACE and GITHUB_WORKSPACE are valid
     project: str = None
-    tenants: Union[str, List[str]] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
-    deploy_to_environments: Union[str, List[str]] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
+    tenants: Union[
+        str, List[str]
+    ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
+    deploy_to_environments: Union[
+        str, List[str]
+    ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
     service_account_key: str = None
     octopus_cli_server_secret: str = None
     octopus_cli_api_key_secret: str = None
