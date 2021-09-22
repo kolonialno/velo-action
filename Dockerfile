@@ -1,52 +1,27 @@
 # A Github Action Dockerfile has some requirements that needs to be followed
 # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
 # TLDR; no WORKDIR, must run as USER root
-ARG OCTOPUSCLI_VERSION='7.4.2' a
+FROM python:3.9-slim as python
 
-FROM octopusdeploy/octo:7.4.2 as octopuscli
-
-
-FROM python:3.9-alpine as python
-
+ARG OCTOPUSCLI_VERSION='7.4.3437'
 ARG GITVERSION='5.6.7'
 ARG POETRY_VERSION='1.1.6'
-ARG GOOGLE_CLOUD_SDK_VERSION='355.0.0'
 
-RUN apk add --no-cache \
-        wget \
-        curl \
+RUN apt-get update -y \
+    && apt-get install --no-install-recommends -y \
+        libgssapi-krb5-2 \
+        libicu-dev \
         jq \
         gnupg \
-        ca-certificates
-
-RUN apk add  
-
-COPY --from=octopuscli /usr/bin/octo /usr/bin/octo
-RUN chmod +x /usr/bin/octo
-
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-
-
-wget --quiet https://github.com/OctopusDeploy/OctopusCLI/archive/refs/tags/7.4.2.tar.gz
-tar -xvf 7.4.2.tar.gz -C tmp
-
-RUN wget --quiet https://github.com/OctopusDeploy/OctopusCLI/archive/refs/tags/$OCTOPUSCLI_VERSION.tar.gz \
-    && mkdir -p /tmp \
-    && tar -xvf $OCTOPUSCLI_VERSION.tar.gz -C tmp \
-    && chmod +x /tmp/OctopusCLI-$OCTOPUSCLI_VERSION \
-    && mv /tmp/** /usr/local/bin \
-    && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
-
-# Install Google Cloud SDK
-RUN apk add --no-cache bash
-RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-$GOOGLE_CLOUD_SDK_VERSION-linux-x86_64.tar.gz \
-    -O /tmp/google-cloud-sdk.tar.gz | bash
-
-RUN mkdir -p /usr/local/gcloud \
-    && tar -C /usr/local/gcloud -xvzf /tmp/google-cloud-sdk.tar.gz \
-    && /usr/local/gcloud/google-cloud-sdk/install.sh -q
+        curl \
+        ca-certificates \
+        apt-transport-https \
+    && sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" \
+    && curl -sSfL https://apt.octopus.com/public.key | apt-key add - \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+    && apt-get update -y && apt-get install -y octopuscli=$OCTOPUSCLI_VERSION google-cloud-sdk \
+    && apt-get clean
 
 # Install Gitversion
 # minimum requirements for GitVersion https://github.com/GitTools/GitVersion/blob/main/src/Docker/linux%20deps.md
@@ -57,7 +32,6 @@ RUN wget --quiet https://github.com/GitTools/GitVersion/releases/download/$GITVE
     && mv /tmp/** /usr/local/bin \
     && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
 
-ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 ENV GITHUB_WORKSPACE '/github/workspace/'
 
