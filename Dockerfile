@@ -3,15 +3,19 @@
 # TLDR; no WORKDIR, must run as USER root
 FROM python:3.9 as python
 
-ARG OCTOPUSCLI_VERSION='7.4.3256'
+ARG OCTOPUSCLI_VERSION='7.4.3437'
 ARG GITVERSION='5.6.7'
 ARG POETRY_VERSION='1.1.6'
 
 RUN apt-get update -y \
     && apt-get install --no-install-recommends -y \
-        libgssapi-krb5-2 libicu-dev \
+        libgssapi-krb5-2 \
+        libicu-dev \
         jq \
-        gnupg curl ca-certificates apt-transport-https \
+        gnupg \
+        curl \
+        ca-certificates \
+        apt-transport-https \
     && sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" \
     && curl -sSfL https://apt.octopus.com/public.key | apt-key add - \
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
