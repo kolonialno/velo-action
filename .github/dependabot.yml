@@ -1,26 +1,38 @@
----
 version: 2
+
 updates:
   - package-ecosystem: pip
     directory: '/'
     schedule:
       interval: daily
-    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
+    open-pull-requests-limit: 5
 
   - package-ecosystem: docker
     directory: '/'
     schedule:
       interval: daily
-    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
+    open-pull-requests-limit: 5
 
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
       interval: daily
-    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
+    open-pull-requests-limit: 5
 
   - package-ecosystem: terraform
     directory: '/'
     schedule:
       interval: daily
-    open-pull-requests-limit: 1
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
+    open-pull-requests-limit: 5
