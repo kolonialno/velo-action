@@ -1,7 +1,7 @@
 # A Github Action Dockerfile has some requirements that needs to be followed
 # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
 # TLDR; no WORKDIR, must run as USER root
-FROM python:3.9 as python
+FROM python:3.9-slim as python
 
 ARG OCTOPUSCLI_VERSION='7.4.3437'
 ARG GITVERSION='5.6.7'
@@ -14,6 +14,7 @@ RUN apt-get update -y \
         jq \
         gnupg \
         curl \
+        wget \
         ca-certificates \
         apt-transport-https \
     && sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" \
