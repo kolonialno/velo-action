@@ -7,23 +7,14 @@ version:
 	gitversion /showvariable SemVer > appversion.txt
 	echo $(VERSION)
 
-install:
-	poetry install
-
-update:
-	poetry update
-
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
 image:
-	docker build -t odacom/velo-action:latest .
+	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer) .
 
-build_no_cache:
-	docker build --no-cache -t odacom/velo-action:dev .
-
-push: image
-	docker push -a odacom/velo-action
+push:
+	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer)
 
 run: image
 	docker-compose run --rm velo-action
