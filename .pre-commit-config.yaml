@@ -1,5 +1,21 @@
 ---
 repos:
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace  # This hook trims trailing whitespace.
+      - id: check-added-large-files  # Prevent giant files from being committed.
+        args: ['--maxkb=3000']
+      - id: check-case-conflict  # Check for files with names that would conflict on a case-insensitive filesystem like MacOS HFS+ or Windows FAT.
+      - id: check-merge-conflict
+      - id: check-symlinks  # Checks for symlinks which do not point to anything.
+      - id: detect-private-key  # Checks for the existence of private keys.
+      - id: end-of-file-fixer  # Makes sure files end in a newline and only a newline.
+      - id: sort-simple-yaml
+      - id: check-vcs-permalinks
+      - id: file-contents-sorter
+        files: '.gitignore'
+
   - repo: git://github.com/adrienverge/yamllint
     rev: 'v1.26.1'
     hooks:
