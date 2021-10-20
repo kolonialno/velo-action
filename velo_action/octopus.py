@@ -100,7 +100,10 @@ class Octopus:
         if wait_for_deployment:
             args.append("--waitForDeployment")
 
-        cmd = f"octo deploy-release --project={project} --version={version} --deployTo={environment}"
+        cmd = (
+            f"octo deploy-release --project={project} --version={version} "
+            f'--deployTo={environment} --variable "SpanID:SomeAwesomeValue"'
+        )
         cmd = cmd + " " + " ".join(str(x) for x in args)
         if tenants:
             octo_tenants = self.list_tenants()
