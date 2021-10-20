@@ -3,7 +3,7 @@ import logging
 import os
 from pathlib import Path
 
-from velo_action import octopus, github, gcp, gitversion
+from velo_action import octopus, github, gcp, gitversion, tracing_helpers
 from velo_action.settings import Settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,6 +14,7 @@ VELO_PROJECT_NAME = "nube-velo-prod"
 
 
 def action(input_args: Settings):
+    started_trace = tracing_helpers.start_trace()
     # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
     if input_args.deploy_to_environments:
         input_args.create_release = True
@@ -107,6 +108,7 @@ def action(input_args: Settings):
                     tenants=input_args.tenants,
                     progress=input_args.progress,
                     wait_for_deployment=input_args.wait_for_deployment,
+                    started_span_id=started_trace,
                 )
 
 
