@@ -74,12 +74,14 @@ def trace_jobs(tracer, wf_span, wf_jobs):
 
 
 def construct_github_action_trace(tracer):
+    if os.environ.get('TOKEN') is None:
+        return 'None'
     headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
     gh_api_url = os.environ["GITHUB_API_URL"]
     gh_repo = os.environ["GITHUB_REPOSITORY"]
     gh_run_id = os.environ["GITHUB_RUN_ID"]
-    gh_preceding_run_id = os.environ.get("PRECEDING_RUN_ID")
+    gh_preceding_run_id = os.environ.get("PRECEDING_RUN_ID", "")
 
     base_url = f"{gh_api_url}/repos/{gh_repo}/actions/runs"
     current_wf_url = f"{base_url}/{gh_run_id}/jobs"
@@ -94,9 +96,13 @@ def construct_github_action_trace(tracer):
         r.raise_for_status()
         preceding_wf_jobs = r.json()
 
-        total_action_dict = {"CI": preceding_wf_jobs, "Deploy": actual_wf_jobs}
+        preceding_wf_name = n if (n := os.environ.get("PRECEDING_RUN_ID", "")) else "CI"
+        total_action_dict = {
+            preceding_wf_name: preceding_wf_jobs,
+            os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs,
+        }
     else:
-        total_action_dict = {"Deploy": actual_wf_jobs}
+        total_action_dict = {os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs}
 
     start_times = []
     with tracer.start_span("In velo-action span start") as span:
