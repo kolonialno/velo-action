@@ -47,15 +47,30 @@ def convert_time(input_time):
     return dt.datetime.fromisoformat(input_time.replace("Z", "+00:00")).timestamp()
 
 
-def replace_job_span_duration(job, job_span, mint, maxt):
-    span_start = convert_time(job["started_at"])
-    job_span.start_time = span_start
-    mint = mint if span_start > mint else span_start
+def trace_jobs(tracer, wf_span, wf_jobs):
+    start_times = []
+    end_times = []
 
-    span_end = convert_time(job["completed_at"])
-    job_span.end_time = span_end
-    maxt = maxt if span_end < maxt else span_end
-    return mint, maxt
+    for job in wf_jobs["jobs"]:
+        with tracer.start_span(job["name"], child_of=wf_span) as job_span:
+            for step in job["steps"]:
+                with tracer.start_span(step["name"], child_of=job_span) as step_span:
+                    if step["started_at"]:
+                        step_span.start_time = convert_time(step["started_at"])
+                if step["completed_at"]:
+                    step_span.end_time = convert_time(step["completed_at"])
+
+        if job["started_at"]:
+            span_start = convert_time(job["started_at"])
+            job_span.start_time = span_start
+            start_times.append(span_start)
+
+        if job["completed_at"]:
+            span_end = convert_time(job["completed_at"])
+            job_span.end_time = span_end
+            end_times.append(span_end)
+
+    return min(start_times), max(end_times)
 
 
 def construct_github_action_trace(tracer):
@@ -66,7 +81,7 @@ def construct_github_action_trace(tracer):
     gh_run_id = os.environ["GITHUB_RUN_ID"]
     gh_preceding_run_id = os.environ.get("PRECEDING_RUN_ID")
 
-    base_url = f"{gh_api_url}/repos/{gh_repo}/actions/runs/"
+    base_url = f"{gh_api_url}/repos/{gh_repo}/actions/runs"
     current_wf_url = f"{base_url}/{gh_run_id}/jobs"
     preceding_wf_url = f"{base_url}/{gh_preceding_run_id}/jobs"
 
@@ -83,24 +98,15 @@ def construct_github_action_trace(tracer):
     else:
         total_action_dict = {"Deploy": actual_wf_jobs}
 
-    mint = 0
-    maxt = time.time()
-
-    with tracer.start_span("Full Build and Deploy") as span:
+    start_times = []
+    with tracer.start_span("In velo-action span start") as span:
         for wf_name, wf_jobs in total_action_dict.items():
             with tracer.start_span(wf_name, child_of=span) as wf_span:
-                for job in wf_jobs["jobs"]:
-                    with tracer.start_span(job["name"], child_of=wf_span) as job_span:
-                        for step in job["steps"]:
-                            with tracer.start_span(
-                                step["name"], child_of=job_span
-                            ) as step_span:
-                                step_span.start_time = convert_time(step["started_at"])
-                            step_span.end_time = convert_time(step["completed_at"])
-                    mint, maxt = replace_job_span_duration(job, job_span, mint, maxt)
-            wf_span.start_time = mint
-            wf_span.end_time = maxt
-        span.start_time = mint
+                wf_start_time, wf_end_time = trace_jobs(tracer, wf_span, wf_jobs)
+            wf_span.start_time = wf_start_time
+            start_times.append(wf_start_time)
+            wf_span.end_time = wf_end_time
+    span.start_time = min(start_times) - 0.1
     return span
 
 
