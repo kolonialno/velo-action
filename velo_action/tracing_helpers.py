@@ -38,7 +38,7 @@ def print_trace_link(span):
     # trace_host = "http://localhost:3000"
     print(
         f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
-        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.trace_id:x}%22%7D%5D\n---"
+        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D\n---"
     )
 
 
@@ -98,7 +98,7 @@ def recurse_add_spans(tracer, parent_span, sub_span_dict):
 def construct_github_action_trace(tracer):
     if os.environ.get("TOKEN") is None:
         return None
-    headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
+    github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
     gh_api_url = os.environ["GITHUB_API_URL"]
     gh_repo = os.environ["GITHUB_REPOSITORY"]
@@ -109,12 +109,12 @@ def construct_github_action_trace(tracer):
     current_wf_url = f"{base_url}/{gh_run_id}/jobs"
     preceding_wf_url = f"{base_url}/{gh_preceding_run_id}/jobs"
 
-    r = requests.get(current_wf_url, headers=headers)
+    r = requests.get(current_wf_url, headers=github_headers)
     r.raise_for_status()
     actual_wf_jobs = r.json()
 
     if gh_preceding_run_id:
-        r = requests.get(preceding_wf_url, headers=headers)
+        r = requests.get(preceding_wf_url, headers=github_headers)
         r.raise_for_status()
         preceding_wf_jobs = r.json()
 
@@ -151,14 +151,13 @@ def construct_github_action_trace(tracer):
     span = tracer.start_span(span_dict["name"], start_time=span_dict["start"])
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
-    span.end(span_dict["end"])
+    if span_dict["end"] != 0:
+        span.end(span_dict["end"])
 
     return span
 
 
 def start_trace() -> str:
-    os.environ.get("JAEGER_AGENT_HOST", "https://tempo.infra.nube.tech")
-    os.environ.get("JAEGER_AGENT_PORT", "443")
     tracer = init_tracer(service="velo-action")
     span = construct_github_action_trace(tracer)
     if span is None:
