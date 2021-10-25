@@ -169,4 +169,4 @@ def start_trace() -> str:
     if span is None:
         return "None"
     print_trace_link(span)
-    return f"{span.context.trace_id:x}-{span.context.span_id:x}-0-{span.context.trace_flags:x}"
+    return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
