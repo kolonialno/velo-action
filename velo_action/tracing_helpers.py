@@ -81,7 +81,8 @@ def trace_jobs(wf_jobs):
                 new_step_span["end"] = convert_time(step["completed_at"])
             new_job_span["sub_spans"].append(new_step_span)
         job_spans.append(new_job_span)
-    return min(start_times), max(end_times), job_spans
+    end_time = max(end_times) if end_times else 0
+    return min(start_times), end_time, job_spans
 
 
 def recurse_add_spans(tracer, parent_span, sub_span_dict):
