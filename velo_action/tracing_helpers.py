@@ -99,7 +99,7 @@ def recurse_add_spans(tracer, parent_span, sub_span_dict):
 
 def construct_github_action_trace(tracer):
     if os.environ.get("TOKEN") is None:
-        logger.info('No github token found to inspect workflows.. Skipping trace!')
+        logger.info("No github token found to inspect workflows.. Skipping trace!")
         return None
     github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
