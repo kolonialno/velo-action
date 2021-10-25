@@ -1,42 +1,41 @@
+import base64
 import datetime as dt
-import logging
 import os
 import time
 
-import opentracing
 import requests
-from jaeger_client import Config
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.trace import set_span_in_context
+
+
+TIME_CONVERSION_FACTOR = 1000000000
 
 
 def init_tracer(service="velo-action"):
-    root_logger_level = logging.getLogger().getEffectiveLevel()
-    jaeger_logger = logging.getLogger("jaeger_tracing")
-    # Set the trace logging to DEBUG if root level is lower then INFO
-    jaeger_logger.setLevel(logging.DEBUG if root_logger_level <= 5 else logging.WARNING)
-
-    config = Config(
-        config={
-            "sampler": {
-                "type": "const",
-                "param": 1,
-            },
-            "logging": True,
-        },
-        service_name=service,
+    trace.set_tracer_provider(
+        TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
 
-    # this call also sets opentracing.tracer
-    tracer = config.initialize_tracer()
-    if tracer is None:
-        return opentracing.global_tracer()
-    else:
-        return tracer
+    otel_password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
+    basic_header = base64.b64encode(f"tempo:{otel_password}".encode()).decode()
+    headers = {"Authorization": f"Basic {basic_header}"}
+    otlp_exporter = OTLPSpanExporter(
+        endpoint="https://tempo.infra.nube.tech:443/v1/traces",
+        headers=headers,
+    )
+
+    trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(otlp_exporter))
+    return trace.get_tracer(__name__)
 
 
 def print_trace_link(span):
     trace_host = "https://grafana.infra.nube.tech"
     # Use this locally together with docker-compose in the velo-tracing directory
-    trace_host = "http://localhost:3000"
+    # trace_host = "http://localhost:3000"
     print(
         f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
         f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.trace_id:x}%22%7D%5D\n---"
@@ -44,38 +43,61 @@ def print_trace_link(span):
 
 
 def convert_time(input_time):
-    return dt.datetime.fromisoformat(input_time.replace("Z", "+00:00")).timestamp()
+    return (
+        round(dt.datetime.fromisoformat(input_time.replace("Z", "+00:00")).timestamp())
+        * TIME_CONVERSION_FACTOR
+    )
 
 
-def trace_jobs(tracer, wf_span, wf_jobs):
+def trace_jobs(wf_jobs):
     start_times = []
     end_times = []
+    job_spans = []
 
     for job in wf_jobs["jobs"]:
-        with tracer.start_span(job["name"], child_of=wf_span) as job_span:
-            for step in job["steps"]:
-                with tracer.start_span(step["name"], child_of=job_span) as step_span:
-                    if step["started_at"]:
-                        step_span.start_time = convert_time(step["started_at"])
-                if step["completed_at"]:
-                    step_span.end_time = convert_time(step["completed_at"])
-
+        new_job_span = {"name": job["name"], "start": 0, "end": 0, "sub_spans": []}
         if job["started_at"]:
             span_start = convert_time(job["started_at"])
-            job_span.start_time = span_start
+            new_job_span["start"] = span_start
             start_times.append(span_start)
 
         if job["completed_at"]:
             span_end = convert_time(job["completed_at"])
-            job_span.end_time = span_end
+            new_job_span["end"] = span_end
             end_times.append(span_end)
 
-    return min(start_times), max(end_times)
+        for step in job["steps"]:
+            new_step_span = {
+                "name": step["name"],
+                "start": 0,
+                "end": 0,
+                "sub_spans": [],
+            }
+            if step["started_at"]:
+                new_step_span["start"] = convert_time(step["started_at"])
+            if step["completed_at"]:
+                new_step_span["end"] = convert_time(step["completed_at"])
+            new_job_span["sub_spans"].append(new_step_span)
+        job_spans.append(new_job_span)
+    return min(start_times), max(end_times), job_spans
+
+
+def recurse_add_spans(tracer, parent_span, sub_span_dict):
+    # 0 is falsy so this will take now instead of 0 if the time isn't set
+    start_time = sub_span_dict["start"] or round(time.time() * TIME_CONVERSION_FACTOR)
+    span = tracer.start_span(
+        sub_span_dict["name"],
+        start_time=start_time,
+        context=set_span_in_context(parent_span),
+    )
+    for span_dict in sub_span_dict["sub_spans"]:
+        recurse_add_spans(tracer, span, span_dict)
+    span.end(sub_span_dict["end"] or round(time.time() * TIME_CONVERSION_FACTOR))
 
 
 def construct_github_action_trace(tracer):
-    if os.environ.get('TOKEN') is None:
-        return 'None'
+    if os.environ.get("TOKEN") is None:
+        return None
     headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
     gh_api_url = os.environ["GITHUB_API_URL"]
@@ -105,22 +127,41 @@ def construct_github_action_trace(tracer):
         total_action_dict = {os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs}
 
     start_times = []
-    with tracer.start_span("In velo-action span start") as span:
-        for wf_name, wf_jobs in total_action_dict.items():
-            with tracer.start_span(wf_name, child_of=span) as wf_span:
-                wf_start_time, wf_end_time = trace_jobs(tracer, wf_span, wf_jobs)
-            wf_span.start_time = wf_start_time
-            start_times.append(wf_start_time)
-            wf_span.end_time = wf_end_time
-    span.start_time = min(start_times) - 0.1
+    span_dict = {
+        "name": "In velo-action span start",
+        "start": 0,
+        "end": 0,
+        "sub_spans": [],
+    }
+
+    for wf_name, wf_jobs in total_action_dict.items():
+        wf_start_time, wf_end_time, job_spans = trace_jobs(wf_jobs)
+        start_times.append(wf_start_time)
+        span_dict["sub_spans"].append(
+            {
+                "name": wf_name,
+                "start": wf_start_time,
+                "end": wf_end_time,
+                "sub_spans": job_spans,
+            }
+        )
+    span_dict["start"] = min(start_times) - 1
+
+    # Convert dict into actual opentelemetry spans!
+    span = tracer.start_span(span_dict["name"], start_time=span_dict["start"])
+    for wf_span_dict in span_dict["sub_spans"]:
+        recurse_add_spans(tracer, span, wf_span_dict)
+    span.end(span_dict["end"])
+
     return span
 
 
 def start_trace() -> str:
+    os.environ.get("JAEGER_AGENT_HOST", "https://tempo.infra.nube.tech")
+    os.environ.get("JAEGER_AGENT_PORT", "443")
     tracer = init_tracer(service="velo-action")
     span = construct_github_action_trace(tracer)
-
-    time.sleep(2)
-    tracer.close()
+    if span is None:
+        return "None"
     print_trace_link(span)
-    return str(span).split()[0]
+    return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
