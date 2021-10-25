@@ -122,7 +122,7 @@ def construct_github_action_trace(tracer):
         r.raise_for_status()
         preceding_wf_jobs = r.json()
 
-        preceding_wf_name = n if (n := os.environ.get("PRECEDING_RUN_ID", "")) else "CI"
+        preceding_wf_name = n if (n := os.environ.get("PRECEDING_RUN_NAME", "")) else "CI"
         total_action_dict = {
             preceding_wf_name: preceding_wf_jobs,
             os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs,
