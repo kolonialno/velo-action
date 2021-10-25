@@ -14,12 +14,12 @@ VELO_PROJECT_NAME = "nube-velo-prod"
 
 
 def action(input_args: Settings):
-    started_trace = tracing_helpers.start_trace()
     # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
     if input_args.deploy_to_environments:
         input_args.create_release = True
 
     logging.basicConfig(level=input_args.log_level)
+    started_trace = tracing_helpers.start_trace()
 
     logger.info("Starting Velo-action")
     if input_args.service_account_key:

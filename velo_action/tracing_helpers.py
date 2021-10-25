@@ -1,5 +1,6 @@
 import base64
 import datetime as dt
+import logging
 import os
 import time
 
@@ -13,6 +14,7 @@ from opentelemetry.trace import set_span_in_context
 
 
 TIME_CONVERSION_FACTOR = 1000000000
+logger = logging.getLogger(name="action")
 
 
 def init_tracer(service="velo-action"):
@@ -36,7 +38,7 @@ def print_trace_link(span):
     trace_host = "https://grafana.infra.nube.tech"
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
-    print(
+    logger.info(
         f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
         f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D\n---"
     )
@@ -97,6 +99,7 @@ def recurse_add_spans(tracer, parent_span, sub_span_dict):
 
 def construct_github_action_trace(tracer):
     if os.environ.get("TOKEN") is None:
+        logger.info('No github token found to inspect workflows.. Skipping trace!')
         return None
     github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
