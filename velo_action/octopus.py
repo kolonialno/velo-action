@@ -93,6 +93,7 @@ class Octopus:
         tenants=None,
         progress=None,
         wait_for_deployment=None,
+        started_span_id="None",
     ):
         args = ["--helpOutputFormat=Json"]
         if progress:
@@ -102,7 +103,7 @@ class Octopus:
 
         cmd = (
             f"octo deploy-release --project={project} --version={version} "
-            f'--deployTo={environment} --variable "SpanID:SomeAwesomeValue"'
+            f'--deployTo={environment} --variable "SpanID:{started_span_id}"'
         )
         cmd = cmd + " " + " ".join(str(x) for x in args)
         if tenants:
