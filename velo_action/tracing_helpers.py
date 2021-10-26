@@ -11,16 +11,18 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_span_in_context
-
+import gcp
 
 logger = logging.getLogger(name="action")
 
 
-def init_tracer(service="velo-action"):
+def init_tracer(g, service="velo-action"):
     trace.set_tracer_provider(
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
-
+    # otel_password = g.lookup_data(
+    #     "tempo-basic-auth-password", "nube-observability-prod"
+    # )
     otel_password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
     basic_header = base64.b64encode(f"tempo:{otel_password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
@@ -177,8 +179,8 @@ def construct_github_action_trace(tracer):
     return span
 
 
-def start_trace() -> str:
-    tracer = init_tracer(service="velo-action")
+def start_trace(g: gcp.Gcp) -> str:
+    tracer = init_tracer(g, service="velo-action")
     span = construct_github_action_trace(tracer)
     if span is None:
         return "None"
