@@ -93,15 +93,13 @@ def recurse_add_spans(tracer, parent_span, sub_span_dict):
         start_time=start_time,
         context=set_span_in_context(parent_span),
     )
+    sub_span_dict["span"] = span
     for span_dict in sub_span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, span_dict)
     span.end(sub_span_dict["end"] or round(time.time() * TIME_CONVERSION_FACTOR))
 
 
-def construct_github_action_trace(tracer):
-    if os.environ.get("TOKEN") is None:
-        logger.info("No github token found to inspect workflows.. Skipping trace!")
-        return None
+def request_github_wf_data():
     github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
     gh_api_url = os.environ["GITHUB_API_URL"]
@@ -131,34 +129,48 @@ def construct_github_action_trace(tracer):
         }
     else:
         total_action_dict = {os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs}
+    return total_action_dict
 
-    start_times = []
-    span_dict = {
-        "name": "In velo-action span start",
-        "start": 0,
-        "end": 0,
-        "sub_spans": [],
+
+def make_span_dict(name, start=0, end=0, sub_spans=None, span=None):
+    return {
+        "name": name,
+        "start": start,
+        "end": end,
+        "sub_spans": sub_spans if sub_spans is not None else [],
+        "span": span,
     }
+
+
+def construct_github_action_trace(tracer):
+    if os.environ.get("TOKEN") is None:
+        logger.info("No github token found to inspect workflows.. Skipping trace!")
+        return None
+
+    total_action_dict = request_github_wf_data()
+
+    wf_start_times = []
+    span_dict = make_span_dict("build and deploy")
 
     for wf_name, wf_jobs in total_action_dict.items():
         wf_start_time, wf_end_time, job_spans = trace_jobs(wf_jobs)
-        start_times.append(wf_start_time)
+        wf_start_times.append(wf_start_time)
         span_dict["sub_spans"].append(
-            {
-                "name": wf_name,
-                "start": wf_start_time,
-                "end": wf_end_time,
-                "sub_spans": job_spans,
-            }
+            make_span_dict(wf_name, wf_start_time, wf_end_time, job_spans)
         )
-    span_dict["start"] = min(start_times) - 1
+    span_dict["start"] = min(wf_start_times) - 1
 
     # Convert dict into actual opentelemetry spans!
     span = tracer.start_span(span_dict["name"], start_time=span_dict["start"])
+    span_dict["span"] = span
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
+        if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
+            logger.info("Will set this span as output:")
+            logger.info(
+                f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}\n"
+            )
     span.end(span_dict["end"] if span_dict["end"] != 0 else None)
-
     return span
 
 
