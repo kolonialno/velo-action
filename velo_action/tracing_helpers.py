@@ -157,8 +157,7 @@ def construct_github_action_trace(tracer):
     span = tracer.start_span(span_dict["name"], start_time=span_dict["start"])
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
-    if span_dict["end"] != 0:
-        span.end(span_dict["end"])
+    span.end(span_dict["end"] if span_dict["end"] != 0 else None)
 
     return span
 
