@@ -103,7 +103,7 @@ class Octopus:
 
         cmd = (
             f"octo deploy-release --project={project} --version={version} "
-            f'--deployTo={environment} --variable="SpanIDVariable:{started_span_id}"'
+            f'--deployTo={environment} --variable="GithubSpanID:{started_span_id}"'
         )
         cmd = cmd + " " + " ".join(str(x) for x in args)
         if tenants:

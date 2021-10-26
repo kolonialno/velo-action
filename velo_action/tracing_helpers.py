@@ -13,7 +13,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_span_in_context
 
 
-TIME_CONVERSION_FACTOR = 1000000000
 logger = logging.getLogger(name="action")
 
 
@@ -47,7 +46,7 @@ def print_trace_link(span):
 def convert_time(input_time):
     return (
         round(dt.datetime.fromisoformat(input_time.replace("Z", "+00:00")).timestamp())
-        * TIME_CONVERSION_FACTOR
+        * 1000000000  # required factor for otel span timing nanoseconds I guess?
     )
 
 
@@ -90,16 +89,15 @@ def trace_jobs(wf_jobs):
 
 def recurse_add_spans(tracer, parent_span, sub_span_dict):
     # 0 is falsy so this will take now instead of 0 if the time isn't set
-    start_time = sub_span_dict["start"] or round(time.time() * TIME_CONVERSION_FACTOR)
     span = tracer.start_span(
         sub_span_dict["name"],
-        start_time=start_time,
+        start_time=sub_span_dict["start"] or None,
         context=set_span_in_context(parent_span),
     )
     sub_span_dict["span"] = span
     for span_dict in sub_span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, span_dict)
-    span.end(sub_span_dict["end"] or round(time.time() * TIME_CONVERSION_FACTOR))
+    span.end(sub_span_dict["end"] or None)
 
 
 def request_github_wf_data():
@@ -175,7 +173,7 @@ def construct_github_action_trace(tracer):
         if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
             logger.info("Current wf_span:")
             logger.info(stringify_span(wf_span_dict["span"]))
-    span.end(span_dict["end"] if span_dict["end"] != 0 else None)
+    span.end(span_dict["end"] or None)
     return span
 
 
