@@ -57,7 +57,10 @@ def trace_jobs(wf_jobs):
     job_spans = []
 
     for job in wf_jobs["jobs"]:
-        new_job_span = {"name": job["name"], "start": 0, "end": 0, "sub_spans": []}
+        if job["status"] == "queued":
+            continue  # Do not trace jobs that are in the future
+
+        new_job_span = make_empty_span_dict(job["name"])
         if job["started_at"]:
             span_start = convert_time(job["started_at"])
             new_job_span["start"] = span_start
@@ -132,7 +135,7 @@ def request_github_wf_data():
     return total_action_dict
 
 
-def make_span_dict(name, start=0, end=0, sub_spans=None, span=None):
+def make_empty_span_dict(name, start=0, end=0, sub_spans=None, span=None):
     return {
         "name": name,
         "start": start,
@@ -140,6 +143,10 @@ def make_span_dict(name, start=0, end=0, sub_spans=None, span=None):
         "sub_spans": sub_spans if sub_spans is not None else [],
         "span": span,
     }
+
+
+def stringify_span(span):
+    return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
 
 
 def construct_github_action_trace(tracer):
@@ -150,13 +157,13 @@ def construct_github_action_trace(tracer):
     total_action_dict = request_github_wf_data()
 
     wf_start_times = []
-    span_dict = make_span_dict("build and deploy")
+    span_dict = make_empty_span_dict("build and deploy")
 
     for wf_name, wf_jobs in total_action_dict.items():
         wf_start_time, wf_end_time, job_spans = trace_jobs(wf_jobs)
         wf_start_times.append(wf_start_time)
         span_dict["sub_spans"].append(
-            make_span_dict(wf_name, wf_start_time, wf_end_time, job_spans)
+            make_empty_span_dict(wf_name, wf_start_time, wf_end_time, job_spans)
         )
     span_dict["start"] = min(wf_start_times) - 1
 
@@ -166,10 +173,8 @@ def construct_github_action_trace(tracer):
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
         if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
-            logger.info("Will set this span as output:")
-            logger.info(
-                f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}\n"
-            )
+            logger.info("Current wf_span:")
+            logger.info(stringify_span(wf_span_dict["span"]))
     span.end(span_dict["end"] if span_dict["end"] != 0 else None)
     return span
 
@@ -180,4 +185,4 @@ def start_trace() -> str:
     if span is None:
         return "None"
     print_trace_link(span)
-    return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
+    return stringify_span(span)
