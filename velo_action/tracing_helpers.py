@@ -19,10 +19,8 @@ def init_tracer(g: gcp.Gcp, service="velo-action"):
     trace.set_tracer_provider(
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
-    otel_tempo_password = g.lookup_data(
-        "tempo-basic-auth-password", "nube-observability-prod"
-    )
-    basic_header = base64.b64encode(f"tempo:{otel_tempo_password}".encode()).decode()
+    password = g.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
+    basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
         endpoint="https://tempo.infra.nube.tech:443/v1/traces",
