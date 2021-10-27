@@ -15,11 +15,17 @@ import gcp
 logger = logging.getLogger(name="action")
 
 
-def init_tracer(g: gcp.Gcp, service="velo-action"):
+def init_tracer(service_acc_key: str, service="velo-action"):
     trace.set_tracer_provider(
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
-    password = g.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
+    if service_acc_key:
+        g = gcp.Gcp(service_acc_key)
+        password = g.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
+    else:
+        password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
+    if not password:
+        logger.info('Traces cannot be send without password')
     basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
@@ -175,8 +181,8 @@ def construct_github_action_trace(tracer):
     return span
 
 
-def start_trace(g: gcp.Gcp) -> str:
-    tracer = init_tracer(g, service="velo-action")
+def start_trace(service_acc_key: str) -> str:
+    tracer = init_tracer(service_acc_key, service="velo-action")
     span = construct_github_action_trace(tracer)
     if span is None:
         return "None"

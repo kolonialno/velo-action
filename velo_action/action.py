@@ -14,17 +14,13 @@ VELO_PROJECT_NAME = "nube-velo-prod"
 
 
 def action(input_args: Settings):
-    if not input_args.service_account_key:
-        raise ValueError("gcp service account key not specified")
-    g = gcp.Gcp(input_args.service_account_key)
-
     # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
     if input_args.deploy_to_environments:
         input_args.create_release = True
 
     logging.basicConfig(level=input_args.log_level)
     try:
-        started_trace = tracing_helpers.start_trace(g)
+        started_trace = tracing_helpers.start_trace(input_args.service_account_key)
     except Exception as e:
         logger.exception("Starting trace failed", exc_info=e)
 
@@ -61,7 +57,10 @@ def action(input_args: Settings):
             raise ValueError("artifact bucket secret not specified")
         if not input_args.project:
             raise ValueError("project not specified")
+        if not input_args.service_account_key:
+            raise ValueError("gcp service account key not specified")
 
+        g = gcp.Gcp(input_args.service_account_key)
         octopus_cli_server = g.lookup_data(
             input_args.octopus_cli_server_secret, VELO_PROJECT_NAME
         )
