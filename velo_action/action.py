@@ -13,18 +13,6 @@ VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
 
 
-def verify_password(g):
-    otel_tempo_password = g.lookup_data(
-        "tempo-basic-auth-password", "nube-observability-prod"
-    )
-    if otel_tempo_password == os.environ.get("OTEL_TEMPO_PASSWORD", ""):
-        logger.info("password found and correct")
-    else:
-        logger.info("passwords differ")
-        logger.info(f"env 5 chars: {otel_tempo_password[:5]}")
-        logger.info(f'gcp 5 chars: {os.environ.get("OTEL_TEMPO_PASSWORD", "")[:5]}')
-
-
 def action(input_args: Settings):
     if not input_args.service_account_key:
         raise ValueError("gcp service account key not specified")
@@ -35,8 +23,10 @@ def action(input_args: Settings):
         input_args.create_release = True
 
     logging.basicConfig(level=input_args.log_level)
-    verify_password(g)
-    started_trace = tracing_helpers.start_trace(g)
+    try:
+        started_trace = tracing_helpers.start_trace(g)
+    except Exception as e:
+        logger.exception('Starting trace failed', exc_info=e)
 
     logger.info("Starting Velo-action")
     if input_args.service_account_key:
