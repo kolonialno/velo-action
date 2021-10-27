@@ -25,7 +25,7 @@ def init_tracer(service_acc_key: str, service="velo-action"):
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
     if not password:
-        logger.info("Traces cannot be send without password")
+        logger.info("Traces cannot be send without password.")
     basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
