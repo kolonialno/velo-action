@@ -3,7 +3,8 @@ import logging
 import os
 from pathlib import Path
 
-from velo_action import octopus, github, gcp, gitversion, tracing_helpers
+from velo_action import octopus, github, gcp, gitversion, tracing_helpers, proc_utils
+from velo_action.github import request_commit_info
 from velo_action.settings import Settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,9 +31,15 @@ def action(input_args: Settings):
     logger.info(f"deploy_to_environments: {input_args.deploy_to_environments}")
     logger.info(f"create_release: {input_args.create_release}")
 
-    if input_args.version is None:
+    if input_args.version == "semver":
         gv = gitversion.Gitversion(path=Path(input_args.workspace))
         version = gv.generate_version()
+    elif input_args.version is None:
+        version = proc_utils.execute_process(
+            "git rev-parse --short HEAD",
+            log_stdout=True,
+            forward_stdout=False,
+        )
     else:
         version = input_args.version
 
@@ -79,7 +86,11 @@ def action(input_args: Settings):
                 deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
             )
 
-            commit_id = os.getenv("GITHUB_SHA")
+            commit_id = proc_utils.execute_process(
+                "git rev-parse HEAD",
+                log_stdout=True,
+                forward_stdout=False,
+            )
             branch_name = os.getenv("GITHUB_REF")
             assert (
                 commit_id is not None
@@ -91,9 +102,14 @@ def action(input_args: Settings):
                 branch_name is not None
             ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
 
-            release_notes = (
-                f'{json.dumps({"commit_id": commit_id, "branch_name": branch_name})}'
-            )
+            commit_info = request_commit_info(commit_id)
+            release_note_dict = {
+                "commit_id": commit_id,
+                "branch_name": branch_name,
+                "commit_message": commit_info["message"],
+                "commit_url": commit_info["url"],
+            }
+            release_notes = f"{json.dumps(release_note_dict)}"
 
             logger.info(
                 f"Creating a release for project '{input_args.project}' with version '{version}'"
