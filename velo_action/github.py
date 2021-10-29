@@ -44,7 +44,9 @@ def request_github_wf_data():
     return total_action_dict
 
 
-def request_commit_info(commit_sha):
+def request_commit_info(commit_sha: str) -> dict:
+    if "TOKEN" not in os.environ:
+        return {"commit": {"message": "Unknown"}}
     github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
     gh_api_url = os.environ["GITHUB_API_URL"]
     gh_repo = os.environ["GITHUB_REPOSITORY"]
@@ -53,5 +55,4 @@ def request_commit_info(commit_sha):
         f"{gh_api_url}/repos/{gh_repo}/commits/{commit_sha}", headers=github_headers
     )
     r.raise_for_status()
-    commit_info = r.json()
-    return commit_info["commit"]
+    return r.json()
