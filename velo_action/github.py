@@ -27,14 +27,16 @@ def request_github_workflow_data():
     total_action_dict = {os.environ["GITHUB_WORKFLOW"]: r.json()}
 
     if gh_preceding_run_ids:
-        for gh_preceding_run_id in gh_preceding_run_ids.split(','):
-            r = requests.get(f"{base_url}/{gh_preceding_run_id}", headers=github_headers)
-            r.raise_for_status()
-            preceding_wf_name = r.json()['name']
-            r = requests.get(f"{base_url}/{gh_preceding_run_id}/jobs", headers=github_headers)
-            r.raise_for_status()
-            total_action_dict[preceding_wf_name] = r.json(),
+        for gh_preceding_run_id in gh_preceding_run_ids.split(","):
+            workflow_run_url = f"{base_url}/{gh_preceding_run_id}"
 
+            r = requests.get(workflow_run_url, headers=github_headers)
+            r.raise_for_status()
+            preceding_wf_name = r.json()["name"]
+
+            r = requests.get(f"{workflow_run_url}/jobs", headers=github_headers)
+            r.raise_for_status()
+            total_action_dict[preceding_wf_name] = (r.json(),)
     return total_action_dict
 
 
