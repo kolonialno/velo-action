@@ -23,7 +23,7 @@ def action(input_args: Settings):
     try:
         started_trace = tracing_helpers.start_trace(input_args.service_account_key)
     except Exception as e:
-        started_trace = 'None'
+        started_trace = "None"
         logger.exception("Starting trace failed", exc_info=e)
 
     logger.info("Starting Velo-action")
