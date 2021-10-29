@@ -36,7 +36,7 @@ def request_github_workflow_data():
 
             r = requests.get(f"{workflow_run_url}/jobs", headers=github_headers)
             r.raise_for_status()
-            total_action_dict[preceding_wf_name] = (r.json(),)
+            total_action_dict[preceding_wf_name] = r.json()
     return total_action_dict
 
 
