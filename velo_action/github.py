@@ -11,36 +11,30 @@ def actions_output(key, value):
     os.system(f'echo "::set-output name={key}::{value}"')
 
 
-def request_github_wf_data():
+def request_github_workflow_data():
     github_headers = {"authorization": f"Bearer {os.environ['TOKEN']}"}
 
     gh_api_url = os.environ["GITHUB_API_URL"]
     gh_repo = os.environ["GITHUB_REPOSITORY"]
     gh_run_id = os.environ["GITHUB_RUN_ID"]
-    gh_preceding_run_id = os.environ.get("PRECEDING_RUN_ID", "")
+    gh_preceding_run_ids = os.environ.get("PRECEDING_RUN_IDS", "")
 
     base_url = f"{gh_api_url}/repos/{gh_repo}/actions/runs"
-    current_wf_url = f"{base_url}/{gh_run_id}/jobs"
-    preceding_wf_url = f"{base_url}/{gh_preceding_run_id}/jobs"
+    current_workflow_url = f"{base_url}/{gh_run_id}/jobs"
 
-    r = requests.get(current_wf_url, headers=github_headers)
+    r = requests.get(current_workflow_url, headers=github_headers)
     r.raise_for_status()
-    actual_wf_jobs = r.json()
+    total_action_dict = {os.environ["GITHUB_WORKFLOW"]: r.json()}
 
-    if gh_preceding_run_id:
-        r = requests.get(preceding_wf_url, headers=github_headers)
-        r.raise_for_status()
-        preceding_wf_jobs = r.json()
+    if gh_preceding_run_ids:
+        for gh_preceding_run_id in gh_preceding_run_ids.split(','):
+            r = requests.get(f"{base_url}/{gh_preceding_run_id}", headers=github_headers)
+            r.raise_for_status()
+            preceding_wf_name = r.json()['name']
+            r = requests.get(f"{base_url}/{gh_preceding_run_id}/jobs", headers=github_headers)
+            r.raise_for_status()
+            total_action_dict[preceding_wf_name] = r.json(),
 
-        preceding_wf_name = (
-            n if (n := os.environ.get("PRECEDING_RUN_NAME", "")) else "CI"
-        )
-        total_action_dict = {
-            preceding_wf_name: preceding_wf_jobs,
-            os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs,
-        }
-    else:
-        total_action_dict = {os.environ["GITHUB_WORKFLOW"]: actual_wf_jobs}
     return total_action_dict
 
 

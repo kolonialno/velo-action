@@ -10,7 +10,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_span_in_context
 import gcp
-from velo_action.github import request_github_wf_data
+from velo_action.github import request_github_workflow_data
 
 logger = logging.getLogger(name="action")
 
@@ -123,7 +123,7 @@ def construct_github_action_trace(tracer):
         logger.info("No github token found to inspect workflows.. Skipping trace!")
         return None
 
-    total_action_dict = request_github_wf_data()
+    total_action_dict = request_github_workflow_data()
 
     wf_start_times = []
     span_dict = make_empty_span_dict("build and deploy")
