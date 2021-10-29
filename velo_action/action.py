@@ -40,6 +40,10 @@ def action(input_args: Settings):
             log_stdout=True,
             forward_stdout=False,
         )
+        logger.info('-------------------')
+        logger.info(version)
+        logger.info(type(version))
+        logger.info('-------------------')
     else:
         version = input_args.version
 
@@ -91,6 +95,10 @@ def action(input_args: Settings):
                 log_stdout=True,
                 forward_stdout=False,
             )
+            logger.info('-------------------')
+            logger.info(commit_id)
+            logger.info(type(commit_id))
+            logger.info('-------------------')
             branch_name = os.getenv("GITHUB_REF")
             assert (
                 commit_id is not None
