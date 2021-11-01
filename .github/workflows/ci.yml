@@ -106,11 +106,6 @@ jobs:
           username: _json_key
           password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        env:
-          TOKEN: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
-
       - uses: docker/build-push-action@v2
         with:
           context: .
