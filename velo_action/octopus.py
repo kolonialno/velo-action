@@ -1,5 +1,7 @@
 import logging
 import json
+import shlex
+
 from velo_action import proc_utils
 
 logger = logging.getLogger(name="octopus")
@@ -81,7 +83,7 @@ class Octopus:
                 "create-release",
                 f"--version={version}",
                 f"--project={project}",
-                "--releaseNotes=" + json.dumps(release_notes, default=str),
+                "--releaseNotes=" + shlex.quote(json.dumps(release_notes, default=str)),
                 "--helpOutputFormat=Json",
             ]
             proc_utils.execute_process(
