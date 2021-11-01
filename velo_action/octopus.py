@@ -76,11 +76,14 @@ class Octopus:
                     break
 
         if not exists:
-            cmd = f"octo create-release \
-                --version={version} \
-                --project={project} \
-                --releaseNotes='{release_notes}' \
-                --helpOutputFormat=Json"
+            cmd = [
+                "octo",
+                "create-release",
+                f"--version={version}",
+                f"--project={project}",
+                "--releaseNotes=" + json.dumps(release_notes, default=str),
+                "--helpOutputFormat=Json",
+            ]
             proc_utils.execute_process(
                 cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False
             )
