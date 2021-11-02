@@ -83,7 +83,7 @@ class Octopus:
                 "create-release",
                 f"--version={version}",
                 f"--project={project}",
-                "--releaseNotes=" + json.dumps(release_notes, default=str),
+                f"--releaseNotes='{release_notes}'",
                 "--helpOutputFormat=Json",
             ]
             proc_utils.execute_process(
