@@ -103,20 +103,18 @@ def action(input_args: Settings):
                 branch_name is not None
             ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
 
-            # commit_info = request_commit_info(commit_id)
+            commit_info = request_commit_info(commit_id)
             release_note_dict = {
                 "commit_id": commit_id,
                 "branch_name": branch_name,
-                # "commit_message": commit_info["commit"]["message"],
+                "commit_message": commit_info["commit"]["message"],
                 "commit_url": f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/commit/{commit_id}',
             }
-            release_notes = f"{json.dumps(release_note_dict)}"
-
             logger.info(
                 f"Creating a release for project '{input_args.project}' with version '{version}'"
             )
             octo.create_release(
-                version=version, project=input_args.project, release_notes=release_notes
+                version=version, project=input_args.project, release_note_dict=release_note_dict
             )
 
         if input_args.deploy_to_environments:
