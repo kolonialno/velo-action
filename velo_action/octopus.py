@@ -78,12 +78,14 @@ class Octopus:
                     break
 
         if not exists:
-            cmd = "octo" \
-                " create-release" \
-                f" --version={version}" \
-                f" --project={project}" \
-                f" --releaseNotes={shlex.quote(json.dumps(release_note_dict))}" \
+            cmd = (
+                "octo"
+                " create-release"
+                f" --version={version}"
+                f" --project={project}"
+                f" --releaseNotes={shlex.quote(json.dumps(release_note_dict))}"
                 " --helpOutputFormat=Json"
+            )
             proc_utils.execute_process(
                 cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False
             )

@@ -114,7 +114,9 @@ def action(input_args: Settings):
                 f"Creating a release for project '{input_args.project}' with version '{version}'"
             )
             octo.create_release(
-                version=version, project=input_args.project, release_note_dict=release_note_dict
+                version=version,
+                project=input_args.project,
+                release_note_dict=release_note_dict,
             )
 
         if input_args.deploy_to_environments:
