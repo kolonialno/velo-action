@@ -112,4 +112,4 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}:${{ steps.velo.outputs.version }},${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max
+          cache-to: type=inline
