@@ -83,7 +83,7 @@ class Octopus:
                 "create-release",
                 f"--version={version}",
                 f"--project={project}",
-                "--releaseNotes=" + shlex.quote(json.dumps(release_notes, default=str)),
+                "--releaseNotes=" + json.dumps(release_notes, default=str),
                 "--helpOutputFormat=Json",
             ]
             proc_utils.execute_process(

@@ -61,6 +61,7 @@ class Gcp:
                 blob.upload_from_filename(local_file)
 
     def lookup_data(self, key, project_id, version=None):
+        logger.info(f"Looking for '{key}' in '{project_id}', with version'{version}'")
         secrets_client = self._get_secrets_client()
         if not version:
             version = self.get_highest_version(key, project_id)
@@ -76,6 +77,10 @@ class Gcp:
     def get_highest_version(self, key, project_id):
         secrets_client = self._get_secrets_client()
         parent = secrets_client.secret_path(project_id, key)
+        logger.info(f"Looking for new version for'{key}' in '{project_id}'")
+        logger.info(f"parent='{parent}'")
+        logger.info("----------------------")
+
         highest_found_version = None
         # noinspection PyTypeChecker
         for version in secrets_client.list_secret_versions(request={"parent": parent}):
