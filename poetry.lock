@@ -226,7 +226,7 @@ beautifulsoup4 = "*"
 
 [[package]]
 name = "google-api-core"
-version = "2.0.1"
+version = "2.2.2"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -234,13 +234,14 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 google-auth = ">=1.25.0,<3.0dev"
-googleapis-common-protos = ">=1.6.0,<2.0dev"
+googleapis-common-protos = ">=1.52.0,<2.0dev"
 grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
+grpcio-status = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 protobuf = ">=3.12.0"
 requests = ">=2.18.0,<3.0.0dev"
 
 [package.extras]
-grpc = ["grpcio (>=1.33.2,<2.0dev)"]
+grpc = ["grpcio (>=1.33.2,<2.0dev)", "grpcio-status (>=1.33.2,<2.0dev)"]
 grpcgcp = ["grpcio-gcp (>=0.2.2)"]
 grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
 
@@ -279,17 +280,16 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.7.1"
+version = "2.8.0"
 description = "Secret Manager API API client library"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-google-api-core = {version = ">=1.26.0,<3.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=1.28.0,<3.0.0dev", extras = ["grpc"]}
 grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
 libcst = ">=0.2.5"
-packaging = ">=14.3"
 proto-plus = ">=1.4.0"
 
 [[package]]
@@ -375,6 +375,19 @@ six = ">=1.5.2"
 
 [package.extras]
 protobuf = ["grpcio-tools (>=1.40.0)"]
+
+[[package]]
+name = "grpcio-status"
+version = "1.40.0"
+description = "Status proto mapping for gRPC"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+googleapis-common-protos = ">=1.5.5"
+grpcio = ">=1.40.0"
+protobuf = ">=3.6.0"
 
 [[package]]
 name = "humanfriendly"
@@ -606,7 +619,7 @@ python-versions = ">=3.6"
 name = "packaging"
 version = "21.0"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -746,7 +759,7 @@ typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -958,7 +971,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "4e351248001bfa79e18ae81a31175ac98e2b9a455b1a10b32a749d22093751b7"
+content-hash = "6110eb65a571ddfefd52fe0079ee325249b0b63ed64d31c5d3994261fe778876"
 
 [metadata.files]
 appdirs = [
@@ -1038,8 +1051,8 @@ google = [
     {file = "google-3.0.0.tar.gz", hash = "sha256:143530122ee5130509ad5e989f0512f7cb218b2d4eddbafbad40fd10e8d8ccbe"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.0.1.tar.gz", hash = "sha256:d6760f21b3a064a8397916b33be7383fc169d1a3c3d7fae7b47eb92bba7892b8"},
-    {file = "google_api_core-2.0.1-py2.py3-none-any.whl", hash = "sha256:b8ad41f72a70dd709dd13a08478936172aecf5f2d34a18ab378efa6d2d6ab575"},
+    {file = "google-api-core-2.2.2.tar.gz", hash = "sha256:97349cc18c2bb2415f64f1353a80273a289a61294ce3eb2f7ce682d251bdd997"},
+    {file = "google_api_core-2.2.2-py2.py3-none-any.whl", hash = "sha256:e7853735d4f51f4212d6bf9750620d76fc0106c0f271be0c3f43b73501c7ddf9"},
 ]
 google-auth = [
     {file = "google-auth-2.1.0.tar.gz", hash = "sha256:7ae5eda089d393ca01658b550df24913cbbbdd34e9e6dedc1cea747485ae0c04"},
@@ -1050,8 +1063,8 @@ google-cloud-core = [
     {file = "google_cloud_core-2.0.0-py2.py3-none-any.whl", hash = "sha256:31785d1e1d02f90ad3f1b020d4aed63db4865c3394ff7c128a296b6995eef31f"},
 ]
 google-cloud-secret-manager = [
-    {file = "google-cloud-secret-manager-2.7.1.tar.gz", hash = "sha256:84ae86a2320425df2e78d981d4ab26bff591ade1b978c18c929188b741a7b37d"},
-    {file = "google_cloud_secret_manager-2.7.1-py2.py3-none-any.whl", hash = "sha256:818397a377fc9000373f422262bb2b0ff9c8ccbc629f91832eb19bc247e2745b"},
+    {file = "google-cloud-secret-manager-2.8.0.tar.gz", hash = "sha256:e8a3fb7c2a1595f59923661c568667d1ba40fcaaa4dd55fe8b1f5e54871e9460"},
+    {file = "google_cloud_secret_manager-2.8.0-py2.py3-none-any.whl", hash = "sha256:af6a8f3aeb5939020cd71deafbbb21744d74b988cef8e0690ebff828302ce13f"},
 ]
 google-cloud-storage = [
     {file = "google-cloud-storage-1.42.2.tar.gz", hash = "sha256:3483174fa3915e9026c8c51c341a1e251063fa3879b9e6706fcece2e2188fcf3"},
@@ -1158,6 +1171,10 @@ grpcio = [
     {file = "grpcio-1.40.0-cp39-cp39-win32.whl", hash = "sha256:5f6d6b638698fa6decf7f040819aade677b583eaa21b43366232cb254a2bbac8"},
     {file = "grpcio-1.40.0-cp39-cp39-win_amd64.whl", hash = "sha256:005fe14e67291498989da67d454d805be31d57a988af28ed3a2a0a7cabb05c53"},
     {file = "grpcio-1.40.0.tar.gz", hash = "sha256:3d172158fe886a2604db1b6e17c2de2ab465fe0fe36aba2ec810ca8441cefe3a"},
+]
+grpcio-status = [
+    {file = "grpcio-status-1.40.0.tar.gz", hash = "sha256:a365d86953cf30650d974ff8e144178f937986a27f0b888b2b61d162474c17fc"},
+    {file = "grpcio_status-1.40.0-py3-none-any.whl", hash = "sha256:1e51ff2836f8bc84e6d82e05e41115936863070dd5ed8390b1828dac1d105976"},
 ]
 humanfriendly = [
     {file = "humanfriendly-9.2-py2.py3-none-any.whl", hash = "sha256:332da98c24cc150efcc91b5508b19115209272bfdf4b0764a56795932f854271"},
