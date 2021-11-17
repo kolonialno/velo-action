@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  IMAGE: europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action
+  IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 
 jobs:
   lint:
