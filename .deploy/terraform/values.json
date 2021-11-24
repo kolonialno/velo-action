@@ -1,0 +1,5 @@
+{
+  "project_id": "{{ project_id }}",
+  "environment": "{{ environment }}",
+  "region": "{{ region }}"
+}

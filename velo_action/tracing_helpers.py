@@ -1,15 +1,17 @@
+# type: ignore
 import base64
 import datetime as dt
 import logging
 import os
 
+import gcp
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_span_in_context
-import gcp
+
 from velo_action.github import request_github_workflow_data
 
 logger = logging.getLogger(name="action")
@@ -20,7 +22,7 @@ def init_tracer(service_acc_key: str, service="velo-action"):
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
     if service_acc_key:
-        g = gcp.Gcp(service_acc_key)
+        g = gcp.GCP(service_acc_key)
         password = g.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")

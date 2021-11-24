@@ -1,0 +1,57 @@
+---
+name: '[lint] python'
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lint-python.yml'
+      - '**.py'
+      - '.flake8'
+      - '.isort.cfg'
+      - '.pylintrc'
+      - '.mypy.ini'
+
+jobs:
+  python:
+    runs-on: ubuntu-20.04
+    name: python
+    strategy:
+      matrix:
+        check:
+          - isort --check .
+          - pylint --rcfile=.pylintrc --fail-under=9 --output-format=parseable --reports=no velo tests
+          - mypy --config-file=.mypy.ini .
+          - black --check --config=pyproject.toml .
+          - flake8 --config='.flake8' .
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ steps.versions.outputs.python }}
+
+      - name: Set up Poetry
+        uses: snok/install-poetry@v1.2
+        with:
+          version: ${{ steps.versions.outputs.poetry }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load Poetry cache
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Run linter
+        run: |
+          poetry run ${{ matrix.check }}

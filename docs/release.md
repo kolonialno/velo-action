@@ -1,6 +1,7 @@
 # Release
 
 ## Create a new release
+
 A release of Velo-action consists of to components
 
 - velo-action docker image

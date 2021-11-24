@@ -1,3 +1,4 @@
+# type: ignore
 import base64
 import json
 import logging
@@ -10,7 +11,7 @@ from google.oauth2 import service_account
 logger = logging.getLogger(name="gcp")
 
 
-class Gcp:
+class GCP:
     def __init__(self, service_account_key):
         google_service_account_key_json_str = None
         try:

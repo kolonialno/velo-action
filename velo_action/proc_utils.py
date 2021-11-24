@@ -1,8 +1,8 @@
-import os
-import sys
-import subprocess
 import logging
+import os
 import re
+import subprocess
+import sys
 from functools import lru_cache
 
 logger = logging.getLogger(name="proc_utils")

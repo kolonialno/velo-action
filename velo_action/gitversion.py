@@ -1,7 +1,8 @@
-import logging
 import json
-from velo_action import proc_utils
+import logging
 from pathlib import Path
+
+from velo_action import proc_utils
 
 logger = logging.getLogger(name="gitversion")
 
