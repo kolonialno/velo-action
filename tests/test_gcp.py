@@ -1,6 +1,9 @@
+# type: ignore
 import os
-from velo_action.gcp import Gcp
+
 import pytest
+
+from velo_action.gcp import GCP
 
 
 def has_encoded_key():
@@ -18,7 +21,7 @@ def has_unencoded_key():
 @pytest.mark.skipif(not has_encoded_key(), reason="no encoded key present in env")
 def test_gcp_encoded():
     """ensure INPUT_SERVICE_ACCOUNT_KEY envvar exists in order to activate test"""
-    g = Gcp(os.getenv("INPUT_SERVICE_ACCOUNT_KEY"))
+    g = GCP(os.getenv("INPUT_SERVICE_ACCOUNT_KEY"))
 
 
 @pytest.mark.skipif(not has_unencoded_key(), reason="no unencoded key present in env")
@@ -27,4 +30,4 @@ def test_gcp_un_encoded():
     service_account_json = os.getenv("INPUT_SERVICE_ACCOUNT_KEY_JSON")
 
     service_account_json = service_account_json.replace(os.linesep, "")
-    g = Gcp(service_account_json)
+    g = GCP(service_account_json)
