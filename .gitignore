@@ -1,34 +1,27 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
 # Distribution / packaging
-.Python
-.pytest_cache/
-
-# pyenv
-.python-version
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
 # Environments
-.env
-.venv
-Makefile
-
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
 # mypy
-.mypy_cache/
-
-appversion.json
-appversion.txt
-
+# pyenv
+*$py.class
+*.py[cod]
+.Python
 .act.secrets
+.env
 .envrc
-deploy
-.vscode
 .idea
-key.json
-appversion.txt
+.mypy_cache/
+.pytest_cache/
+.python-version
+.venv
+.vscode
+Makefile
+__pycache__/
+__pypackages__/
 appversion.json
+appversion.json
+appversion.txt
+appversion.txt
+deploy
+key.json

@@ -1,6 +1,7 @@
 # Release
 
 ## Create a new release
+
 A release of Velo-action consists of to components
 
 - velo-action docker image
@@ -23,7 +24,7 @@ To create a new release of velo-action follow the steps below
     ...
     runs:
         using: docker
-        image: docker://europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:x.x.x  # example 0.2.14
+        image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:x.x.x  # example 0.2.14
     ...
     ```
 
@@ -36,9 +37,9 @@ To create a new release of velo-action follow the steps below
 3. Build and push the image by running
 
     ```bash
-    docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer) .
+    docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:$(gitversion /showvariable SemVer) .
 
-    docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer)
+    docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:$(gitversion /showvariable SemVer)
     ```
 
 4. Update the `changelog.md` with the changes for this release.
@@ -68,4 +69,3 @@ To create a new release of velo-action follow the steps below
         image: Dockerfile
     ...
     ```
-

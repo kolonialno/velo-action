@@ -1,9 +1,10 @@
+# type: ignore
 import json
 import logging
 import os
 from pathlib import Path
 
-from velo_action import octopus, github, gcp, gitversion, tracing_helpers, proc_utils
+from velo_action import gcp, github, gitversion, octopus, proc_utils, tracing_helpers
 from velo_action.github import request_commit_info
 from velo_action.settings import Settings
 
@@ -68,7 +69,7 @@ def action(input_args: Settings):
         if not input_args.service_account_key:
             raise ValueError("gcp service account key not specified")
 
-        g = gcp.Gcp(input_args.service_account_key)
+        g = gcp.GCP(input_args.service_account_key)
         octopus_cli_server = g.lookup_data(
             input_args.octopus_cli_server_secret, VELO_PROJECT_NAME
         )
@@ -103,20 +104,20 @@ def action(input_args: Settings):
                 branch_name is not None
             ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
 
-            # commit_info = request_commit_info(commit_id)
+            commit_info = request_commit_info(commit_id)
             release_note_dict = {
                 "commit_id": commit_id,
                 "branch_name": branch_name,
-                # "commit_message": commit_info["commit"]["message"],
+                "commit_message": commit_info["commit"]["message"],
                 "commit_url": f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/commit/{commit_id}',
             }
-            release_notes = f"{json.dumps(release_note_dict)}"
-
             logger.info(
                 f"Creating a release for project '{input_args.project}' with version '{version}'"
             )
             octo.create_release(
-                version=version, project=input_args.project, release_notes=release_notes
+                version=version,
+                project=input_args.project,
+                release_note_dict=release_note_dict,
             )
 
         if input_args.deploy_to_environments:

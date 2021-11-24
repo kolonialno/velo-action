@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import shlex
 
 from velo_action import proc_utils
@@ -67,7 +67,7 @@ class Octopus:
         releases = releases_list[0].get("Releases")
         return releases
 
-    def create_release(self, version, project, release_notes=None):
+    def create_release(self, version, project, release_note_dict=None):
         releases = self.list_releases(project)
         exists = False
         if releases:
@@ -78,14 +78,14 @@ class Octopus:
                     break
 
         if not exists:
-            cmd = [
-                "octo",
-                "create-release",
-                f"--version={version}",
-                f"--project={project}",
-                "--releaseNotes=" + shlex.quote(json.dumps(release_notes, default=str)),
-                "--helpOutputFormat=Json",
-            ]
+            cmd = (
+                "octo"
+                " create-release"
+                f" --version={version}"
+                f" --project={project}"
+                f" --releaseNotes={shlex.quote(json.dumps(release_note_dict))}"
+                " --helpOutputFormat=Json"
+            )
             proc_utils.execute_process(
                 cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False
             )

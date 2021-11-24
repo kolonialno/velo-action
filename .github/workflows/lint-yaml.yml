@@ -1,0 +1,25 @@
+---
+name: '[lint] yaml'
+
+on:
+  push:
+    paths:
+      - ".github/workflows/lint-yaml.yaml"
+      - "**.yaml"
+      - "**.yml"
+      - ".yamllint"
+
+jobs:
+  yamllint:
+    name: yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: ".yamllint"
+          file_or_dir: "."  # Run againstt all YAML files
+          format: colored
+          strict: true

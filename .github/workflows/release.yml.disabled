@@ -20,7 +20,7 @@ jobs:
       - name: Update image version in action.yml
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval -i '.runs.image = "docker://europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:${{ steps.velo.outputs.version }}"' action.yml
+          cmd: yq eval -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.velo.outputs.version }}"' action.yml
 
       - name: Wait on CI
         uses: lewagon/wait-on-check-action@master
