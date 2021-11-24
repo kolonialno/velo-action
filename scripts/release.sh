@@ -1,10 +1,10 @@
 make version
 export VERSION=$(cat appversion.txt)
-export docker_image="docker://europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:${VERSION}" && echo $docker_image
+export docker_image="docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${VERSION}" && echo $docker_image
 
 make image
-docker tag europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:dev europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$VERSION
-docker push -a europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action
+docker tag europe-docker.pkg.dev/nube-hub/docker-public/velo-action:dev europe-docker.pkg.dev/nube-hub/docker-public/velo-action:$VERSION
+docker push -a europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 
 yq eval -i '.runs.image = env(docker_image)' action.yml
 
@@ -26,7 +26,7 @@ echo "Update the release notes manually in the github release page."
 
 echo "Reset action image to latest for future development."
 
-yq eval -i '.runs.image = "docker://europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:latest"' action.yml
+yq eval -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest"' action.yml
 
 git add action.yml
 git commit -m "Set image to latest for future development"

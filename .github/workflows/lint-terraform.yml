@@ -1,0 +1,32 @@
+name: '[lint] Terraform format'
+
+on:
+  push:
+    paths:
+      - '.github/workflows/terraform-format.yml'
+      - '**.tf'
+      - '**.hcl'
+
+jobs:
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ steps.versions.outputs.terraform }}
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -recursive .
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ !env.ACT }}
+        with:
+          commit_message: Terrafor format
+          commit_options: '--no-verify --signoff'

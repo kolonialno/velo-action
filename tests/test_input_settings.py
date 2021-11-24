@@ -1,8 +1,11 @@
+# type: ignore
+import os
+
 import pytest
+from pydantic import ValidationError
+
 from velo_action.settings import Settings
 from velo_action.test_utils import fill_default_envvars
-from pydantic import ValidationError
-import os
 
 HAS_GITHUB_WORKSPACE = True if os.getenv("GITHUB_WORKSPACE") else False
 

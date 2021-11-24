@@ -1,7 +1,9 @@
-from typing import Optional, List, Union
-from pydantic import BaseSettings, ValidationError, validator, root_validator
+# type: ignore
 import os
 from pathlib import Path
+from typing import List, Optional, Union
+
+from pydantic import BaseSettings, ValidationError, root_validator, validator
 
 
 class Settings(BaseSettings):
