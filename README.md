@@ -1,6 +1,13 @@
-# Velo action
+<h1 align="center">
+  🚲 <br>
+  Velo-action
+</h1>
 
-This actions is part of the Velo deploy tooling at Oda.
+<p align="center">
+  A Github Action to create releases
+</p>
+
+This Github actions is part of the Velo deploy system at Oda.
 
 This repo is public since Github actions does not yet [support actions in private repos](https://github.com/github/roadmap/issues/74).
 
