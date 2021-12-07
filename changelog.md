@@ -1,5 +1,10 @@
 # Changelog
 
+## DRAFT v0.3.x (2021-12-08)
+
+- Remove generation of semantic version numbers (SemVer). Default is now the shortened git
+  hash (`git rev-parse --short HEAD`). Removes although the gitversion dependency.
+
 ## v0.2.21 (2021-09-23)
 
 - Moved image to the new [public Artifact Registry](https://console.cloud.google.com/artifacts/docker/nube-artifacts-prod/europe/nube-container-images-public?project=nube-artifacts-prod) in Google Cloud Platform. Will deprecate the Dockerhub image when there have been no pull for a month. This change require no changes by the user.

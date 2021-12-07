@@ -1,20 +1,16 @@
-VERSION_FILE=appversion.txt
-VERSION=`cat $(VERSION_FILE)`
+.PHONY: img_tag tests
 
-.PHONY: version tests
-
-version:
-	gitversion /showvariable SemVer > appversion.txt
-	echo $(VERSION)
+img_tag:
+	$(eval IMG_TAG=$(shell git rev-parse --short HEAD))
 
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
-image:
-	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer) .
+image: img_tag
+	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMG_TAG) .
 
-push:
-	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(gitversion /showvariable SemVer)
+push: img_tag
+	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMG_TAG)
 
 run: image
 	docker-compose run --rm velo-action

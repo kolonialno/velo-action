@@ -4,7 +4,6 @@
 FROM python:3.9-slim as python
 
 ARG OCTOPUSCLI_VERSION='7.4.3437'
-ARG GITVERSION='5.6.7'
 ARG POETRY_VERSION='1.1.6'
 
 RUN apt-get update -y \
@@ -24,16 +23,6 @@ RUN apt-get update -y \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
     && apt-get update -y && apt-get install -y octopuscli=$OCTOPUSCLI_VERSION google-cloud-sdk \
     && apt-get clean
-
-# Install Gitversion
-# minimum requirements for GitVersion https://github.com/GitTools/GitVersion/blob/main/src/Docker/linux%20deps.md
-RUN wget --quiet https://github.com/GitTools/GitVersion/releases/download/$GITVERSION/gitversion-linux-x64-$GITVERSION.tar.gz \
-    && mkdir -p /tmp \
-    && tar -xvf gitversion-linux-x64-$GITVERSION.tar.gz -C tmp \
-    && chmod +x /tmp/gitversion \
-    && mv /tmp/** /usr/local/bin \
-    && rm -rf gitversion-linux-x64-$GITVERSION.tar.gz
-
 
 ENV GITHUB_WORKSPACE '/github/workspace/'
 

@@ -7,7 +7,6 @@ authors = ["Anders Liland <anders.liland@oda.com>"]
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
 semantic-version = "^2.8"
-gitversion = "^2.1"
 appdirs = "^1.4"
 google = "^3.0"
 google-auth = "^2.1.0"
