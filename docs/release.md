@@ -47,7 +47,7 @@ To create a new release of velo-action follow the steps below
 
 6. Commit the `action.yml` and the `changelog.md` files and push the commit to the `main` branch.
 
-7. Manually [create a release in Github](https://github.com/kolonialno/velo-action/releases), on 
+7. Manually [create a release in Github](https://github.com/kolonialno/velo-action/releases), on
    the commit you just pushed.
 
    Tag the release commit with the new version using a `v` prefix.
