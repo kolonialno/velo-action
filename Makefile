@@ -1,17 +1,17 @@
 .PHONY: img_tag tests
 
-img_tag:
-	$(eval IMG_TAG=$(shell git rev-parse --short HEAD))
-	echo ${IMG_TAG}
+image_tag:
+	$(eval IMAGE_TAG=$(shell git rev-parse --short HEAD))
+	echo ${IMAGE_TAG}
 
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
-image: img_tag
-	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMG_TAG) .
+image: image_tag
+	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMAGE_TAG) .
 
-push: img_tag
-	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMG_TAG)
+push: image_tag
+	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:$(IMAGE_TAG)
 
 run: image
 	docker-compose run --rm velo-action
