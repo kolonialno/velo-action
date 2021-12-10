@@ -2,6 +2,7 @@
 
 img_tag:
 	$(eval IMG_TAG=$(shell git rev-parse --short HEAD))
+	echo ${IMG_TAG}
 
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
