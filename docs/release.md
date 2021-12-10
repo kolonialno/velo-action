@@ -39,6 +39,7 @@ To create a new release of velo-action follow the steps below
    ```
 
 4. Determine the version of the next Release.
+
    **NOTE:** This is done manually for the moment. A version should be generated automatically
    in the future.
 
