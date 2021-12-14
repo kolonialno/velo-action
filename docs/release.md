@@ -26,7 +26,7 @@ To create a new release of velo-action follow the steps below
 3. Update the field `runs.image` in the `action.yml` file. Replace the tag
    with the shortened hash of the commit (`make image_tag`).
 
-   We are using [GCP artifacts](https://console.cloud.google.com/artifacts/docker/nube-artifacts-prod/europe/nube-container-images-public?project=nube-artifacts-prod).
+   We are using [GCP artifacts](https://console.cloud.google.com/artifacts/browse/nube-hub?project=nube-hub).
 
    The `action.yml` should look something like this
 
