@@ -34,7 +34,7 @@ To create a new release of velo-action follow the steps below
    ...
    runs:
      using: docker
-     image: docker://europe-docker.pkg.dev/nube-hub/docker/velo-action:1234567
+     image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1234567
    ...
    ```
 

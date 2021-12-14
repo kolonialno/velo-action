@@ -8,10 +8,10 @@ tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
 image: image_tag
-	docker build -t europe-docker.pkg.dev/nube-hub/docker/velo-action:$(IMAGE_TAG) .
+	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:$(IMAGE_TAG) .
 
 push: image_tag
-	docker push europe-docker.pkg.dev/nube-hub/docker/velo-action:$(IMAGE_TAG)
+	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:$(IMAGE_TAG)
 
 run: image
 	docker-compose run --rm velo-action
