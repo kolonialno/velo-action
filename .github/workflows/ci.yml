@@ -97,7 +97,15 @@ jobs:
       - "test"
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # required to get a unique ref
+
+      # Determine the version
+      - uses: kolonialno/velo-action@v0.2.21
+        id: velo
+        with:
+          create_release: 'False'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -114,7 +122,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
             ${{ env.IMAGE }}:${{ steps.velo.outputs.version }}
             ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
@@ -125,15 +132,11 @@ jobs:
     name: release
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set outputs
-        id: vars
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        with:
+          fetch-depth: 0 # required to get a unique ref
 
       - uses: kolonialno/velo-action@v0.2.21
         with:
-          version: ${{ steps.vars.outputs.sha_short }}
           create_release: 'True'
           project: velo-action
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
