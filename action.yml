@@ -5,6 +5,8 @@ inputs:
   version:
     description: |-
       Version used to generate release and tag image. Defaults to the shortened git hash.
+      NOTE: The length of the version string is dynamic. It can be longer if it is not
+      unique.
     required: false
     default: None
   project:
@@ -79,7 +81,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: docker://europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:814516a
+  image: docker://europe-docker.pkg.dev/nube-hub/docker/velo-action:814516a
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
