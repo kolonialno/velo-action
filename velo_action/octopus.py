@@ -59,7 +59,7 @@ class Octopus:
         return tenant_names
 
     def list_releases(self, project):
-        cmd = f"octo list-releases --project={project} --outputformat=json"
+        cmd = ["octo", "list-releases", "--project={project}", "--outputformat=json"]
         result = proc_utils.execute_process_sp_run(
             cmd, env_vars=self.octa_env_vars, log_stdout=False, log_cmd=False
         )
