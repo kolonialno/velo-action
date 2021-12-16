@@ -11,10 +11,10 @@ tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
 image:
-	docker build -t europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:${VERSION} .
+	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${VERSION} .
 
 push:
-	docker push europe-docker.pkg.dev/nube-artifacts-prod/nube-container-images-public/velo-action:${VERSION}
+	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${VERSION}
 
 run: image
 	docker-compose run --rm velo-action
