@@ -18,6 +18,44 @@ def ansi_escape_string(input_str):
     return ansi_escape.sub("", input_str)
 
 
+def execute_process_sp_run(
+    args,
+    *,
+    env_vars=None,
+    fail_on_non_zero_exit=True,
+    log_cmd=True,
+    log_envvars=False,
+    log_stdout=True,
+    forward_stdout=False,
+    log_stderr=True,
+    cwd=None,
+):
+    if not env_vars:
+        env_vars = {}
+    proc_env_vars = os.environ.copy()
+    proc_env_vars = {**proc_env_vars, **env_vars}
+    if log_cmd:
+        logger.info(f"Running '{args}'")
+    if log_envvars:
+        logger.info("Env Vars")
+        logger.info(proc_env_vars)
+
+    process_output = subprocess.run(
+        args,
+        env=proc_env_vars,
+        cwd=cwd,
+        capture_output=not forward_stdout,
+        check=fail_on_non_zero_exit,
+    )
+
+    if not forward_stdout and log_stdout:
+        logger.info(f"stdout logs for command '{args}'")
+        logger.info(process_output.stdout.decode(encoding="utf-8"))
+    if not forward_stdout and log_stderr:
+        logger.info(f"stderr logs for command '{args}'")
+        logger.info(process_output.stderr.decode(encoding="utf-8"))
+
+
 def execute_process(
     cmd,
     env_vars=None,
