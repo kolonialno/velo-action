@@ -52,7 +52,7 @@ class Octopus:
     def list_tenants(self):
         cmd = ("octo", "list-tenants", "--outputformat=json")
         result = proc_utils.execute_process_sp_run(
-            cmd, self.octa_env_vars, log_cmd=False, log_stdout=False
+            cmd, env_vars=self.octa_env_vars, log_cmd=False, log_stdout=False
         )
         tenants_list = json.loads(result)
         tenant_names = [o.get("Name") for o in tenants_list]
@@ -87,7 +87,7 @@ class Octopus:
                 "--helpOutputFormat=Json",
             )
             proc_utils.execute_process_sp_run(
-                cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False
+                cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False
             )
 
     def deploy_release(
