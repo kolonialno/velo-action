@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """[Parse input arguments]
 
     The Github action only provides input arguments to the container as environment variables,
-    with INPUT_ prefiex on the argument name.
+    with INPUT_ prefix on the argument name.
 
     This means every argument is parsed as a string.
     To replicate this behaviour when debugging locally all default values is also set to the string 'None'.

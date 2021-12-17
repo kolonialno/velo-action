@@ -22,8 +22,8 @@ class Octopus:
 
         # test connection to server
         try:
-            proc_utils.execute_process(
-                "octo list-environments",
+            proc_utils.execute_process_sp_run(
+                ("octo", "list-environments"),
                 log_cmd=False,
                 env_vars=self.octa_env_vars,
                 log_stdout=False,
@@ -35,7 +35,7 @@ class Octopus:
 
     def _octo_cli_exists(self):
         try:
-            proc_utils.execute_process("octo", log_cmd=False, log_stdout=False)
+            proc_utils.execute_process_sp_run("octo", log_cmd=False, log_stdout=False)
         except:
             raise Exception(
                 "Octopus Cli 'octo' is not installed. See https://octopus.com/downloads/octopuscli for instructions"
@@ -43,27 +43,27 @@ class Octopus:
         return True
 
     def _version(self):
-        result = proc_utils.execute_process(
-            "octo --version", log_cmd=False, log_stdout=False
+        result = proc_utils.execute_process_sp_run(
+            ("octo", "--version"), log_cmd=False, log_stdout=False
         )
         version = result[0]
         return version
 
     def list_tenants(self):
-        cmd = "octo list-tenants --outputformat=json"
-        result = proc_utils.execute_process(
-            cmd, self.octa_env_vars, log_cmd=False, log_stdout=False
+        cmd = ("octo", "list-tenants", "--outputformat=json")
+        result = proc_utils.execute_process_sp_run(
+            cmd, env_vars=self.octa_env_vars, log_cmd=False, log_stdout=False
         )
-        tenants_list = json.loads("".join(result))
+        tenants_list = json.loads(result)
         tenant_names = [o.get("Name") for o in tenants_list]
         return tenant_names
 
     def list_releases(self, project):
-        cmd = f"octo list-releases --project={project} --outputformat=json"
-        result = proc_utils.execute_process(
-            cmd, self.octa_env_vars, log_stdout=False, log_cmd=False
+        cmd = ("octo", "list-releases", f"--project={project}", "--outputformat=json")
+        result = proc_utils.execute_process_sp_run(
+            cmd, env_vars=self.octa_env_vars, log_stdout=False, log_cmd=False
         )
-        releases_list = json.loads("".join(result))
+        releases_list = json.loads(result)
         releases = releases_list[0].get("Releases")
         return releases
 
@@ -79,15 +79,15 @@ class Octopus:
 
         if not exists:
             cmd = (
-                "octo"
-                " create-release"
-                f" --version={version}"
-                f" --project={project}"
-                f" --releaseNotes={shlex.quote(json.dumps(release_note_dict))}"
-                " --helpOutputFormat=Json"
+                "octo",
+                "create-release",
+                f"--version={version}",
+                f"--project={project}",
+                f"--releaseNotes={shlex.quote(json.dumps(release_note_dict))}",
+                "--helpOutputFormat=Json",
             )
-            proc_utils.execute_process(
-                cmd, self.octa_env_vars, log_stdout=True, forward_stdout=False
+            proc_utils.execute_process_sp_run(
+                cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False
             )
 
     def deploy_release(
@@ -106,11 +106,16 @@ class Octopus:
         if wait_for_deployment:
             args.append("--waitForDeployment")
 
-        cmd = (
-            f"octo deploy-release --project={project} --version={version} "
-            f'--deployTo={environment} --variable="GithubSpanID:{started_span_id}"'
-        )
-        cmd = cmd + " " + " ".join(str(x) for x in args)
+        cmd = [
+            "octo",
+            "deploy-release",
+            f"--project={project}",
+            f"--version={version}",
+            f"--deployTo={environment}",
+            f'--variable="GithubSpanID:{started_span_id}"',
+        ]
+        cmd = cmd + args
+
         if tenants:
             octo_tenants = self.list_tenants()
             for tenant in tenants:
@@ -119,9 +124,8 @@ class Octopus:
                         f"Tenant '{tenant}' does not exist in Octopus Deploy, found '{octo_tenants}'."
                     )
 
-                cmd_tenant = f"--tenant={tenant}"
-                proc_utils.execute_process(
-                    cmd + " " + cmd_tenant,
+                proc_utils.execute_process_sp_run(
+                    cmd + [f"--tenant={tenant}"],
                     env_vars=self.octa_env_vars,
                     log_stdout=True,
                     forward_stdout=False,
@@ -130,7 +134,7 @@ class Octopus:
                     f"Deploying '{project}' '{tenant}' version '{version}' to '{environment}'"
                 )
         else:
-            proc_utils.execute_process(
+            proc_utils.execute_process_sp_run(
                 cmd, env_vars=self.octa_env_vars, log_stdout=True, forward_stdout=False
             )
             logger.info(f"Deploying '{project}' version '{version}' to '{environment}'")
