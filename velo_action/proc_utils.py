@@ -55,6 +55,8 @@ def execute_process_sp_run(
         logger.info(f"stderr logs for command '{args}'")
         logger.info(process_output.stderr.decode(encoding="utf-8"))
 
+    return process_output.stdout
+
 
 def execute_process(
     cmd,
