@@ -7,7 +7,7 @@ A release of Velo-action consists of to components
 - velo-action docker image
 - a GitHub release
 
-The version of the action is determined by the release tag. It is used when
+The version of the action is determined by the Github release tag. It is used when
 referencing the action in a workflow yaml. The container image is tagged
 using a shortened commit hash.
 
