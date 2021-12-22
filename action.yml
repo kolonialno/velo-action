@@ -4,7 +4,8 @@ description: Velo
 inputs:
   version:
     description: |-
-      Version used to generate release and tag image. Defaults to the shortened git hash.
+      Version used to generate release and tag image. Defaults to the shortened git hash (`git rev-parse --short HEAD`) .
+            NOTE: The length of the Git hash is dynamic. It can be longer if it is not unique.
       NOTE: The length of the version string is dynamic. It can be longer if it is not
       unique.
     required: false
