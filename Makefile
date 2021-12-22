@@ -7,16 +7,16 @@ image_tag:
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
-image: image_tag
+image_build: image_tag
 	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG} .
 
-push: image_tag
+image_push: image_tag
 	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG}
 
 run: image
 	docker-compose run --rm velo-action
 
-bash: image
+docker_bash: image
 	docker-compose run --rm --entrypoint bash velo-action
 
 lint: black flake8 pylint yamllint
