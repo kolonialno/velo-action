@@ -1,4 +1,5 @@
 ---
+project: velo-action
 vars:
   owner: cloud-platform
   region: europe-west4
