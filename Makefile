@@ -7,10 +7,10 @@ image_tag:
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
-image_build: image_tag
+image: image_tag
 	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG} .
 
-image_push: image_tag
+push: image_tag
 	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG}
 
 run: image
