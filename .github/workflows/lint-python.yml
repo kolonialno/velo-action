@@ -35,7 +35,7 @@ jobs:
           python-version: ${{ steps.versions.outputs.python }}
 
       - name: Set up Poetry
-        uses: snok/install-poetry@v1.2
+        uses: snok/install-poetry@v1.3
         with:
           version: ${{ steps.versions.outputs.poetry }}
           virtualenvs-create: true
