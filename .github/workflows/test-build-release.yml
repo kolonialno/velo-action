@@ -1,4 +1,4 @@
-name: CI
+name: Build & Release
 
 on:
   push:
@@ -12,51 +12,9 @@ env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
-    name: lint
-    strategy:
-      matrix:
-        check:
-          - pylint --rcfile=.pylintrc --fail-under=8 --output-format=parseable --reports=no velo_action
-          - black --check --config=pyproject.toml .
-          - flake8 --config='.flake8' .
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Read .tool-versions
-        uses: marocchino/tool-versions-action@v1
-        id: versions
-
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ steps.versions.outputs.python }}
-
-      - name: Set up Poetry
-        uses: snok/install-poetry@v1.2
-        with:
-          version: ${{ steps.versions.outputs.poetry }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load Poetry cache
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-
-      - name: Run linter
-        run: |
-          poetry run ${{ matrix.check }}
-
   test:
     runs-on: ubuntu-20.04
-    name: test
+    name: Test
     steps:
       - uses: actions/checkout@v2
 
@@ -91,13 +49,21 @@ jobs:
 
   build:
     runs-on: ubuntu-20.04
-    name: build & push
+    name: Build & push
     needs:
-      - "lint"
-      - "test"
+      - lint
+      - test
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          fetch-depth: 0 # required to get a unique ref
+
+      - name: Version
+        id: vars
+        run: |
+          echo "::set-output name=version::$(git rev-parse --short HEAD)"
+          echo ${{ steps.vars.outputs.version }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -115,25 +81,21 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE }}:${{ steps.velo.outputs.version }}
+            ${{ env.IMAGE }}:${{ steps.vars.outputs.version }}
             ${{ env.IMAGE }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
           cache-to: type=registry,${{ env.IMAGE }}:buildcache,mode=max
 
   release:
     runs-on: ubuntu-20.04
-    name: release
+    name: Create release
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set outputs
-        id: vars
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        with:
+          fetch-depth: 0 # required to get a unique ref
 
       - uses: kolonialno/velo-action@v0.2.21
         with:
-          version: ${{ steps.vars.outputs.sha_short }}
           create_release: 'True'
           project: velo-action
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}

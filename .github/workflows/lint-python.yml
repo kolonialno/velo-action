@@ -18,11 +18,11 @@ jobs:
     strategy:
       matrix:
         check:
-          - isort --check .
-          - pylint --rcfile=.pylintrc --fail-under=9 --output-format=parseable --reports=no velo tests
-          - mypy --config-file=.mypy.ini .
-          - black --check --config=pyproject.toml .
-          - flake8 --config='.flake8' .
+          - isort
+          - pylint
+          - mypy
+          - black
+          - flake8
     steps:
       - uses: actions/checkout@v2
 
@@ -54,4 +54,4 @@ jobs:
 
       - name: Run linter
         run: |
-          poetry run ${{ matrix.check }}
+          make ${{ matrix.check }}

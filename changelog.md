@@ -1,5 +1,14 @@
 # Changelog
 
+## DRAFT v0.3.x (2021-12-08)
+
+- Remove generation of semantic version numbers (SemVer). Default is now the shortened git
+  hash (`git rev-parse --short HEAD`). Removes although the gitversion dependency. Please see
+  [this example](https://github.com/kolonialno/velo/blob/c3d5ddff650fd97357b72ef178d93e5519eb5efa/.github/workflows/ci.yml#L71-L114)
+  if you still want to auto-generate the SemVer.
+
+  NOTE: The length of the version string is dynamic. It can be longer if it is not unique.
+
 ## v0.2.79 (2021-12-17)
 
 - Use `subprocess.run()` when calling the octo CLI
