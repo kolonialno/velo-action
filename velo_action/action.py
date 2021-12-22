@@ -104,7 +104,7 @@ def action(input_args: Settings):
             release_note_dict = {
                 "commit_id": commit_id,
                 "branch_name": branch_name,
-                "commit_message": commit_info["commit"]["message"],
+                # "commit_message": commit_info["commit"]["message"],
                 "commit_url": f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/commit/{commit_id}',
             }
             logger.info(
