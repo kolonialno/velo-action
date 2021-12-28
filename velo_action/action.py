@@ -4,7 +4,7 @@ import logging
 import os
 from pathlib import Path
 
-from velo_action import gcp, github, gitversion, octopus, proc_utils, tracing_helpers
+from velo_action import gcp, github, gitversion, octopus_api, proc_utils, tracing_helpers
 from velo_action.github import request_commit_info
 from velo_action.settings import Settings
 
@@ -80,7 +80,7 @@ def action(input_args: Settings):
             input_args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
         )
 
-        octo = octopus.Octopus(api_key=octopus_cli_api_key, server=octopus_cli_server)
+        octo = octopus_api.Octopus(server=octopus_cli_server, api_key=octopus_cli_api_key)
 
         if input_args.create_release:
             logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
