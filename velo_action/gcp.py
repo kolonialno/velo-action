@@ -1,5 +1,6 @@
 # type: ignore
 import base64
+import binascii
 import json
 import logging
 import os
@@ -12,25 +13,12 @@ logger = logging.getLogger(name="gcp")
 
 
 class GCP:
-    def __init__(self, service_account_key):
-        google_service_account_key_json_str = None
-        try:
-            google_service_account_key_json_str = base64.b64decode(
-                service_account_key.encode("ascii")
-            ).decode("ascii")
-        except Exception as e:
-            logger.debug("INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded")
-
-        if google_service_account_key_json_str:
-            service_account_info = json.loads(google_service_account_key_json_str)
+    def __init__(self, service_account_key=None):
+        self.scoped_credentials = None
+        if service_account_key:
+            self._auth_service_account(service_account_key)
         else:
-            service_account_info = json.loads(service_account_key)
-        credentials = service_account.Credentials.from_service_account_info(
-            service_account_info
-        )
-        self.scoped_credentials = credentials.with_scopes(
-            ["https://www.googleapis.com/auth/cloud-platform"]
-        )
+            logger.info("Using local credentials")
 
     @lru_cache
     def _get_storage_client(self):
@@ -94,3 +82,23 @@ class GCP:
         if not highest_found_version:
             raise ValueError("Secret not found")
         return highest_found_version
+
+    def _auth_service_account(self, service_account_key):
+        google_service_account_key_json_str = None
+        try:
+            google_service_account_key_json_str = base64.b64decode(
+                service_account_key.encode("ascii")
+            ).decode("ascii")
+        except binascii.Error as e:
+            logger.warning(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {e}")
+
+        if google_service_account_key_json_str:
+            service_account_info = json.loads(google_service_account_key_json_str)
+        else:
+            service_account_info = json.loads(service_account_key)
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_info
+        )
+        self.scoped_credentials = credentials.with_scopes(
+            ["https://www.googleapis.com/auth/cloud-platform"]
+        )

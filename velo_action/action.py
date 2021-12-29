@@ -67,7 +67,7 @@ def action(input_args: Settings):
         if not input_args.project:
             raise ValueError("project not specified")
         if not input_args.service_account_key:
-            raise ValueError("gcp service account key not specified")
+            logger.warning("gcp service account key not specified")
 
         g = gcp.GCP(input_args.service_account_key)
         octopus_cli_server = g.lookup_data(
