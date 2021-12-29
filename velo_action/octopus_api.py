@@ -8,6 +8,8 @@ import requests
 
 logger = logging.getLogger(name="octopus")
 
+_RELEASE_REGEX = "^(|\+.*)$"
+
 
 class Octopus:
     """
@@ -64,10 +66,10 @@ class Octopus:
         except requests.RequestException as e:
             logger.error(
                 "Could not establish connection with Octopus deploy server "
-                f'at "{self._baseurl}".'
+                f"at '{self._baseurl}'."
             )
         logger.debug(
-            f'Successfully connected to Octopus deploy server "{self._baseurl}"'
+            f"Successfully connected to Octopus deploy server '{self._baseurl}'"
         )
 
     def _get_request(self, path):
@@ -88,11 +90,10 @@ class Octopus:
 
         packages = []
         for p in template["Packages"]:
-            release_regex = "^(|\+.*)$"
 
             v = self._get_request(
                 f"api/feeds/{p['FeedId']}/packages/versions?"
-                f"packageId={p['PackageId']}&preReleaseTag={release_regex}&take=1"
+                f"packageId={p['PackageId']}&preReleaseTag={_RELEASE_REGEX}&take=1"
             )
 
             packages.append(
@@ -122,8 +123,8 @@ def _handle_response(response):
 
     else:
         raise RuntimeError(
-            f'{response.request.method} "{response.url}" failed with status "'
-            f"{response.status_code}"
+            f"{response.request.method} '{response.url}' failed with status "
+            f"'{response.status_code}'"
         )
 
 

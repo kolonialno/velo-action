@@ -1,4 +1,5 @@
 # type: ignore
+import json
 import os
 from pathlib import Path
 from typing import List, Optional, Union
@@ -74,6 +75,7 @@ class Settings(BaseSettings):
             return None
         return v
 
+
     @validator("tenants", "deploy_to_environments")
     def check_list_not_str_none(cls, v):
         """
@@ -90,9 +92,9 @@ class Settings(BaseSettings):
 
     @validator("workspace")
     def validate_valid_path(cls, v):
-        path = Path(v)
+        path = Path(v).expanduser().resolve()
         if not path.exists():
             raise ValidationError(f"path {path} does not exist")
         if not path.is_dir():
             raise ValidationError(f"path {path} is not a dir")
-        return v
+        return path

@@ -39,6 +39,8 @@ def action(input_args: Settings):
     logger.info(f"deploy_to_environments: {input_args.deploy_to_environments}")
     logger.info(f"create_release: {input_args.create_release}")
 
+    os.chdir(input_args.workspace)
+
     if input_args.version == "semver":
         gv = gitversion.Gitversion(path=Path(input_args.workspace))
         version = gv.generate_version()
@@ -117,7 +119,7 @@ def action(input_args: Settings):
                 "commit_id": commit_id,
                 "branch_name": branch_name,
                 # "commit_message": commit_info["commit"]["message"],
-                "commit_url": f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/commit/{commit_id}',
+                "commit_url": f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{commit_id}",
             }
             logger.info(
                 f"Creating a release for project '{input_args.project}' with version '{version}'"
@@ -130,6 +132,10 @@ def action(input_args: Settings):
 
         if input_args.deploy_to_environments:
             for env in input_args.deploy_to_environments:
+                logger.info(
+                    f"Deploying project '{input_args.project}' version '{version}' "
+                    f"to '{env}'"
+                )
                 octo.deploy_release(
                     version=version,
                     environment=env,
