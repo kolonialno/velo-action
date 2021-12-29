@@ -25,7 +25,7 @@ class Octopus:
     def list_releases(self, project):
         project_id = self.get_project_id(project)
         data = self._get_request(f"api/projects/{project_id}/releases")
-        return data['Items']
+        return data["Items"]
 
     def create_release(self, version, project, release_note_dict=None):
         project_id = self.get_project_id(project)
@@ -43,14 +43,14 @@ class Octopus:
         return self._post_request("/api/releases", data=release_data)
 
     def deploy_release(
-            self,
-            version,
-            project,
-            environment,
-            tenants=None,
-            progress=None,
-            wait_for_deployment=None,
-            started_span_id="None",
+        self,
+        version,
+        project,
+        environment,
+        tenants=None,
+        progress=None,
+        wait_for_deployment=None,
+        started_span_id="None",
     ):
         pass
 
@@ -62,9 +62,13 @@ class Octopus:
         try:
             self._get_request("api")
         except requests.RequestException as e:
-            logger.error('Could not establish connection with Octopus deploy server '
-                         f'at "{self._baseurl}".')
-        logger.debug(f'Successfully connected to Octopus deploy server "{self._baseurl}"')
+            logger.error(
+                "Could not establish connection with Octopus deploy server "
+                f'at "{self._baseurl}".'
+            )
+        logger.debug(
+            f'Successfully connected to Octopus deploy server "{self._baseurl}"'
+        )
 
     def _get_request(self, path):
         url = urllib.parse.urljoin(self._baseurl, path)
@@ -84,22 +88,23 @@ class Octopus:
 
         packages = []
         for p in template["Packages"]:
-            release_regex = '^(|\+.*)$'
+            release_regex = "^(|\+.*)$"
 
             v = self._get_request(
                 f"api/feeds/{p['FeedId']}/packages/versions?"
                 f"packageId={p['PackageId']}&preReleaseTag={release_regex}&take=1"
             )
 
-            packages.append({
-                "ActionName": (p["ActionName"]),
-                "Version": v["Items"][0]["Version"]
-            })
+            packages.append(
+                {"ActionName": (p["ActionName"]), "Version": v["Items"][0]["Version"]}
+            )
 
         return packages
 
     def _does_release_exist(self, project_id, version):
-        url = urllib.parse.urljoin(self._baseurl, f"api/projects/{project_id}/releases/{version}")
+        url = urllib.parse.urljoin(
+            self._baseurl, f"api/projects/{project_id}/releases/{version}"
+        )
         response = requests.head(url, headers=self._headers)
         return response.status_code == 200
 
@@ -111,21 +116,23 @@ def _handle_response(response):
 
     elif response.status_code == 400:
         err: str = f"{j['ErrorMessage']} {'. '.join(j['Errors'])}"
-        if j['ParsedHelpLinks']:
+        if j["ParsedHelpLinks"]:
             err = err + f" ({j['ParsedHelpLinks']})"
         raise RuntimeError(err)
 
     else:
         raise RuntimeError(
             f'{response.request.method} "{response.url}" failed with status "'
-            f'{response.status_code}'
+            f"{response.status_code}"
         )
 
 
 if __name__ == "__main__":
     try:
-        octopus = Octopus(server=os.getenv("INPUT_OCTOPUS_SERVER"),
-                          api_key=os.getenv("INPUT_OCTOPUS_API_KEY"))
+        octopus = Octopus(
+            server=os.getenv("INPUT_OCTOPUS_SERVER"),
+            api_key=os.getenv("INPUT_OCTOPUS_API_KEY"),
+        )
         project = "example-deploy-project"
 
         p = octopus.create_release("0.0.9999", project)
