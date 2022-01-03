@@ -3,13 +3,7 @@ import logging
 import os
 from pathlib import Path
 
-from velo_action import (
-    gcp,
-    github,
-    octopus_api,
-    proc_utils,
-    tracing_helpers,
-)
+from velo_action import gcp, github, octopus_api, proc_utils, tracing_helpers
 from velo_action.github import request_commit_info
 from velo_action.settings import Settings
 
