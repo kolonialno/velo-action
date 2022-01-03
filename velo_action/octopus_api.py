@@ -12,7 +12,7 @@ import requests
 logger = logging.getLogger(name="octopus")
 
 _RELEASE_REGEX = r"^(|\+.*)$"
-_MAX_WAIT_TIME = timedelta(seconds=10)
+_MAX_WAIT_TIME = timedelta(minutes=3)
 
 
 class Octopus:
@@ -59,15 +59,16 @@ class Octopus:
         wait_for_deployment=None,
         started_span_id="None",
     ):
-        # Todo variable="GithubSpanID:{started_span_id}"
-
         if not tenants:
             tenants = [None]
 
+        variables = {"GithubSpanID": started_span_id}
         deployments = []
         for ten in tenants:
             deployments.append(
-                self._deploy_tenant(project_name, version, environment, tenant=ten)
+                self._deploy_tenant(
+                    project_name, version, environment, tenant=ten, variables=variables
+                )
             )
 
         if wait_for_deployment:
@@ -103,7 +104,7 @@ class Octopus:
 
             if _MAX_WAIT_TIME < datetime.now() - start:
                 logger.warning(
-                    f"Exceeded maximum wait time of {_MAX_WAIT_TIME} "
+                    f"Exceeded maximum wait time of {_MAX_WAIT_TIME.seconds}s "
                     f"for the deployment. Proceeding anyway..."
                 )
                 break
@@ -132,7 +133,9 @@ class Octopus:
 
         return states
 
-    def _deploy_tenant(self, project_name, version, environment, tenant=None):
+    def _deploy_tenant(
+        self, project_name, version, environment, tenant=None, variables=None
+    ):
         logger.debug(
             f"Deploying '{project_name}' version '{version}' to '{environment}'"
         )
@@ -143,6 +146,7 @@ class Octopus:
                 "ProjectId": self.get_project_id(project_name),
                 "ReleaseId": self.get_release_id(project_name, version),
                 "TenantId": tenant,
+                "FormValues": variables,
             },
         )
         return data
