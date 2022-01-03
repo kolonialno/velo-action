@@ -1,28 +1,37 @@
-VERSION_FILE=appversion.txt
-VERSION=`cat $(VERSION_FILE)`
+.PHONY: img_tag tests
 
-.PHONY: version tests
-
-version:
-	gitversion /showvariable SemVer > appversion.txt
-	echo $(VERSION)
+image_tag:
+	$(eval IMAGE_TAG=$(shell git rev-parse --short HEAD))
+	echo ${IMAGE_TAG}
 
 tests:
 	poetry run pytest tests -c pytest.ini -v -m "not docker"
 
-image:
-	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${VERSION} .
+image: image_tag
+	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG} .
 
-push:
-	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${VERSION}
+push: image_tag
+	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG}
 
 run: image
 	docker-compose run --rm velo-action
 
-bash: image
+docker_bash: image
 	docker-compose run --rm --entrypoint bash velo-action
 
-lint: black flake8 pylint yamllint
+velo_render_staging:
+	velo deploy-local-dir --environment staging
+
+velo_deploy_staging:
+	velo deploy-local-dir --environment staging --do-deploy
+
+velo_render_prod:
+	velo deploy-local-dir --environment prod
+
+velo_deploy_prod:
+	velo deploy-local-dir --environment prod --do-deploy
+
+lint: black flake8 pylint yamllint isort markdownlint
 
 black:
 	poetry run black --config=pyproject.toml .
@@ -31,10 +40,13 @@ flake8:
 	poetry run flake8 --config='.flake8' .
 
 mypy:
-	poetry run mypy --config-file=.mypy.ini velo_action
+	poetry run mypy --config-file=.mypy.ini velo_action tests
 
 pylint:
-	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
+	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action tests
+
+isort:
+	poetry run isort --check .
 
 yamllint:
 	yamllint --config-file=.yamllint .

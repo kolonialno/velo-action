@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     image: act-github-actions-velo:latest
     env_file: .env
-    environment:
+    environment: {}
     volumes:
       - ${PWD}:/github/workspace
+    working_dir: /github/workspace
