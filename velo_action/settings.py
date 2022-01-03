@@ -75,7 +75,6 @@ class Settings(BaseSettings):
             return None
         return v
 
-
     @validator("tenants", "deploy_to_environments")
     def check_list_not_str_none(cls, v):
         """

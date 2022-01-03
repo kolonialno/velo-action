@@ -126,7 +126,7 @@ def action(input_args: Settings):
             )
             octo.create_release(
                 version=version,
-                project=input_args.project,
+                project_name=input_args.project,
                 release_note_dict=release_note_dict,
             )
 
@@ -136,15 +136,15 @@ def action(input_args: Settings):
                     f"Deploying project '{input_args.project}' version '{version}' "
                     f"to '{env}'"
                 )
-                octo.deploy_release(
+                rel = octo.deploy_release(
                     version=version,
+                    project_name=input_args.project,
                     environment=env,
-                    project=input_args.project,
                     tenants=input_args.tenants,
-                    progress=input_args.progress,
                     wait_for_deployment=input_args.wait_for_deployment,
                     started_span_id=started_trace,
                 )
+                print(rel)
 
 
 if __name__ == "__main__":
