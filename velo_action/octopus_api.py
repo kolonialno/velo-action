@@ -4,8 +4,8 @@ import logging
 import os
 import traceback
 import urllib.parse
-from time import sleep
 from datetime import datetime, timedelta
+from time import sleep
 
 import requests
 
@@ -51,13 +51,13 @@ class Octopus:
         )
 
     def deploy_release(
-            self,
-            version,
-            project_name,
-            environment,
-            tenants=None,
-            wait_for_deployment=None,
-            started_span_id="None",
+        self,
+        version,
+        project_name,
+        environment,
+        tenants=None,
+        wait_for_deployment=None,
+        started_span_id="None",
     ):
         # Todo variable="GithubSpanID:{started_span_id}"
 
@@ -207,7 +207,10 @@ class Octopus:
             )
 
             packages.append(
-                {"ActionName": (pkg["ActionName"]), "Version": ver["Items"][0]["Version"]}
+                {
+                    "ActionName": (pkg["ActionName"]),
+                    "Version": ver["Items"][0]["Version"],
+                }
             )
 
         return packages
