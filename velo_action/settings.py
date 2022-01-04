@@ -1,10 +1,9 @@
 # type: ignore
-import json
 import os
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Union
 
-from pydantic import BaseSettings, ValidationError, root_validator, validator
+from pydantic import BaseSettings, ValidationError, validator
 
 
 class Settings(BaseSettings):

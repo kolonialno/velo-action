@@ -6,10 +6,10 @@ import logging
 import os
 from functools import lru_cache
 
-from google.cloud import secretmanager, storage
-from google.oauth2 import service_account
 from google.api_core.exceptions import PermissionDenied
 from google.auth.exceptions import DefaultCredentialsError
+from google.cloud import secretmanager, storage
+from google.oauth2 import service_account
 
 logger = logging.getLogger(name="gcp")
 
@@ -34,10 +34,11 @@ class GCP:
                 credentials=self.scoped_credentials
             )
         except DefaultCredentialsError as err:
-            raise RuntimeError("No valid credentials to access Google cloud. "
-                               "Please either specify the INPUT_SERVICE_ACCOUNT_KEY "
-                               "environment or authenticate using 'gcloud auth login'."
-                               ) from err
+            raise RuntimeError(
+                "No valid credentials to access Google cloud. "
+                "Please either specify the INPUT_SERVICE_ACCOUNT_KEY "
+                "environment or authenticate using 'gcloud auth login'."
+            ) from err
 
         return secrets_client
 
@@ -46,8 +47,8 @@ class GCP:
         client = self._get_storage_client()
 
         rel_paths = []
-        for p in path.rglob("*"):
-            rel_paths.append(p)
+        for i in path.rglob("*"):
+            rel_paths.append(i)
 
         bucket = client.get_bucket(dest_bucket_name)
 
@@ -71,11 +72,15 @@ class GCP:
                 }
             ).payload.data.decode("utf-8")
         except PermissionDenied as err:
-            msg = f"Missing permission to access secret '{key}' in project '{project_id}'"
+            msg = (
+                f"Missing permission to access secret '{key}' in project '{project_id}'"
+            )
 
             if not self.scoped_credentials:
-                msg = msg + (". Elevate your permissions with: klipy power elevate --group "
-                             "nube.project.editor.nube-velo-prod")
+                msg = msg + (
+                    ". Elevate your permissions with: klipy power elevate --group "
+                    "nube.project.editor.nube-velo-prod"
+                )
             raise RuntimeError(msg) from err
 
         return secret
@@ -106,8 +111,8 @@ class GCP:
             google_service_account_key_json_str = base64.b64decode(
                 service_account_key.encode("ascii")
             ).decode("ascii")
-        except binascii.Error as e:
-            logger.warning(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {e}")
+        except binascii.Error as err:
+            logger.warning(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {err}")
 
         if google_service_account_key_json_str:
             service_account_info = json.loads(google_service_account_key_json_str)

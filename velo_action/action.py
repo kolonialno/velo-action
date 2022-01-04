@@ -22,9 +22,9 @@ def action(input_args: Settings):
     logging.basicConfig(level=input_args.log_level)
     try:
         started_trace = tracing_helpers.start_trace(input_args.service_account_key)
-    except Exception as e:
+    except Exception as err:
         started_trace = "None"
-        logger.exception("Starting trace failed", exc_info=e)
+        logger.exception("Starting trace failed", exc_info=err)
 
     logger.info("Starting Velo-action")
     os.chdir(input_args.workspace)
@@ -67,14 +67,14 @@ def action(input_args: Settings):
         if not input_args.service_account_key:
             logger.warning("gcp service account key not specified")
 
-        g = gcp.GCP(input_args.service_account_key)
-        octopus_cli_server = g.lookup_data(
+        gcloud = gcp.GCP(input_args.service_account_key)
+        octopus_cli_server = gcloud.lookup_data(
             input_args.octopus_cli_server_secret, VELO_PROJECT_NAME
         )
-        octopus_cli_api_key = g.lookup_data(
+        octopus_cli_api_key = gcloud.lookup_data(
             input_args.octopus_cli_api_key_secret, VELO_PROJECT_NAME
         )
-        velo_artifact_bucket = g.lookup_data(
+        velo_artifact_bucket = gcloud.lookup_data(
             input_args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
         )
 
@@ -84,7 +84,7 @@ def action(input_args: Settings):
 
         if input_args.create_release:
             logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
-            g.upload_from_directory(
+            gcloud.upload_from_directory(
                 deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
             )
 
@@ -104,11 +104,9 @@ def action(input_args: Settings):
                 branch_name is not None
             ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
 
-            commit_info = request_commit_info(commit_id)
             release_note_dict = {
                 "commit_id": commit_id,
                 "branch_name": branch_name,
-                # "commit_message": commit_info["commit"]["message"],
                 "commit_url": f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{commit_id}",
             }
             logger.info(
