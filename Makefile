@@ -13,8 +13,11 @@ image: image_tag
 push: image_tag
 	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG}
 
-run: image
-	docker-compose run --rm velo-action
+run:
+	. ./env.dev && docker-compose run --rm velo-action
+
+dev-run:
+	. ./env.dev && poetry run python velo_action/action.py
 
 docker_bash: image
 	docker-compose run --rm --entrypoint bash velo-action

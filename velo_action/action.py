@@ -27,6 +27,8 @@ def action(input_args: Settings):
         logger.exception("Starting trace failed", exc_info=e)
 
     logger.info("Starting Velo-action")
+    os.chdir(input_args.workspace)
+
     if input_args.service_account_key:
         logger.info(f"service account: {input_args.service_account_key[:15]}")
     logger.info(f"deploy_to_environments: {input_args.deploy_to_environments}")

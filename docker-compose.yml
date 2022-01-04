@@ -7,9 +7,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: act-github-actions-velo:latest
-    env_file: .env
-    environment: {}
+    env_file: env.dev-vars
+    environment:
+      INPUT_WORKSPACE: /github/workspace
     volumes:
-      - ${PWD}:/github/workspace
+      - ${INPUT_WORKSPACE}:/github/workspace:ro
+      - ${CLOUDSDK_CONFIG}:/root/.config/gcloud:ro
     working_dir: /github/workspace
