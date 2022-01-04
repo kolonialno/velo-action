@@ -17,10 +17,10 @@ run:
 	. ./env.dev && poetry run python velo_action/action.py
 
 run_docker:
-	. ./env.dev && docker-compose run --rm velo-action
+	. ./env.dev && docker-compose build && docker-compose run --rm velo-action
 
 run_docker_shell:
-	. ./env.dev && docker-compose run --rm --entrypoint bash velo-action
+	. ./env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
 
 velo_render_staging:
 	velo deploy-local-dir --environment staging
