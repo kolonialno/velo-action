@@ -249,16 +249,3 @@ def _handle_response(response):
             f"{response.request.method} '{response.url}' failed with status "
             f"'{response.status_code}'"
         )
-
-
-if __name__ == "__main__":
-    try:
-        octopus = Octopus(
-            server=os.getenv("INPUT_OCTOPUS_SERVER"),
-            api_key=os.getenv("INPUT_OCTOPUS_API_KEY"),
-        )
-        p = octopus.create_release("0.0.9999", "example-deploy-project")
-        print(p)
-
-    except BaseException as ex:
-        traceback.print_exception(type(ex), ex, ex.__traceback__)
