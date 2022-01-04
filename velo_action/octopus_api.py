@@ -1,8 +1,6 @@
 import functools
 import json
 import logging
-import os
-import traceback
 import urllib.parse
 from datetime import datetime, timedelta
 from time import sleep
