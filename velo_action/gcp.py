@@ -8,6 +8,8 @@ from functools import lru_cache
 
 from google.cloud import secretmanager, storage
 from google.oauth2 import service_account
+from google.api_core.exceptions import PermissionDenied
+from google.auth.exceptions import DefaultCredentialsError
 
 logger = logging.getLogger(name="gcp")
 
@@ -27,9 +29,16 @@ class GCP:
 
     @lru_cache
     def _get_secrets_client(self):
-        secrets_client = secretmanager.SecretManagerServiceClient(
-            credentials=self.scoped_credentials
-        )
+        try:
+            secrets_client = secretmanager.SecretManagerServiceClient(
+                credentials=self.scoped_credentials
+            )
+        except DefaultCredentialsError as err:
+            raise RuntimeError("No valid credentials to access Google cloud. "
+                               "Please either specify the INPUT_SERVICE_ACCOUNT_KEY "
+                               "environment or authenticate using 'gcloud auth login'."
+                               ) from err
+
         return secrets_client
 
     def upload_from_directory(self, path, dest_bucket_name, dest_blob_name):
@@ -55,11 +64,19 @@ class GCP:
         if not version:
             version = self.get_highest_version(key, project_id)
         # noinspection PyTypeChecker
-        secret = secrets_client.access_secret_version(
-            request={
-                "name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"
-            }
-        ).payload.data.decode("utf-8")
+        try:
+            secret = secrets_client.access_secret_version(
+                request={
+                    "name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"
+                }
+            ).payload.data.decode("utf-8")
+        except PermissionDenied as err:
+            msg = f"Missing permission to access secret '{key}' in project '{project_id}'"
+
+            if not self.scoped_credentials:
+                msg = msg + (". Elevate your permissions with: klipy power elevate --group "
+                             "nube.project.editor.nube-velo-prod")
+            raise RuntimeError(msg) from err
 
         return secret
 
