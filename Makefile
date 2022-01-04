@@ -10,17 +10,17 @@ tests:
 image: image_tag
 	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG} .
 
-push: image_tag
+push: image
 	docker push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG}
 
 run:
-	. ./env.dev && docker-compose run --rm velo-action
-
-dev-run:
 	. ./env.dev && poetry run python velo_action/action.py
 
-docker_bash: image
-	docker-compose run --rm --entrypoint bash velo-action
+run_docker:
+	. ./env.dev && docker-compose run --rm velo-action
+
+run_docker_shell:
+	. ./env.dev docker-compose run --rm --entrypoint bash velo-action
 
 velo_render_staging:
 	velo deploy-local-dir --environment staging
