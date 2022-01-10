@@ -56,9 +56,9 @@ def action(input_args: Settings):
                 f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{input_args.workspace}'."
             )
 
-        if not input_args.octopus_cli_server_secret:
+        if not input_args.octopus_server_secret:
             raise ValueError("octopus server secret not specified")
-        if not input_args.octopus_cli_api_key_secret:
+        if not input_args.octopus_api_key_secret:
             raise ValueError("octopus api key secret not specified")
         if not input_args.velo_artifact_bucket_secret:
             raise ValueError("artifact bucket secret not specified")
@@ -68,19 +68,17 @@ def action(input_args: Settings):
             logger.warning("gcp service account key not specified")
 
         gcloud = gcp.GCP(input_args.service_account_key)
-        octopus_cli_server = gcloud.lookup_data(
-            input_args.octopus_cli_server_secret, VELO_PROJECT_NAME
+        octopus_server = gcloud.lookup_data(
+            input_args.octopus_server_secret, VELO_PROJECT_NAME
         )
-        octopus_cli_api_key = gcloud.lookup_data(
-            input_args.octopus_cli_api_key_secret, VELO_PROJECT_NAME
+        octopus_api_key = gcloud.lookup_data(
+            input_args.octopus_api_key_secret, VELO_PROJECT_NAME
         )
         velo_artifact_bucket = gcloud.lookup_data(
             input_args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
         )
 
-        octo = octopus_api.Octopus(
-            server=octopus_cli_server, api_key=octopus_cli_api_key
-        )
+        octo = octopus_api.Octopus(server=octopus_server, api_key=octopus_api_key)
 
         if input_args.create_release:
             logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")

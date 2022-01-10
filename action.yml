@@ -2,23 +2,6 @@ name: Velo
 author: Oda
 description: Velo
 inputs:
-  version:
-    description: |-
-      Version used to generate release and tag image. Defaults to the shortened git hash (`git rev-parse --short HEAD`).
-      NOTE: The length of the Git hash is dynamic. It can be longer if it is not unique.
-    required: false
-    default: None
-  project:
-    description: |-
-      Name of the project in Octopus Deploy to deploy to.
-    required: true
-    default: None
-  workspace:
-    description: |-
-      Path to the folder containing the .deploy folder. Default is the root of the repository.
-      The folder must be in a Git repository to use automated version numbers.
-    required: false
-    default: None
   create_release:
     description: |-
       Create a release on Octopus Deploy and save artifacts in the Velo Artifacts bucket.
@@ -31,6 +14,32 @@ inputs:
       Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
     required: false
     default: None
+  log_level:
+    description: |-
+      Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
+    required: false
+    default: INFO
+  octopus_api_key_secret:
+    description: |-
+      Name of the GCP secret containing the Octopus Deploy api key.
+    required: false
+    default: 'velo_action_octopus_api_key'
+  octopus_server_secret:
+    description: |-
+      Name of the GCP secret containing the Octopus Deploy server url.
+    required: false
+    default: 'velo_action_octopus_server'
+  project:
+    description: |-
+      Name of the project in Octopus Deploy to deploy to.
+    required: true
+    default: None
+  service_account_key:
+    description: |-
+      A Google Service account key to use for authentication. This should be the JSON
+      formatted private key which can be exported from the Cloud Console.
+    required: false
+    default: None
   tenants:
     description: |-
       If specified trigger a deploy to the spesified tenants.
@@ -38,42 +47,28 @@ inputs:
       Will only deploy to environments listed in the 'deploy_to_environments' variable.
     required: false
     default: None
-  progress:
-    description: |-
-      Show progress of the deployment in Octopus Deploy.
-    required: false
-    default: 'False'
-  wait_for_deployment:
-    description: |-
-      Whether to wait synchronously for deployment in Octopus Deploy to finish.
-    required: false
-    default: 'False'
-  service_account_key:
-    description: |-
-      A Google Service account key to use for authentication. This should be the JSON
-      formatted private key which can be exported from the Cloud Console.
-    required: false
-    default: None
-  python_logging_level:
-    description: |-
-      Python Logging level. Can be any of CRITICAL, FATAL, ERROR, WARN, WARNING, INFO, DEBUG.
-    required: false
-    default: INFO
-  octopus_cli_server_secret:
-    description: |-
-      Name of the GCP secret containing the Octopus Deploy server url.
-    required: false
-    default: 'velo_action_octopus_server'
-  octopus_cli_api_key_secret:
-    description: |-
-      Name of the GCP secret containing the Octopus Deploy api key.
-    required: false
-    default: 'velo_action_octopus_api_key'
   velo_artifact_bucket_secret:
     description: |-
       Name of the GCP secret containing the name of the Velo actifact bucket.
     required: false
     default: 'velo_action_artifacts_bucket_name'
+  version:
+    description: |-
+      Version used to generate release and tag image. Defaults to the shortened git hash (`git rev-parse --short HEAD`).
+      NOTE: The length of the Git hash is dynamic. It can be longer if it is not unique.
+    required: false
+    default: None
+  wait_for_deployment:
+    description: |-
+      Whether to wait synchronously for deployment in Octopus Deploy to finish.
+    required: false
+    default: 'False'
+  workspace:
+    description: |-
+      Path to the folder containing the .deploy folder. Default is the root of the repository.
+      The folder must be in a Git repository to use automated version numbers.
+    required: false
+    default: None
 outputs:
   version:
     description: |-
@@ -89,6 +84,6 @@ runs:
     - ${{ inputs.progress }}
     - ${{ inputs.wait_for_deployment }}
     - ${{ inputs.service_account_key }}
-    - ${{ inputs.octopus_cli_server_secret }}
-    - ${{ inputs.octopus_cli_api_key_secret }}
+    - ${{ inputs.octopus_server_secret }}
+    - ${{ inputs.octopus_api_key_secret }}
     - ${{ inputs.velo_artifact_bucket_secret }}
