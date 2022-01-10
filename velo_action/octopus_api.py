@@ -16,6 +16,13 @@ _MAX_WAIT_TIME = timedelta(minutes=3)
 class Octopus:
     """
     Client to interact with the Octopus Deploy server
+
+    The API specification is available at:
+    https://octopusdeploy.prod.nube.tech/swaggerui/index.html
+    The queries need to be executed using the HTTPS protocol. For `curl` that
+    can be done by following redirects using the `-L` parameter.
+
+    Internals of Octopus deploy are documented at: https://octopus.com/docs
     """
 
     def __init__(self, server=None, api_key=None):
