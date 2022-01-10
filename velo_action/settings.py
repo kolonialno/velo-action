@@ -1,9 +1,9 @@
 # type: ignore
-import os
+import logging
 from pathlib import Path
 from typing import List, Union
 
-from pydantic import BaseSettings, ValidationError, validator
+from pydantic import BaseSettings, Field, validator
 
 
 class Settings(BaseSettings):
@@ -19,80 +19,73 @@ class Settings(BaseSettings):
     Otherwise you would get an env var in the container with no value, causing an error.
     """
 
+    # pylint: disable=no-self-argument,no-self-use
+
     class Config:
         env_prefix = "INPUT_"
 
-    version: str = None
-    log_level: str = "INFO"
     create_release: bool = False
-    workspace: str = None  # both INPUT_WORKSPACE and GITHUB_WORKSPACE are valid
-    project: str = None
-    tenants: Union[
-        str, List[str]
-    ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
     deploy_to_environments: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
+    log_level: str = "INFO"
+    octopus_api_key_secret: str = None
+    octopus_server_secret: str = None
+    project: str = None
     service_account_key: str = None
-    octopus_cli_server_secret: str = None
-    octopus_cli_api_key_secret: str = None
+    tenants: Union[
+        str, List[str]
+    ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
     velo_artifact_bucket_secret: str = None
-    progress: bool = True
+    version: str = None
     wait_for_deployment: bool = False
 
-    @validator("deploy_to_environments", "tenants", pre=True)
-    def validate(cls, val):
-        if type(val) is str:
-            return val.split(",")
-        return val
+    # GITHUB_WORKSPACE is set in GitHub workflows
+    workspace: str = Field(None, env=["input_workspace", "github_workspace"])
 
-    @validator("workspace", pre=True)
-    def lookup_from_alternative_envvar(cls, v):
-        alt_lookup = os.getenv("GITHUB_WORKSPACE")
-        if v == "None":
-            v = None
-        if not v and alt_lookup:
-            return alt_lookup
-        elif not v:
-            return "/github/workspace"
-        return v
+    @validator("deploy_to_environments", "tenants", pre=True)
+    def split_list(cls, value):
+        if value in ("None", ""):
+            return []
+        elif isinstance(value, str):
+            return value.split(",")
+        elif isinstance(value, list):
+            return value
+        else:
+            raise ValueError("Needs to be a string with ',' as separator or a list.")
 
     @validator(
         "version",
         "log_level",
         "project",
         "service_account_key",
-        "octopus_cli_server_secret",
-        "octopus_cli_api_key_secret",
+        "octopus_server_secret",
+        "octopus_api_key_secret",
         "velo_artifact_bucket_secret",
+        "workspace",
+        pre=True,
     )
-    def check_not_str_none(cls, v):
+    def normalize_str(cls, value):
         """normalise the input from github actions so we get _real_ none-values"""
-        if v == "None":
+        if value in ("None", ""):
             return None
-        elif v == "":
-            return None
-        return v
+        return value
 
-    @validator("tenants", "deploy_to_environments")
-    def check_list_not_str_none(cls, v):
-        """
-        normalise the input from github actions so we get _real_ none-values
-        the combination of github actions' string input and pydantics parsing of list fields makes this one a bit shitty.
-        """
-        if v == "None":
-            return []
-        elif v == "":
-            return []
-        elif v == ["None"]:
-            return []
-        return v
+    @validator("log_level")
+    def validate_log_level(cls, value):
+        name = logging.getLevelName(value)
+        if isinstance(name, str):
+            raise ValueError()
+        return value
 
     @validator("workspace")
-    def validate_valid_path(cls, v):
-        path = Path(v).expanduser().resolve()
+    def absolute_path(cls, value):
+        if value is None:
+            value = "."
+
+        path = Path(value).expanduser().resolve()
         if not path.exists():
-            raise ValidationError(f"path {path} does not exist")
+            raise ValueError(f"path '{path}' does not exist")
         if not path.is_dir():
-            raise ValidationError(f"path {path} is not a dir")
-        return path
+            raise ValueError(f"path '{path}' is not a directory")
+        return str(path)

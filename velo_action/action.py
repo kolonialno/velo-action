@@ -1,7 +1,10 @@
 # type: ignore
 import logging
 import os
+import sys
 from pathlib import Path
+
+import pydantic
 
 from velo_action import gcp, github, octopus_api, proc_utils, tracing_helpers
 from velo_action.github import request_commit_info
@@ -134,5 +137,9 @@ def action(input_args: Settings):
 
 
 if __name__ == "__main__":
-    s = Settings()
+    try:
+        s = Settings()
+    except pydantic.ValidationError as err:
+        logger.error(err)
+        sys.exit(1)
     action(s)
