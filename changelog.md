@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.x (2021-12-22)
+## v0.3.0 (2021-12-22)
 
 - Remove generation of semantic version numbers (SemVer). Default is now the shortened git
   hash (`git rev-parse --short HEAD`). Removes although the gitversion dependency. Please see
