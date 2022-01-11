@@ -11,6 +11,6 @@ services:
     environment:
       INPUT_WORKSPACE: /github/workspace
     volumes:
-      - ${INPUT_WORKSPACE}:/github/workspace:ro
+      - ${GITHUB_WORKSPACE}:/github/workspace:ro
       - ${CLOUDSDK_CONFIG}:/root/.config/gcloud:ro
     working_dir: /github/workspace

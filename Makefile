@@ -56,3 +56,6 @@ yamllint:
 
 markdownlint:
 	markdownlint --config=.markdownlint.yaml .
+
+install:
+	poetry install
