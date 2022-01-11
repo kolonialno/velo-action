@@ -1,4 +1,5 @@
 import os.path
+from functools import lru_cache
 
 import yaml
 
@@ -14,6 +15,7 @@ def fill_default_envvars(monkeypatch):
         monkeypatch.setenv("INPUT_" + var.upper(), default)
 
 
+@lru_cache
 def read_github_action_inputs_defaults() -> dict:
     """
     Get dict of defaults from action.yml

@@ -22,8 +22,8 @@ def init_tracer(service_acc_key: str, service="velo-action"):
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
     if service_acc_key:
-        g = gcp.GCP(service_acc_key)
-        password = g.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
+        gcloud = gcp.GCP(service_acc_key)
+        password = gcloud.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
     if not password:

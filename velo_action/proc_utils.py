@@ -68,7 +68,6 @@ def execute_process(
     forward_stdout=False,
     log_stderr=True,
     cwd=None,
-    ansi_escape_loglines=True,
 ):
     if not env_vars:
         env_vars = {}
@@ -84,6 +83,7 @@ def execute_process(
         proc_stdout = sys.stdout
     else:
         proc_stdout = subprocess.PIPE
+    # pylint: disable=consider-using-with
     process = subprocess.Popen(
         cmd,
         shell=True,
