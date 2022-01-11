@@ -2,7 +2,7 @@
 
 ## Create a new release
 
-A release of Velo-action consists of to components
+A release of Velo-action consists of two components
 
 - velo-action docker image
 - a GitHub release
@@ -11,7 +11,7 @@ The version of the action is determined by the Github release tag. It is used wh
 referencing the action in a workflow yaml. The container image is tagged
 using a shortened commit hash.
 
-To create a new release of velo-action follow the steps below
+To create a new release of velo-action follow the steps below:
 
 1. These steps must be run from the default branch, which is `main`. Make sure
    you committed and pushed your changes before proceeding.

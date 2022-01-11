@@ -75,7 +75,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:2269da4
+  image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:e67e024
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
