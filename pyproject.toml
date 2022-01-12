@@ -27,7 +27,7 @@ mypy = "^0.921"
 pylint = "^2.9"
 pytest-mock = "^3.6"
 docker-image-size-limit = "^0.4.1"
-types-requests = "^2.26.0"
+types-requests = "^2.27.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
