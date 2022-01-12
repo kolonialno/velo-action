@@ -43,9 +43,7 @@ diverge from the release process:
  2. Build and push the image as normal
  3. Reference the image tag in the [action.yml](../action.yml)
  4. Push the changes to your feature branch
- 5. Change the GitHub workflow that should use pre-release velo-action to reference
-    your feature branch:
-    
-    ```shell
-    uses: kolonialno/velo-action@my/new-feature
-    ```
+    1. Change the GitHub workflow that should use pre-release velo-action to reference
+       your feature branch:
+
+       uses: kolonialno/velo-action@my/new-feature
