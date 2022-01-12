@@ -45,5 +45,6 @@ diverge from the release process:
  4. Push the changes to your feature branch
  5. Change the GitHub workflow that should use pre-release velo-action to reference
     your feature branch:
-    
-        uses: kolonialno/velo-action@my/new-feature
+    ```shell
+    uses: kolonialno/velo-action@my/new-feature
+    ```
