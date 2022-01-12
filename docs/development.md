@@ -1,9 +1,10 @@
-## velo-action Development
+# velo-action Development
 
 Velo-action is a small Python project that mainly runs within GitHub workflows from
 a container. For development and testing it can be executed locally.
 
 Prerequisites
+
 * Python 3.9+
 * [poetry](https://python-poetry.org/docs/)
 
@@ -22,7 +23,7 @@ To get the same results as the productive action, you need access to the secrets
 in the `nube-velo-prod` GCP project. This can be easily achieved by elevating your
 existing permissions using [klipy](https://github.com/kolonialno/klipy).
 
-```
+```shell
 klipy power elevate --group nube.project.editor.nube-velo-prod
 ```
 

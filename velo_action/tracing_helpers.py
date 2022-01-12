@@ -23,7 +23,9 @@ def init_tracer(service_acc_key: str, service="velo-action"):
     )
     if service_acc_key:
         gcloud = gcp.GCP(service_acc_key)
-        password = gcloud.lookup_data("tempo-basic-auth-password", "nube-observability-prod")
+        password = gcloud.lookup_data(
+            "tempo-basic-auth-password", "nube-observability-prod"
+        )
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
     if not password:
