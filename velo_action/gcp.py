@@ -78,7 +78,7 @@ class GCP:
 
             if not self.scoped_credentials:
                 msg = msg + (
-                    ". Elevate your permissions with: klipy power elevate --group "
+                    ". Elevate your permissions with:\nklipy power elevate --group "
                     "nube.project.editor.nube-velo-prod"
                 )
             raise RuntimeError(msg) from err
