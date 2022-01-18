@@ -34,7 +34,7 @@ def mock_client_requests(registered_responses: list = None):
                         responses.pop(i)
                         return req[2]
                 raise RuntimeError(
-                    f"No request found for '{method}' '{path}'. \""
+                    f"No request found for '{method}' '{path}'. "
                     f'Add it to @mock_client_requests([]):\n("{method}", "{path}", {{}}),'
                 )
 
