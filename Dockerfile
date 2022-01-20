@@ -1,7 +1,7 @@
 # A Github Action Dockerfile has some requirements that needs to be followed
 # https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions
 # TLDR; no WORKDIR, must run as USER root
-FROM python:3.9-slim as python
+FROM python:3.10.2-slim as python
 
 ARG OCTOPUSCLI_VERSION='7.4.3437'
 ARG POETRY_VERSION='1.1.6'
