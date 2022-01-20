@@ -26,7 +26,7 @@ from velo_action.octopus.test_decorators import mock_client_requests
 )
 def prepared_release():
     client = OctopusClient()
-    rel = Release.by_project_and_version(
+    rel = Release.from_project_and_version(
         project_name="ProjectName", version="v1.2.3", client=client
     )
     return rel
@@ -119,7 +119,7 @@ def test_create_release_with_packages(client):
     ]
 )
 def test_by_project_name_and_version(client):
-    release = Release.by_project_and_version(
+    release = Release.from_project_and_version(
         project_name="ProjectName", version="v1.2.3", client=client
     )
 

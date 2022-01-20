@@ -6,8 +6,10 @@ from pathlib import Path
 
 import pydantic
 
-from velo_action import gcp, github, octopus, proc_utils, tracing_helpers
+from velo_action import gcp, github, proc_utils, tracing_helpers
 from velo_action.octopus.client import OctopusClient
+from velo_action.octopus.deployment import Deployment
+from velo_action.octopus.release import Release
 from velo_action.settings import Settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -116,7 +118,7 @@ def action(input_args: Settings):
             f"Creating a release for project '{input_args.project}' with version '{version}'"
         )
 
-        release = octopus.release.Release(client=octo)
+        release = Release(client=octo)
         release.create(
             project_name=input_args.project, version=version, notes=release_note_dict
         )
@@ -126,20 +128,29 @@ def action(input_args: Settings):
         if trace_id:
             deploy_vars["GithubSpanId"] = trace_id
 
-        for env in input_args.deploy_to_environments:
-            logger.info(
-                f"Deploying project '{input_args.project}' version '{version}' to '{env}'"
-            )
+        tenants = input_args.tenants or [None]
 
-            deploy = octopus.deployment.Deployment(
-                project_name=input_args.project, version=input_args.version
-            )
-            deploy.create(
-                env_name=env,
-                tenants=input_args.tenants,
-                wait_to_complete=input_args.wait_for_deployment,
-                variables=deploy_vars,
-            )
+        for env in input_args.deploy_to_environments:
+            for ten in tenants:
+                log = f"Deploying project '{input_args.project}' version '{version}' to '{env}' "
+                if ten:
+                    log += f"for tenant '{ten}'"
+                else:
+                    log += "without tenant"
+                logger.info(log)
+
+                deploy = Deployment(
+                    project_name=input_args.project,
+                    version=input_args.version,
+                    client=octo,
+                )
+
+                deploy.create(
+                    env_name=env,
+                    tenant=ten,
+                    wait_to_complete=input_args.wait_for_deployment,
+                    variables=deploy_vars,
+                )
     logger.info("Done")
 
 

@@ -4,7 +4,6 @@ import logging
 from velo_action.octopus.client import OctopusClient
 
 _RELEASE_REGEX = r"^(|\+.*)$"
-
 logger = logging.getLogger(name="octopus")
 
 
@@ -15,13 +14,13 @@ class Release:
         self._client: OctopusClient = client
 
     @classmethod
-    def by_project_and_version(
+    def from_project_and_version(
         cls, version, client: OctopusClient, project_name=None, project_id=None
     ):
         if not project_id:
             project_id = client.lookup_project_id(project_name)
 
-        rel = Release(client=client)
+        rel = cls(client=client)
         rel._octo_object = client.get(f"api/projects/{project_id}/releases/{version}")
         return rel
 

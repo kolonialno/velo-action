@@ -1,7 +1,19 @@
 import unittest.mock
 
+import pytest
+
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.test_decorators import mock_client_requests
+
+
+@pytest.fixture
+@mock_client_requests(
+    [
+        ("head", "api", True),
+    ]
+)
+def octo():
+    return OctopusClient()
 
 
 @unittest.mock.patch(target="requests.request")
@@ -22,35 +34,56 @@ def test_init(request_mock: unittest.mock.Mock):
 
 @mock_client_requests(
     [
-        ("head", "api", None),
         ("get", "some/path", {"Text": "Yohoo"}),
     ]
 )
-def test_get():
-    client = OctopusClient()
-    response = client.get("some/path")
+def test_get(octo):
+    response = octo.get("some/path")
     assert response == {"Text": "Yohoo"}
 
 
 @mock_client_requests(
     [
-        ("head", "api", None),
         ("post", "some/path", {"Text": "Ok"}),
     ]
 )
-def test_post():
-    client = OctopusClient()
-    response = client.post("some/path", data="")
-    assert response == {"Text": "Ok"}
+def test_post(octo):
+    assert octo.post("some/path", data="") == {"Text": "Ok"}
 
 
 @mock_client_requests(
     [
-        ("head", "api", None),
-        ("get", "api/projects/Project-1", {"Id": "project-1"}),
+        ("get", "api/environments/all", [{"Name": "DevEnv", "Id": "env-1"}]),
     ]
 )
-def test_lookup_project_id():
-    client = OctopusClient()
-    pid = client.lookup_project_id("Project-1")
-    assert pid == "project-1"
+def test_lookup_environment_id(octo):
+    assert octo.lookup_environment_id("DevEnv") == "env-1"
+    # Second call without mock ensures working cache
+    assert octo.lookup_environment_id("DevEnv") == "env-1"
+
+
+@mock_client_requests(
+    [
+        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
+    ]
+)
+def test_lookup_project_id(octo):
+    assert octo.lookup_project_id("ProjectName") == "project-1"
+    # Second call without mock ensures working cache
+    assert octo.lookup_project_id("ProjectName") == "project-1"
+
+
+@mock_client_requests(
+    [
+        ("get", "api/tenants/all", [{"Name": "TenantName", "Id": "tenant-1"}]),
+    ]
+)
+def test_lookup_tenant_id(octo):
+    assert octo.lookup_tenant_id("TenantName") == "tenant-1"
+    # Second call without mock ensures working cache
+    assert octo.lookup_tenant_id("TenantName") == "tenant-1"
+
+
+def test_lookup_tenant_id_without_name(octo):
+    assert octo.lookup_tenant_id(None) == ""
+    assert octo.lookup_tenant_id("") == ""

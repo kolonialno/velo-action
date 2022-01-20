@@ -4,6 +4,19 @@ from unittest.mock import patch
 from velo_action.octopus.client import OctopusClient
 
 
+class Request:
+    method: str
+    path: str
+    response: object
+    payload: object
+
+    def __init__(self, method, path, response=None, payload=None):
+        self.method = method
+        self.path = path
+        self.response = response
+        self.payload = payload
+
+
 def mock_client_requests(registered_responses: list = None):
     """
     Decorator for mocking requests against the Octopus server
@@ -27,15 +40,24 @@ def mock_client_requests(registered_responses: list = None):
                 # Local copy to prevent side effects
                 responses = list(registered_responses)
 
-            def perform_request(_self, method, path, _data=None):
+            def perform_request(_self, method, path, data=None):
                 nonlocal responses
                 for i, req in enumerate(responses):
-                    if req[0] == method and req[1] == path:
-                        responses.pop(i)
-                        return req[2]
+                    if not isinstance(req, Request):
+                        req = Request(req[0], req[1], response=req[2])
+
+                    if method != req.method or path != req.path:
+                        continue
+
+                    if req.payload:
+                        assert data == req.payload
+
+                    responses.pop(i)
+                    return req.response
                 raise RuntimeError(
                     f"No request found for '{method}' '{path}'. "
-                    f'Add it to @mock_client_requests([]):\n("{method}", "{path}", {{}}),'
+                    f"Add it to @mock_client_requests([]):\n"
+                    f'Request("{method}", "{path}", payload={data}, response={{}}),'
                 )
 
             with patch.object(
