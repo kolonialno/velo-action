@@ -98,7 +98,7 @@ class OctopusClient:
                 return True
             return response.json()
 
-        elif response.status_code in [400, 404]:
+        elif 400 <= response.status_code < 600:
             if not response.content:
                 return False
             data = response.json()

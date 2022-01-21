@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import Mock
 
 import pytest
@@ -205,6 +206,28 @@ def test_create_with_variables(monkeypatch, deployment1):
                                     "IsCompleted": False,
                                     "HasWarningsOrErrors": False,
                                     "ErrorMessage": None,
+                                    "State": "Executing",
+                                }
+                            ]
+                        },
+                    }
+                ],
+            },
+        ),
+        Request(
+            "get",
+            "api/projects/project-1/progression",
+            response={
+                "Releases": [
+                    {
+                        "Release": {"Id": "release-1"},
+                        "Deployments": {
+                            "env-1": [
+                                {
+                                    "DeploymentId": "deployment-1",
+                                    "IsCompleted": True,
+                                    "HasWarningsOrErrors": False,
+                                    "ErrorMessage": None,
                                     "State": "Success",
                                 }
                             ]
@@ -219,4 +242,6 @@ def test_create_with_wait(monkeypatch, deployment1):
     monkeypatch.setattr(
         client.OctopusClient, "lookup_environment_id", Mock(return_value="env-1")
     )
+    # pylint: disable=protected-access
+    deployment._MAX_WAIT_TIME = datetime.timedelta(seconds=0.1)
     deployment1.create("dev-env", wait_to_complete=True)

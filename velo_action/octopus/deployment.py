@@ -62,7 +62,8 @@ class Deployment:
 
         if variables:
             form_variables = {}
-            mapping = self._release.form_variable_id_mapping()
+            mapping = self._variable_name_to_id_mapping(environment_id)
+            # mapping = self._release.form_variable_id_mapping()
             for name, value in variables.items():
                 if name in mapping:
                     form_variables[mapping[name]] = value
@@ -80,19 +81,6 @@ class Deployment:
                 environment_id=environment_id, tenant_id=tenant_id
             )
 
-        # Data involved in creating a deployment
-        #
-        # * ProjectID
-        # * Version
-        # * EnvironmentID
-        # * VariableSet (ideally version form release)
-        # * TenantID
-        # https://octopusdeploy.prod.nube.tech/api/Spaces-1/projects/Projects-123
-        # https://octopusdeploy.prod.nube.tech/api/Spaces-1/releases/Releases-7149
-        # https://octopusdeploy.prod.nube.tech/api/Spaces-1/variables/variableset-Projects-123
-        # https://octopusdeploy.prod.nube.tech/api/Spaces-1/releases/Releases-7149/snapshot-variables
-        # https://octopusdeploy.prod.nube.tech/api/Spaces-1/variables/variableset-Projects-123-s-27-93NYL
-
     def _wait_for_completion(self, environment_id, tenant_id):
         start = datetime.now()
 
@@ -103,10 +91,11 @@ class Deployment:
             if state.completed:
                 logger.info("Deployment completed")
                 break
-            if start + _MAX_WAIT_TIME > datetime.now():
+            if start + _MAX_WAIT_TIME <= datetime.now():
                 logger.info(f"Wait time {_MAX_WAIT_TIME} exceeded. Proceeding anyway")
                 break
-            sleep(secs=1)
+            logger.info("Sleep")
+            sleep(1)
 
         return state.state == "Success"
 
@@ -127,9 +116,23 @@ class Deployment:
                 if tenant_id and dep["TenantId"] != tenant_id:
                     continue
 
+                logger.debug(dep)
                 return DeploymentState(
                     completed=dep["IsCompleted"],
                     error=dep["ErrorMessage"],
                     has_warning=dep["HasWarningsOrErrors"],
                     state=dep["State"],
                 )
+
+    def _variable_name_to_id_mapping(self, environment_id):
+        """
+        Returns mapping of form variable names to their Id
+
+        The mapping does also exist in the VariableSet (api/variables/variableset-*)
+        but that endpoint requires additional permissions.
+        """
+        preview = self._client.get(
+            f"api/releases/{self.release_id()}/deployments/preview/{environment_id}")
+        form_elements = preview["Form"]["Elements"]
+
+        return {e["Control"]["Name"]: e["Name"] for e in form_elements}
