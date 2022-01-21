@@ -45,6 +45,9 @@ class Deployment:
         Deploy the current Release a specific env with an optional tenant
         """
 
+        if not self._release:
+            raise RuntimeError("Cannot create deployment. Release was not specified.")
+
         environment_id = self._client.lookup_environment_id(env_name)
         tenant_id = self._client.lookup_tenant_id(tenant)
 

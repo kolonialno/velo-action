@@ -126,7 +126,7 @@ def action(input_args: Settings):
     if input_args.deploy_to_environments:
         deploy_vars = {}
         if trace_id:
-            deploy_vars["GithubSpanId"] = trace_id
+            deploy_vars["GithubSpanID"] = trace_id
 
         tenants = input_args.tenants or [None]
 
@@ -141,7 +141,7 @@ def action(input_args: Settings):
 
                 deploy = Deployment(
                     project_name=input_args.project,
-                    version=input_args.version,
+                    version=version,
                     client=octo,
                 )
 
