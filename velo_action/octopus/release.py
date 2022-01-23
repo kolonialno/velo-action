@@ -43,16 +43,16 @@ class Release:
         else:
             packages = None
 
-        obj = self._client.post(
-            "api/releases",
-            data={
-                "ProjectId": project_id,
-                "Version": version,
-                "ReleaseNotes": json.dumps(notes),
-                "SelectedPackages": packages,
-            },
-        )
-        self._octo_object = obj
+        payload = {
+            "ProjectId": project_id,
+            "Version": version,
+            "ReleaseNotes": json.dumps(notes),
+        }
+
+        if packages:
+            payload["SelectedPackages"] = packages
+
+        self._octo_object = self._client.post("api/releases", data=payload)
 
     def form_variable_id_mapping(self) -> dict:
         """

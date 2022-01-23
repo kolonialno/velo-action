@@ -3,13 +3,13 @@ import unittest.mock
 import pytest
 
 from velo_action.octopus.client import OctopusClient
-from velo_action.octopus.test_decorators import mock_client_requests
+from velo_action.octopus.test_decorators import Request, mock_client_requests
 
 
 @pytest.fixture
 @mock_client_requests(
     [
-        ("head", "api", True),
+        Request("head", "api", response=True),
     ]
 )
 def octo():
@@ -34,7 +34,7 @@ def test_init(request_mock: unittest.mock.Mock):
 
 @mock_client_requests(
     [
-        ("get", "some/path", {"Text": "Yohoo"}),
+        Request("get", "some/path", response={"Text": "Yohoo"}),
     ]
 )
 def test_get(octo):
@@ -44,7 +44,7 @@ def test_get(octo):
 
 @mock_client_requests(
     [
-        ("post", "some/path", {"Text": "Ok"}),
+        Request("post", "some/path", response={"Text": "Ok"}),
     ]
 )
 def test_post(octo):
@@ -53,7 +53,9 @@ def test_post(octo):
 
 @mock_client_requests(
     [
-        ("get", "api/environments/all", [{"Name": "DevEnv", "Id": "env-1"}]),
+        Request(
+            "get", "api/environments/all", response=[{"Name": "DevEnv", "Id": "env-1"}]
+        ),
     ]
 )
 def test_lookup_environment_id(octo):
@@ -64,7 +66,7 @@ def test_lookup_environment_id(octo):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
     ]
 )
 def test_lookup_project_id(octo):
@@ -75,7 +77,11 @@ def test_lookup_project_id(octo):
 
 @mock_client_requests(
     [
-        ("get", "api/tenants/all", [{"Name": "TenantName", "Id": "tenant-1"}]),
+        Request(
+            "get",
+            "api/tenants/all",
+            response=[{"Name": "TenantName", "Id": "tenant-1"}],
+        ),
     ]
 )
 def test_lookup_tenant_id(octo):

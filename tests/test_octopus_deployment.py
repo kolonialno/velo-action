@@ -10,7 +10,7 @@ from velo_action.octopus.test_decorators import Request, mock_client_requests
 @pytest.fixture
 @mock_client_requests(
     [
-        ("head", "api", True),
+        Request("head", "api", response=True),
     ]
 )
 def octo() -> client.OctopusClient:
@@ -56,11 +56,11 @@ def test_init(octo):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        (
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request(
             "get",
             "api/projects/project-1/releases/v1",
-            {"Id": "release-1", "ProjectId": "project-1", "Version": "v1"},
+            response={"Id": "release-1", "ProjectId": "project-1", "Version": "v1"},
         ),
     ]
 )

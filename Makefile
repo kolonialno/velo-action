@@ -49,7 +49,7 @@ pylint:
 	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action tests
 
 isort:
-	poetry run isort --check .
+	poetry run isort .
 
 yamllint:
 	yamllint --config-file=.yamllint .

@@ -2,18 +2,18 @@ import pytest
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import Release
-from velo_action.octopus.test_decorators import mock_client_requests
+from velo_action.octopus.test_decorators import Request, mock_client_requests
 
 
 @pytest.fixture
 @mock_client_requests(
     [
-        ("head", "api", True),
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        (
+        Request("head", "api", response=True),
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request(
             "get",
             "api/projects/project-1/releases/v1.2.3",
-            {
+            response={
                 "Id": "release-1",
                 "ProjectId": "project-1",
                 "Version": "v1.2.3",
@@ -35,7 +35,7 @@ def prepared_release():
 @pytest.fixture
 @mock_client_requests(
     [
-        ("head", "api", True),
+        Request("head", "api", response=True),
     ]
 )
 def client():
@@ -44,12 +44,17 @@ def client():
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        ("head", "api/projects/project-1/releases/v1.2.3", False),
-        (
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1.2.3", response=False),
+        Request(
             "post",
             "api/releases",
-            {
+            payload={
+                "ProjectId": "project-1",
+                "ReleaseNotes": '"Notes"',  # Json encoded
+                "Version": "v1.2.3",
+            },
+            response={
                 "Id": "release-1",
                 "ProjectId": "project-1",
                 "Version": "v1.2.3",
@@ -68,12 +73,12 @@ def test_create_release_without_packages(client):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/Project-1", {"Id": "project-1"}),
-        ("head", "api/projects/project-1/releases/v1.2.3", False),
-        (
+        Request("get", "api/projects/Project-1", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1.2.3", response=False),
+        Request(
             "get",
             "api/projects/project-1/deploymentprocesses/template",
-            {
+            response={
                 "Packages": [
                     {
                         "FeedId": "feed-1",
@@ -83,15 +88,21 @@ def test_create_release_without_packages(client):
                 ]
             },
         ),
-        (
+        Request(
             "get",
             r"api/feeds/feed-1/packages/versions?packageId=package-1&preReleaseTag=^(|\+.*)$&take=1",
-            {"Items": [{"Version": "v0.1.9"}]},
+            response={"Items": [{"Version": "v0.1.9"}]},
         ),
-        (
+        Request(
             "post",
             "api/releases",
-            {
+            payload={
+                "ProjectId": "project-1",
+                "ReleaseNotes": '"Notes"',  # Json encoded
+                "SelectedPackages": [{"ActionName": "AnAction", "Version": "v0.1.9"}],
+                "Version": "v1.2.3",
+            },
+            response={
                 "Id": "release-1",
                 "ProjectId": "project-1",
                 "Version": "v1.2.3",
@@ -110,11 +121,11 @@ def test_create_release_with_packages(client):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        (
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request(
             "get",
             "api/projects/project-1/releases/v1.2.3",
-            {"Id": "release-1", "ProjectId": "project-1", "Version": "v1.2.3"},
+            response={"Id": "release-1", "ProjectId": "project-1", "Version": "v1.2.3"},
         ),
     ]
 )
@@ -130,10 +141,10 @@ def test_by_project_name_and_version(client):
 
 @mock_client_requests(
     [
-        (
+        Request(
             "get",
             "api/variables/variableset-project-1-s-1",
-            {
+            response={
                 "Variables": [
                     {
                         "Id": "abcdef0123456789",
@@ -151,10 +162,10 @@ def test_form_variables(prepared_release):
 
 @mock_client_requests(
     [
-        (
+        Request(
             "get",
             "api/projects/project-1/deploymentprocesses/template",
-            {
+            response={
                 "Packages": [
                     {
                         "FeedId": "feed-1",
@@ -164,10 +175,10 @@ def test_form_variables(prepared_release):
                 ]
             },
         ),
-        (
+        Request(
             "get",
             r"api/feeds/feed-1/packages/versions?packageId=package-1&preReleaseTag=^(|\+.*)$&take=1",
-            {"Items": [{"Version": "v0.1.9"}]},
+            response={"Items": [{"Version": "v0.1.9"}]},
         ),
     ]
 )
@@ -180,8 +191,8 @@ def test_determine_latest_deploy_packages(prepared_release):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        ("head", "api/projects/project-1/releases/v1", False),
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1", response=False),
     ]
 )
 def test_exists_not(client):
@@ -190,8 +201,8 @@ def test_exists_not(client):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        ("head", "api/projects/project-1/releases/v1", True),
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1", response=True),
     ]
 )
 def test_exists(client):
@@ -200,8 +211,8 @@ def test_exists(client):
 
 @mock_client_requests(
     [
-        ("get", "api/projects/ProjectName", {"Id": "project-1"}),
-        ("head", "api/projects/project-1/releases/v1.2.3", True),
+        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1.2.3", response=True),
     ]
 )
 def test_skip_create_existing_release(client):
