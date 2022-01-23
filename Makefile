@@ -34,7 +34,7 @@ velo_render_prod:
 velo_deploy_prod:
 	velo deploy-local-dir --environment prod --do-deploy
 
-lint: black flake8 pylint yamllint isort markdownlint
+lint: black flake8 mypy pylint yamllint isort markdownlint
 
 black:
 	poetry run black --config=pyproject.toml .

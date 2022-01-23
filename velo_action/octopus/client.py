@@ -51,7 +51,7 @@ class OctopusClient:
         if not self._cached_environment_ids:
             data = self.get("api/environments/all")
             self._cached_environment_ids = {e["Name"]: e["Id"] for e in data}
-        return self._cached_environment_ids.get(env_name)
+        return self._cached_environment_ids.get(env_name, "")
 
     @lru_cache
     def lookup_project_id(self, project_name) -> str:
@@ -66,7 +66,7 @@ class OctopusClient:
         if not self._cached_tenant_ids:
             data = self.get("api/tenants/all")
             self._cached_tenant_ids = {e["Name"]: e["Id"] for e in data}
-        return self._cached_tenant_ids.get(tenant_name)
+        return self._cached_tenant_ids.get(tenant_name, "")
 
     def _request(self, method, path, data=None):
         url = urllib.parse.urljoin(self._baseurl, path)

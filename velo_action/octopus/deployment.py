@@ -1,7 +1,7 @@
-import datetime
 import logging
 from datetime import datetime, timedelta
 from time import sleep
+import typing
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment_state import DeploymentState
@@ -12,7 +12,7 @@ logger = logging.getLogger(name="octopus")
 
 
 class Deployment:
-    _octo_object = {}
+    _octo_object: typing.Any = {}
     _release: Release = None
 
     def __init__(self, project_name=None, version=None, client=None):
