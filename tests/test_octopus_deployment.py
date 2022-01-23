@@ -164,7 +164,19 @@ def test_create_with_tenant(monkeypatch, deployment1):
                 "ReleaseId": "release-1",
                 "ProjectId": "project-1",
             },
-        )
+        ),
+        Request(
+            "get",
+            "api/releases/release-1/deployments/preview/env-1",
+            payload=None,
+            response={
+                "Form": {
+                    "Elements": [
+                        {"Name": "12345-12345", "Control": {"Name": "SomeVariable"}}
+                    ]
+                }
+            },
+        ),
     ]
 )
 def test_create_with_variables(monkeypatch, deployment1):

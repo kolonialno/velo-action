@@ -132,7 +132,8 @@ class Deployment:
         but that endpoint requires additional permissions.
         """
         preview = self._client.get(
-            f"api/releases/{self.release_id()}/deployments/preview/{environment_id}")
+            f"api/releases/{self.release_id()}/deployments/preview/{environment_id}"
+        )
         form_elements = preview["Form"]["Elements"]
 
         return {e["Control"]["Name"]: e["Name"] for e in form_elements}
