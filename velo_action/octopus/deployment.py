@@ -1,13 +1,13 @@
 import logging
+import typing
 from datetime import datetime, timedelta
 from time import sleep
-import typing
 
 from velo_action.octopus.client import OctopusClient
-from velo_action.octopus.deployment_state import DeploymentState
 from velo_action.octopus.release import Release
 
-_MAX_WAIT_TIME = timedelta(seconds=20)
+_MAX_WAIT_TIME = timedelta(minutes=10)
+_OCTOPUS_STATE_SUCCESS = "Success"
 logger = logging.getLogger(name="octopus")
 
 
@@ -63,7 +63,6 @@ class Deployment:
         if variables:
             form_variables = {}
             mapping = self._variable_name_to_id_mapping(environment_id)
-            # mapping = self._release.form_variable_id_mapping()
             for name, value in variables.items():
                 if name in mapping:
                     form_variables[mapping[name]] = value
@@ -81,27 +80,8 @@ class Deployment:
                 environment_id=environment_id, tenant_id=tenant_id
             )
 
-    def _wait_for_completion(self, environment_id, tenant_id):
-        start = datetime.now()
-
-        while True:
-            state = self.get_deployment_state(
-                environment_id=environment_id, tenant_id=tenant_id
-            )
-            if state.completed:
-                logger.info("Deployment completed")
-                break
-            if start + _MAX_WAIT_TIME <= datetime.now():
-                logger.info(f"Wait time {_MAX_WAIT_TIME} exceeded. Proceeding anyway")
-                break
-            logger.info("Sleep")
-            sleep(1)
-
-        return state.state == "Success"
-
-    def get_deployment_state(self, environment_id, tenant_id) -> DeploymentState:
+    def get_deployment_state(self, environment_id, tenant_id) -> str:
         progression = self._client.get(f"api/projects/{self.project_id()}/progression")
-
         for rel in progression["Releases"]:
             if rel["Release"]["Id"] != self.release_id():
                 continue
@@ -116,13 +96,29 @@ class Deployment:
                 if tenant_id and dep["TenantId"] != tenant_id:
                     continue
 
-                logger.debug(dep)
-                return DeploymentState(
-                    completed=dep["IsCompleted"],
-                    error=dep["ErrorMessage"],
-                    has_warning=dep["HasWarningsOrErrors"],
-                    state=dep["State"],
+                return dep["State"]
+
+        return ""
+
+    def _wait_for_completion(self, environment_id, tenant_id):
+        logger.info(f"Waiting up to {_MAX_WAIT_TIME} for completion...")
+        start = datetime.now()
+
+        while True:
+            state = self.get_deployment_state(
+                environment_id=environment_id, tenant_id=tenant_id
+            )
+            if state == _OCTOPUS_STATE_SUCCESS:
+                logger.info("Deployment completed")
+                break
+            if start + _MAX_WAIT_TIME <= datetime.now():
+                logger.warning(
+                    f"Wait time {_MAX_WAIT_TIME} exceeded. Proceeding anyway"
                 )
+                break
+            sleep(1)
+
+        return state == _OCTOPUS_STATE_SUCCESS
 
     def _variable_name_to_id_mapping(self, environment_id):
         """
