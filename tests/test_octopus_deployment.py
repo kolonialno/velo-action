@@ -256,4 +256,4 @@ def test_create_with_wait(monkeypatch, deployment1):
     )
     # pylint: disable=protected-access
     deployment._MAX_WAIT_TIME = datetime.timedelta(seconds=0.1)
-    deployment1.create("dev-env", wait_to_complete=True)
+    deployment1.create("dev-env", wait_for_success=True)

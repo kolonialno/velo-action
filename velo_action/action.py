@@ -148,7 +148,7 @@ def action(input_args: Settings):
                 deploy.create(
                     env_name=env,
                     tenant=ten,
-                    wait_to_complete=input_args.wait_for_deployment,
+                    wait_for_success=input_args.wait_for_deployment,
                     variables=deploy_vars,
                 )
     logger.info("Done")
