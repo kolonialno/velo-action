@@ -10,8 +10,8 @@ Prerequisites
 
 ## Local execution
 
-[The Makefile](../Makefile) covers the most common commands you need. For testing
-you should checkout the
+[The Makefile](../Makefile) covers the most common commands you need. For testing,
+you should check out the
 [example-deploy-project](https://github.com/kolonialno/example-deploy-project/)
 to have a working deployable application.
 

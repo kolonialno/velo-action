@@ -61,9 +61,10 @@ inputs:
   wait_for_success_seconds:
     description:
       Waits the given number of seconds until the deployment is completed. The step fails
-      If it does not complete in the given period or if the deployment has an error.
+      If it does not complete in the given period or if the deployment has an error. A value
+      of 0 will not verify the success or wait for completion.
     required: false
-    default: '600'
+    default: '0'
   wait_for_deployment:
     deprecationMessage: Please use 'wait_for_success_seconds' instead.
     description: |-

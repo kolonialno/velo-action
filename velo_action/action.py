@@ -32,7 +32,7 @@ def action(input_args: Settings):
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
 
-    logger.info("Starting Velo-action")
+    logger.info("Starting velo-action")
     os.chdir(input_args.workspace)
 
     if input_args.service_account_key:
