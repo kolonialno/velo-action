@@ -66,6 +66,18 @@ def test_lookup_environment_id(octo):
 
 @mock_client_requests(
     [
+        Request(
+            "get", "api/environments/all", response=[{"Name": "DevEnv", "Id": "env-1"}]
+        ),
+    ]
+)
+def test_lookup_unknown_environment_id(octo):
+    with pytest.raises(ValueError, match="'UnknownEnv' is unknown"):
+        octo.lookup_environment_id("UnknownEnv")
+
+
+@mock_client_requests(
+    [
         Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
     ]
 )
@@ -73,6 +85,16 @@ def test_lookup_project_id(octo):
     assert octo.lookup_project_id("ProjectName") == "project-1"
     # Second call without mock ensures working cache
     assert octo.lookup_project_id("ProjectName") == "project-1"
+
+
+@mock_client_requests(
+    [
+        Request("get", "api/projects/UnknownProject", response=None),
+    ]
+)
+def test_lookup_unknown_project_id(octo):
+    with pytest.raises(ValueError, match="'UnknownProject' is unknown"):
+        octo.lookup_project_id("UnknownProject")
 
 
 @mock_client_requests(
@@ -88,6 +110,20 @@ def test_lookup_tenant_id(octo):
     assert octo.lookup_tenant_id("TenantName") == "tenant-1"
     # Second call without mock ensures working cache
     assert octo.lookup_tenant_id("TenantName") == "tenant-1"
+
+
+@mock_client_requests(
+    [
+        Request(
+            "get",
+            "api/tenants/all",
+            response=[{"Name": "TenantName", "Id": "tenant-1"}],
+        ),
+    ]
+)
+def test_lookup_unknown_tenant_id(octo):
+    with pytest.raises(ValueError, match="'UnknownTenant' is unknown"):
+        octo.lookup_tenant_id("UnknownTenant")
 
 
 def test_lookup_tenant_id_without_name(octo):

@@ -5,7 +5,7 @@ from typing import List, Union
 
 from pydantic import BaseSettings, Field, validator
 
-logger = logging.getLogger(name="octopus")
+logger = logging.getLogger(name="settings")
 
 
 class Settings(BaseSettings):
@@ -97,8 +97,8 @@ class Settings(BaseSettings):
     def deprecate_wait_for_deployment(cls, val, values: dict):
         if val:
             logger.warning(
-                "The use of 'wait_for_deployment' is deprecated. Please use "
-                "'wait_for_success_seconds' instead"
+                "NOTE: The use of 'wait_for_deployment' is deprecated. Please use "
+                "'wait_for_success_seconds' instead."
             )
             if not values["wait_for_success_seconds"]:
                 values["wait_for_success_seconds"] = 600

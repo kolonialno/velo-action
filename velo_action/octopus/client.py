@@ -54,22 +54,28 @@ class OctopusClient:
         if not self._cached_environment_ids:
             data = self.get("api/environments/all")
             self._cached_environment_ids = {e["Name"]: e["Id"] for e in data}
-        return self._cached_environment_ids.get(env_name, "")
+        if env_name not in self._cached_environment_ids:
+            raise ValueError(f"Environment '{env_name}' is unknown")
+        return self._cached_environment_ids[env_name]
 
     @lru_cache
     def lookup_project_id(self, project_name) -> str:
         """Translate project name into a project id"""
-        return self.get(f"api/projects/{project_name}").get("Id")
+        pro = self.get(f"api/projects/{project_name}")
+        if not pro:
+            raise ValueError(f"Project '{project_name}' is unknown")
+        return pro["Id"]
 
     def lookup_tenant_id(self, tenant_name) -> str:
         """Translate tenant name into a tenant id"""
         if not tenant_name:
             return ""
-
         if not self._cached_tenant_ids:
             data = self.get("api/tenants/all")
             self._cached_tenant_ids = {e["Name"]: e["Id"] for e in data}
-        return self._cached_tenant_ids.get(tenant_name, "")
+        if tenant_name not in self._cached_tenant_ids:
+            raise ValueError(f"Tenant '{tenant_name}' is unknown")
+        return self._cached_tenant_ids[tenant_name]
 
     def _request(self, method, path, data=None):
         url = urllib.parse.urljoin(self._baseurl, path)
