@@ -19,6 +19,9 @@ class OctopusClient:
         self._headers = {"X-Octopus-ApiKey": f"{api_key}"}
         self._verify_connection()
 
+    def base_url(self):
+        return self._baseurl
+
     def get(self, path):
         """
         Get a resource

@@ -7,7 +7,6 @@ from time import sleep
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import Release
 
-_MAX_WAIT_TIME = timedelta(minutes=10)
 logger = logging.getLogger(name="octopus")
 
 
@@ -47,7 +46,7 @@ class Deployment:
     def release_id(self) -> str:
         return self._release.id() if self._release else ""
 
-    def create(self, env_name, tenant=None, wait_for_success=False, variables=None):
+    def create(self, env_name, tenant=None, wait_seconds=0, variables=None):
         """
         Deploy the current Release a specific env with an optional tenant
         """
@@ -74,9 +73,15 @@ class Deployment:
 
         self._octo_object = self._client.post("api/deployments", data=payload)
 
-        if wait_for_success:
+        logger.info(
+            f'Deployment URL: {self._client.base_url()}{self._octo_object["Links"]["Web"]}'
+        )
+
+        if wait_seconds:
             result = self._wait_until_completed(
-                environment_id=environment_id, tenant_id=tenant_id
+                duration=timedelta(seconds=wait_seconds),
+                environment_id=environment_id,
+                tenant_id=tenant_id,
             )
             if result == DeploymentState.SUCCESS:
                 logger.info("Deployment finished successfully")
@@ -113,7 +118,10 @@ class Deployment:
 
         if dep_state["State"] == "Success":
             return DeploymentState.SUCCESS
+        if dep_state["State"] in ["Executing", "Queued"]:
+            return DeploymentState.PROGRESS
         else:
+            print(dep_state)
             return DeploymentState.FAIL
 
     def _build_form_variables(self, environment_id, variables) -> dict:
@@ -133,18 +141,17 @@ class Deployment:
                 )
         return form_variables
 
-    def _wait_until_completed(self, environment_id, tenant_id) -> DeploymentState:
-        logger.info(f"Waiting up to {_MAX_WAIT_TIME} for completion...")
+    def _wait_until_completed(
+        self, duration, environment_id, tenant_id
+    ) -> DeploymentState:
+        logger.info(f"Waiting up to {duration} for completion...")
         start = datetime.now()
 
         while True:
             state = self.get_state(environment_id=environment_id, tenant_id=tenant_id)
             if state == DeploymentState.SUCCESS:
                 return state
-            if datetime.now() > start + _MAX_WAIT_TIME:
-                logger.warning(
-                    f"Wait time {_MAX_WAIT_TIME} exceeded. Proceeding anyway"
-                )
+            if datetime.now() > start + duration:
                 return DeploymentState.TIMEOUT
             sleep(1)
 

@@ -38,6 +38,7 @@ def action(input_args: Settings):
     if input_args.service_account_key:
         logger.info(f"service account: {input_args.service_account_key[:15]}")
     logger.info(f"deploy_to_environments: {input_args.deploy_to_environments}")
+    logger.info(f"tenants: {input_args.tenants}")
     logger.info(f"create_release: {input_args.create_release}")
 
     if input_args.version is None:
@@ -148,7 +149,7 @@ def action(input_args: Settings):
                 deploy.create(
                     env_name=env,
                     tenant=ten,
-                    wait_for_success=input_args.wait_for_deployment,
+                    wait_seconds=input_args.wait_for_success_seconds,
                     variables=deploy_vars,
                 )
     logger.info("Done")

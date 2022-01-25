@@ -134,3 +134,21 @@ def test_use_github_workspace_as_fallback(monkeypatch):
     monkeypatch.setenv("INPUT_WORKSPACE", "/etc")
     sett = Settings()
     assert sett.workspace == "/etc"
+
+
+def test_wait_for_deployment_becomes_wait_for_success_seconds():
+    default = Settings()
+    assert default.wait_for_deployment is False
+    assert default.wait_for_success_seconds == 0
+
+    deprecated = Settings(wait_for_deployment="True")
+    assert deprecated.wait_for_deployment is False
+    assert deprecated.wait_for_success_seconds == 600
+
+    new = Settings(wait_for_success_seconds="120")
+    assert new.wait_for_deployment is False
+    assert new.wait_for_success_seconds == 120
+
+    both = Settings(wait_for_deployment="True", wait_for_success_seconds="120")
+    assert both.wait_for_deployment is False
+    assert both.wait_for_success_seconds == 120

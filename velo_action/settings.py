@@ -5,6 +5,8 @@ from typing import List, Union
 
 from pydantic import BaseSettings, Field, validator
 
+logger = logging.getLogger(name="octopus")
+
 
 class Settings(BaseSettings):
     """[Parse input arguments]
@@ -38,6 +40,7 @@ class Settings(BaseSettings):
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
     velo_artifact_bucket_secret: str = None
     version: str = None
+    wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
 
     # GITHUB_WORKSPACE is set in GitHub workflows
@@ -89,3 +92,14 @@ class Settings(BaseSettings):
         if not path.is_dir():
             raise ValueError(f"path '{path}' is not a directory")
         return str(path)
+
+    @validator("wait_for_deployment")
+    def deprecate_wait_for_deployment(cls, val, values: dict):
+        if val:
+            logger.warning(
+                "The use of 'wait_for_deployment' is deprecated. Please use "
+                "'wait_for_success_seconds' instead"
+            )
+            if not values["wait_for_success_seconds"]:
+                values["wait_for_success_seconds"] = 600
+        return False

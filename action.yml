@@ -58,7 +58,14 @@ inputs:
       NOTE: The length of the Git hash is dynamic. It can be longer if it is not unique.
     required: false
     default: None
+  wait_for_success_seconds:
+    description:
+      Waits the given number of seconds until the deployment is completed. The step fails
+      If it does not complete in the given period or if the deployment has an error.
+    required: false
+    default: '600'
   wait_for_deployment:
+    deprecationMessage: Please use 'wait_for_success_seconds' instead.
     description: |-
       Whether to wait synchronously for deployment in Octopus Deploy to finish.
     required: false
