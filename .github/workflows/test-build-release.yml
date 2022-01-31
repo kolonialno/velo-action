@@ -9,6 +9,7 @@ on:
 
 env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
+  IMAGE_SIZE_LIMIT: 1300 MB
 
 jobs:
   test:
@@ -82,6 +83,11 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ steps.vars.outputs.version }}
             ${{ env.IMAGE }}:latest
+
+      - uses: wemake-services/docker-image-size-limit@0.4.1
+        with:
+          image: "${{ env.IMAGE }}"
+          size: "${{ env.IMAGE_SIZE_LIMIT }}"
 
   release:
     runs-on: ubuntu-20.04
