@@ -129,11 +129,15 @@ def test_use_github_workspace_as_fallback(monkeypatch):
     monkeypatch.setenv("GITHUB_WORKSPACE", "/var")
     monkeypatch.delenv("INPUT_WORKSPACE")
     sett = Settings()
-    assert sett.workspace == "/var"
+    assert (
+        sett.workspace == "/var" or sett.workspace == "/private/var"
+    )  # /private/ on macOS
 
     monkeypatch.setenv("INPUT_WORKSPACE", "/etc")
     sett = Settings()
-    assert sett.workspace == "/etc"
+    assert (
+        sett.workspace == "/etc" or sett.workspace == "/private/etc"
+    )  # /private/ on macOS
 
 
 def test_wait_for_deployment_becomes_wait_for_success_seconds():
