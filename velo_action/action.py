@@ -5,11 +5,12 @@ from pathlib import Path
 
 import pydantic
 
-from velo_action import gcp, github, proc_utils, tracing_helpers
+from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
 from velo_action.settings import Settings
+from velo_action.version import generate_version
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 logger = logging.getLogger(name="action")
@@ -41,11 +42,7 @@ def action(input_args: Settings):
     logger.info(f"create_release: {input_args.create_release}")
 
     if input_args.version is None:
-        version = proc_utils.execute_process(
-            "git rev-parse --short HEAD",
-            log_stdout=True,
-            forward_stdout=False,
-        )[0]
+        version = generate_version()
     else:
         version = input_args.version
 

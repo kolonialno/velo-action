@@ -2,7 +2,7 @@ import pytest
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import Release
-from velo_action.octopus.test_decorators import Request, mock_client_requests
+from velo_action.octopus.tests.test_decorators import Request, mock_client_requests
 
 
 @pytest.fixture

@@ -5,7 +5,7 @@ image_tag:
 	echo ${IMAGE_TAG}
 
 tests:
-	poetry run pytest tests -c pytest.ini -v -m "not docker"
+	poetry run pytest velo_action -c pytest.ini -v -m "not docker"
 
 image: image_tag
 	docker build -t europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${IMAGE_TAG} .
@@ -43,10 +43,10 @@ flake8:
 	poetry run flake8 --config='.flake8' .
 
 mypy:
-	poetry run mypy --config-file=.mypy.ini velo_action tests
+	poetry run mypy --config-file=.mypy.ini velo_action
 
 pylint:
-	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action tests
+	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
 
 isort:
 	poetry run isort .

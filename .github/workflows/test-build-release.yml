@@ -44,7 +44,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
-      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+      - run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
 
   build:

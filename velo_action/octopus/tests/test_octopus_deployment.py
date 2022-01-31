@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from velo_action.octopus import client, deployment, release
-from velo_action.octopus.test_decorators import Request, mock_client_requests
+from velo_action.octopus.tests.test_decorators import Request, mock_client_requests
 
 
 @pytest.fixture
