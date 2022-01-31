@@ -13,11 +13,11 @@ tests:
 image: image_tag
 	docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
 
-image_size:
-	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
-
 push: image
 	docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+image_size:
+	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
 
 run:
 	. ./env.dev && poetry run python velo_action/main.py
