@@ -94,11 +94,7 @@ def action(input_args: Settings):
             deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
         )
 
-        commit_id = proc_utils.execute_process(
-            "git rev-parse HEAD",
-            log_stdout=True,
-            forward_stdout=False,
-        )[0]
+        commit_id = os.getenv("GITHUB_SHA")
         branch_name = os.getenv("GITHUB_REF")
         assert (
             commit_id is not None
