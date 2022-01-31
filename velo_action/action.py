@@ -1,4 +1,3 @@
-# type: ignore
 import logging
 import os
 import sys
@@ -27,7 +26,7 @@ def action(input_args: Settings):
     logging.basicConfig(level=input_args.log_level)
 
     try:
-        trace_id = tracing_helpers.start_trace(input_args.service_account_key)
+        trace_id = tracing_helpers.start_trace(input_args.service_account_key)  # type: ignore
     except Exception as err:
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
@@ -125,7 +124,7 @@ def action(input_args: Settings):
         if trace_id:
             deploy_vars["GithubSpanID"] = trace_id
 
-        tenants = input_args.tenants or [None]
+        tenants = input_args.tenants or [None]  # type: ignore
 
         for env in input_args.deploy_to_environments:
             for ten in tenants:

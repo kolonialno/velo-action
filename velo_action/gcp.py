@@ -1,4 +1,3 @@
-# type: ignore
 import base64
 import binascii
 import json
@@ -8,7 +7,7 @@ from functools import lru_cache
 
 from google.api_core.exceptions import PermissionDenied
 from google.auth.exceptions import DefaultCredentialsError
-from google.cloud import secretmanager, storage
+from google.cloud import secretmanager, storage  # type: ignore
 from google.oauth2 import service_account
 
 logger = logging.getLogger(name="gcp")

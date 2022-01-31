@@ -1,7 +1,6 @@
-# type: ignore
 import logging
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseSettings, Field, validator
 
@@ -31,15 +30,15 @@ class Settings(BaseSettings):
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
     log_level: str = "INFO"
-    octopus_api_key_secret: str = None
-    octopus_server_secret: str = None
-    project: str = None
-    service_account_key: str = None
+    octopus_api_key_secret: Optional[str] = None
+    octopus_server_secret: Optional[str] = None
+    project: Optional[str] = None
+    service_account_key: Optional[str] = None
     tenants: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
-    velo_artifact_bucket_secret: str = None
-    version: str = None
+    velo_artifact_bucket_secret: Optional[str] = None
+    version: Optional[str] = None
     wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
 
