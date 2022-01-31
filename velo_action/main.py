@@ -89,7 +89,9 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
 
     if input_args.create_release:
-        logger.info(f"Uploading artifacts to '{velo_artifact_bucket}'")
+        logger.info(
+            f"Uploading artifacts to '{velo_artifact_bucket}/{input_args.project}/{version}'"
+        )
         gcloud.upload_from_directory(
             deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
         )
