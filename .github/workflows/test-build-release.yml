@@ -1,11 +1,11 @@
-name: Build & Release
+name: '[ci] Build & Release'
 
 on:
   push:
     paths:
       - .deploy/**
       - velo_action/**
-      - .github/workflows/ci.yml
+      - .github/workflows/test-build-release.yml
 
 env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
