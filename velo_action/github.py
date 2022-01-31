@@ -1,9 +1,7 @@
-import logging
 import os
 
 import requests
-
-logger = logging.getLogger(name="github")
+from loguru import logger
 
 
 def actions_output(key, value):

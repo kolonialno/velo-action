@@ -1,13 +1,12 @@
 import enum
-import logging
 import typing
 from datetime import datetime, timedelta
 from time import sleep
 
+from loguru import logger
+
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import Release
-
-logger = logging.getLogger(name="octopus")
 
 
 class DeploymentState(enum.Enum):
@@ -34,7 +33,7 @@ class Deployment:
         dep._release = release
         return dep
 
-    def id(self) -> str:
+    def id(self) -> str:  # pylint: disable=invalid-name
         return self._octo_object.get("Id", "")
 
     def project_id(self) -> str:
@@ -136,7 +135,7 @@ class Deployment:
             if name in mapping:
                 form_variables[mapping[name]] = value
             else:
-                logging.warning(
+                logger.warning(
                     f"Supplied variable '{name}' is not a known project variable"
                 )
         return form_variables

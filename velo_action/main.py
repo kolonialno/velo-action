@@ -1,9 +1,9 @@
-import logging
 import os
 import sys
 from pathlib import Path
 
 import pydantic
+from loguru import logger
 
 from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
@@ -13,22 +13,22 @@ from velo_action.settings import Settings
 from velo_action.version import generate_version
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-logger = logging.getLogger(name="action")
 
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
 
 
-def action(input_args: Settings):
+def action(input_args: Settings):  # pylint: disable=too-many-branches
     # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
     if input_args.deploy_to_environments:
         input_args.create_release = True
 
-    logging.basicConfig(level=input_args.log_level)
+    log_format = "{time:YYYY-MM-DD HH:mm:ss} {message}"
+    logger.add(sys.stdout, level=input_args.log_level, format=log_format)
 
     try:
         trace_id = tracing_helpers.start_trace(input_args.service_account_key)  # type: ignore
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
 
@@ -36,10 +36,14 @@ def action(input_args: Settings):
     os.chdir(input_args.workspace)
 
     if input_args.service_account_key:
-        logger.info(f"service account: {input_args.service_account_key[:15]}")
-    logger.info(f"deploy_to_environments: {input_args.deploy_to_environments}")
-    logger.info(f"tenants: {input_args.tenants}")
-    logger.info(f"create_release: {input_args.create_release}")
+        logger.info(f"Service account: {input_args.service_account_key[:15]}")
+
+    logger.info(f"Deploy to environments: {input_args.deploy_to_environments}")
+
+    if input_args.tenants:
+        logger.info(f"Tenants: {input_args.tenants}")
+
+    logger.info(f"Create release: {input_args.create_release}")
 
     if input_args.version is None:
         version = generate_version()
@@ -61,15 +65,15 @@ def action(input_args: Settings):
         )
 
     if not input_args.octopus_server_secret:
-        raise ValueError("octopus server secret not specified")
+        raise ValueError("Octopus server secret not specified")
     if not input_args.octopus_api_key_secret:
-        raise ValueError("octopus api key secret not specified")
+        raise ValueError("Octopus api key secret not specified")
     if not input_args.velo_artifact_bucket_secret:
-        raise ValueError("artifact bucket secret not specified")
+        raise ValueError("Artifact bucket secret not specified")
     if not input_args.project:
-        raise ValueError("project not specified")
+        raise ValueError("Project not specified")
     if not input_args.service_account_key:
-        logger.warning("gcp service account key not specified")
+        logger.warning("GCP service account key not specified")
 
     gcloud = gcp.GCP(input_args.service_account_key)
     octopus_server = gcloud.lookup_data(
@@ -128,8 +132,6 @@ def action(input_args: Settings):
                 log = f"Deploying project '{input_args.project}' version '{version}' to '{env}' "
                 if ten:
                     log += f"for tenant '{ten}'"
-                else:
-                    log += "without tenant"
                 logger.info(log)
 
                 deploy = Deployment(

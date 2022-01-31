@@ -1,7 +1,6 @@
 import base64
 import binascii
 import json
-import logging
 import os
 from functools import lru_cache
 
@@ -9,8 +8,7 @@ from google.api_core.exceptions import PermissionDenied
 from google.auth.exceptions import DefaultCredentialsError
 from google.cloud import secretmanager, storage  # type: ignore
 from google.oauth2 import service_account
-
-logger = logging.getLogger(name="gcp")
+from loguru import logger
 
 
 class GCP:
@@ -19,7 +17,7 @@ class GCP:
         if service_account_key:
             self._auth_service_account(service_account_key)
         else:
-            logger.info("Using local credentials")
+            logger.info("Using local credentials.")
 
     @lru_cache
     def _get_storage_client(self):
@@ -59,7 +57,7 @@ class GCP:
                 blob.upload_from_filename(local_file)
 
     def lookup_data(self, key, project_id, version=None):
-        logger.info(f"Looking for '{key}' in '{project_id}', with version '{version}'")
+        logger.debug(f"Looking for '{key}' in '{project_id}', with version '{version}'")
         secrets_client = self._get_secrets_client()
         if not version:
             version = self.get_highest_version(key, project_id)
@@ -87,9 +85,9 @@ class GCP:
     def get_highest_version(self, key, project_id):
         secrets_client = self._get_secrets_client()
         parent = secrets_client.secret_path(project_id, key)
-        logger.info(f"Looking for new version for'{key}' in '{project_id}'")
-        logger.info(f"parent='{parent}'")
-        logger.info("----------------------")
+        logger.debug(f"Looking for new version for'{key}' in '{project_id}'")
+        logger.debug(f"parent='{parent}'")
+        logger.debug("----------------------")
 
         highest_found_version = None
         # noinspection PyTypeChecker

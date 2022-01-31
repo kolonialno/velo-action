@@ -2,7 +2,7 @@
 name = "velo-action"
 version = "0.1.0"
 description = "Github Action used to generate velo deploy version and trigger a release."
-authors = ["Anders Liland <anders.liland@oda.com>"]
+authors = ["Cloud-platform team <team-cloud-platform@oda.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
@@ -19,6 +19,7 @@ opentelemetry-api = "^1.6.2"
 opentelemetry-exporter-otlp = "^1.6.2"
 PyYAML = "^6.0"
 types-PyYAML = "^6.0.3"
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

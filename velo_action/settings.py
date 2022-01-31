@@ -1,10 +1,10 @@
-import logging
 from pathlib import Path
 from typing import List, Optional, Union
 
+from loguru import logger
 from pydantic import BaseSettings, Field, validator
 
-logger = logging.getLogger(name="settings")
+logger.remove()
 
 
 class Settings(BaseSettings):
@@ -75,7 +75,7 @@ class Settings(BaseSettings):
 
     @validator("log_level")
     def validate_log_level(cls, value):
-        name = logging.getLevelName(value)
+        name = logger.level(value)
         if isinstance(name, str):
             raise ValueError()
         return value

@@ -1,11 +1,9 @@
-import logging
 import urllib.parse
 from functools import lru_cache
 
 import requests
+from loguru import logger
 from requests.exceptions import RequestException
-
-logger = logging.getLogger(name="octopus")
 
 
 class OctopusClient:

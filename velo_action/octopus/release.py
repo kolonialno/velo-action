@@ -1,10 +1,11 @@
 import json
-import logging
+from dis import disco
+
+from loguru import logger
 
 from velo_action.octopus.client import OctopusClient
 
 _RELEASE_REGEX = r"^(|\+.*)$"
-logger = logging.getLogger(name="octopus")
 
 
 class Release:
@@ -24,7 +25,7 @@ class Release:
         rel._octo_object = client.get(f"api/projects/{project_id}/releases/{version}")
         return rel
 
-    def id(self) -> str:
+    def id(self) -> str:  # pylint: disable=invalid-name
         return self._octo_object.get("Id", "")
 
     def project_id(self) -> str:
@@ -35,7 +36,12 @@ class Release:
 
     def create(self, project_name, version, notes=None, auto_select_packages=True):
         if self.exists(project_name, version, client=self._client):
-            logger.info(f"Release '{version}' already exists. Skipping...")
+            logger.info(
+                f"Release '{version}' already exists at "
+                f"'{self._client._baseurl}/app#/Spaces-1/projects/"
+                f"{project_name}/deployments/releases/{version}'. "  # pylint: disable=protected-access
+                "Skipping..."
+            )
             return None
         project_id = self._client.lookup_project_id(project_name)
         if auto_select_packages:

@@ -1,9 +1,9 @@
 import base64
 import datetime as dt
-import logging
 import os
 
 import gcp
+from loguru import logger
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (  # type: ignore
     OTLPSpanExporter,
@@ -14,8 +14,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
 from velo_action.github import request_github_workflow_data
-
-logger = logging.getLogger(name="action")
 
 
 def init_tracer(service_acc_key: str, service="velo-action"):
