@@ -82,8 +82,6 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ steps.vars.outputs.version }}
             ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}
-          cache-to: type=registry,${{ env.IMAGE }}
 
   release:
     runs-on: ubuntu-20.04
