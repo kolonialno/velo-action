@@ -94,8 +94,8 @@ jobs:
         with:
           fetch-depth: 0 # required to get a unique ref
 
-      - uses: kolonialno/velo-action@v0.2.21
+      - uses: kolonialno/velo-action@v0.3.0
         with:
           create_release: 'True'
           project: velo-action
-          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
