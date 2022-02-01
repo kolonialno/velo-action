@@ -1,5 +1,4 @@
 import subprocess
-import sys
 
 
 def generate_version() -> str:
