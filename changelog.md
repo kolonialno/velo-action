@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.xx (2022-01-xx)
+## v0.4.0 (2022-02-01)
 
 Breaking changes:
 
@@ -8,6 +8,11 @@ Breaking changes:
 - action input `octopus_cli_server_secret` is renamed to `octopus_server_secret`
 
 Please update your GitHub workflows where needed.
+
+Features:
+
+- New input `wait_for_success_seconds` to specify that the action waits until Octopus Deploy is finished.
+  Deprecates the input `wait_for_deployment`
 
 Other:
 
