@@ -1,20 +1,26 @@
+import os.path
+from functools import lru_cache
+
+import yaml
+
+_ACTION_FILE = os.path.dirname(__file__) + "/../action.yml"
+
+
 def fill_default_envvars(monkeypatch):
     """
-    set all envvars so that local .env files won't affect test runs.
-    These envvars should correspond to the defaults in `action.yml`
-    in order to give a realistic test environment
-
+    set all input envvars according to the GitHub action defaults
     """
-    monkeypatch.setenv("INPUT_VERSION", "None")
-    monkeypatch.setenv("INPUT_WORKSPACE", "None")
-    monkeypatch.setenv("INPUT_PROJECT", "None")
-    monkeypatch.setenv("INPUT_CREATE_RELEASE", "False")
-    monkeypatch.setenv("INPUT_DEPLOY_TO_ENVIRONMENTS", "None")
-    monkeypatch.setenv("INPUT_TENANTS", "None")
-    monkeypatch.setenv("INPUT_PROGRESS", "False")
-    monkeypatch.setenv("INPUT_WAIT_FOR_DEPLOYMENT", "False")
-    monkeypatch.setenv("INPUT_SERVICE_ACCOUNT_KEY", "None")
-    monkeypatch.setenv("INPUT_PYTHON_LOGGING_LEVEL", "None")
-    monkeypatch.setenv("INPUT_OCTOPUS_CLI_SERVER_SECRET", "None")
-    monkeypatch.setenv("INPUT_OCTOPUS_CLI_API_SECRET", "None")
-    monkeypatch.setenv("INPUT_VELO_ARTIFACT_BUCKET_SECRET", "None")
+    defaults = read_github_action_inputs_defaults()
+    for var, default in defaults.items():
+        monkeypatch.setenv("INPUT_" + var.upper(), default)
+
+
+@lru_cache
+def read_github_action_inputs_defaults() -> dict:
+    """
+    Get dict of defaults from action.yml
+    """
+    with open(_ACTION_FILE, mode="r", encoding="utf8") as file:
+        data = yaml.safe_load(file)
+        inputs = data.get("inputs", {})
+        return {k: v.get("default") for k, v in inputs.items()}

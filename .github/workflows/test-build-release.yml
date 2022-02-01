@@ -1,28 +1,30 @@
-name: Build & Release
+name: '[ci] Build & Release'
 
 on:
   push:
     paths:
       - .deploy/**
       - velo_action/**
-      - tests/**
-      - .github/workflows/ci.yml
+      - .github/workflows/test-build-release.yml
 
 env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
+  IMAGE_SIZE_LIMIT: 1300 MB
 
 jobs:
   test:
     runs-on: ubuntu-20.04
     name: Test
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Read .tool-versions
         uses: marocchino/tool-versions-action@v1
         id: versions
 
-      - uses: actions/setup-python@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ steps.versions.outputs.python }}
 
@@ -44,15 +46,13 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
-      - run: poetry run pytest . -c pytest.ini --capture=no -v -m "not docker"
+      - name: Run tests
+        run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
 
   build:
     runs-on: ubuntu-20.04
-    name: Build & push
-    needs:
-      - lint
-      - test
+    name: Build & push image
     steps:
       - uses: actions/checkout@v2
         name: Checkout
@@ -83,19 +83,20 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ steps.vars.outputs.version }}
             ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          cache-to: type=registry,${{ env.IMAGE }}:buildcache,mode=max
 
   release:
     runs-on: ubuntu-20.04
     name: Create release
+    needs:
+      - test
+      - build
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # required to get a unique ref
 
-      - uses: kolonialno/velo-action@v0.2.21
+      - uses: kolonialno/velo-action@v0.3.0
         with:
           create_release: 'True'
           project: velo-action
-          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
