@@ -95,7 +95,7 @@ jobs:
         with:
           fetch-depth: 0 # required to get a unique ref
 
-      - uses: kolonialno/velo-action@v0.3.0
+      - uses: kolonialno/velo-action@v0.4.0
         with:
           create_release: 'True'
           project: velo-action
