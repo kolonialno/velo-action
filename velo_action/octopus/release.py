@@ -34,7 +34,7 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(self, project_name, version, notes=None, auto_select_packages=True):
+    def create(self, project_name, version, velo_version=None, notes=None, auto_select_packages=True):
         if self.exists(project_name, version, client=self._client):
             logger.info(
                 f"Release '{version}' already exists at "
@@ -49,10 +49,20 @@ class Release:
         else:
             packages = None
 
+        print(packages)
+        return
         payload = {
             "ProjectId": project_id,
             "Version": version,
             "ReleaseNotes": json.dumps(notes),
+            "SelectedPackages": [
+                {
+                    "ActionName": "run velo",
+                    "StepName": "run velo",
+                    "PackageReferenceName": "",
+                    "Version": "0.2.10"
+                }
+            ]
         }
 
         if packages:

@@ -19,7 +19,6 @@ def test_github_default_values(monkeypatch):
     assert sett.log_level == "INFO"
     assert sett.octopus_api_key_secret == "velo_action_octopus_api_key"
     assert sett.octopus_server_secret == "velo_action_octopus_server"
-    assert sett.project is None
     assert sett.service_account_key is None
     assert isinstance(sett.tenants, list) and len(sett.tenants) == 0
     assert sett.velo_artifact_bucket_secret == "velo_action_artifacts_bucket_name"
@@ -39,7 +38,6 @@ def test_default_values():
     assert sett.log_level == "INFO"
     assert sett.octopus_api_key_secret is None
     assert sett.octopus_server_secret is None
-    assert sett.project is None
     assert sett.service_account_key is None
     assert isinstance(sett.tenants, list) and len(sett.tenants) == 0
     assert sett.velo_artifact_bucket_secret is None
@@ -54,7 +52,6 @@ def test_parse_none():
             "deploy_to_environments": "None",
             "octopus_api_key_secret": "None",
             "octopus_server_secret": "None",
-            "project": "None",
             "service_account_key": "None",
             "tenants": "None",
             "velo_artifact_bucket_secret": "None",
@@ -64,7 +61,6 @@ def test_parse_none():
 
     assert sett.octopus_api_key_secret is None
     assert sett.octopus_server_secret is None
-    assert sett.project is None
     assert sett.service_account_key is None
     assert sett.velo_artifact_bucket_secret is None
     assert sett.version is None

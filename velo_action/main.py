@@ -1,8 +1,8 @@
 import os
 import sys
 from pathlib import Path
+import yaml
 
-import pydantic
 from loguru import logger
 
 from velo_action import gcp, github, tracing_helpers
@@ -70,8 +70,6 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
         raise ValueError("Octopus api key secret not specified")
     if not input_args.velo_artifact_bucket_secret:
         raise ValueError("Artifact bucket secret not specified")
-    if not input_args.project:
-        raise ValueError("Project not specified")
     if not input_args.service_account_key:
         logger.warning("GCP service account key not specified")
 
@@ -89,11 +87,34 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
 
     if input_args.create_release:
+        ## Read the app.yml/app.yaml file form the deploy folder and parse the velo version
+        ## To figure out what velo version we are deploying
+        velo_config_path = None
+        app_yml_path = Path.joinpath(deploy_folder, "app.yml")
+        app_yaml_path = Path.joinpath(deploy_folder, "app.yaml")
+        if app_yml_path.is_file():
+            velo_config_path = app_yml_path
+        elif app_yaml_path.is_file():
+            velo_config_path = app_yaml_path
+        else:
+            raise Exception(
+                f"Did not find an app.yml or app.yaml file in '{deploy_folder}'"
+            )
+        
+        velo_version = None
+        velo_project = None
+        with open(velo_config_path, "r") as f:
+            app_yml = f.read()
+            velo_config = yaml.safe_load(app_yml)
+            velo_version = velo_config.get('version', None)
+            velo_project = velo_config.get('project', None)
+
         logger.info(
-            f"Uploading artifacts to '{velo_artifact_bucket}/{input_args.project}/{version}'"
+            f"Uploading artifacts to '{velo_artifact_bucket}/{velo_project}/{version}'"
         )
+
         gcloud.upload_from_directory(
-            deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
+            deploy_folder, velo_artifact_bucket, f"{velo_project}/{version}"
         )
 
         commit_id = os.getenv("GITHUB_SHA")
@@ -114,12 +135,12 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             "commit_url": f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{commit_id}",
         }
         logger.info(
-            f"Creating a release for project '{input_args.project}' with version '{version}'"
+            f"Creating a release for project '{velo_project}' with version '{version}'"
         )
 
         release = Release(client=octo)
         release.create(
-            project_name=input_args.project, version=version, notes=release_note_dict
+            project_name=velo_project, version=version, notes=release_note_dict, velo_version=velo_version
         )
 
     if input_args.deploy_to_environments:
@@ -131,13 +152,13 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
 
         for env in input_args.deploy_to_environments:
             for ten in tenants:
-                log = f"Deploying project '{input_args.project}' version '{version}' to '{env}' "
+                log = f"Deploying project '{velo_project}' version '{version}' to '{env}' "
                 if ten:
                     log += f"for tenant '{ten}'"
                 logger.info(log)
 
                 deploy = Deployment(
-                    project_name=input_args.project,
+                    project_name=velo_project,
                     version=version,
                     client=octo,
                 )

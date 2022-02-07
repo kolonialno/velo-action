@@ -32,7 +32,7 @@ inputs:
   project:
     description: |-
       Name of the project in Octopus Deploy to deploy to.
-    required: true
+    required: false
     default: None
   service_account_key:
     description: |-
