@@ -1,10 +1,12 @@
 import os
 import sys
 from pathlib import Path
+from pydantic import ValidationError
 import yaml
 
 from loguru import logger
 
+from velo_action.utils import find_matching_version
 from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
@@ -138,9 +140,14 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             f"Creating a release for project '{velo_project}' with version '{version}'"
         )
 
+        
         release = Release(client=octo)
+
+        velo_versions = release._list_deploy_packages()
+        matching_velo_version = find_matching_version(velo_versions, velo_version)
+
         release.create(
-            project_name=velo_project, version=version, notes=release_note_dict, velo_version=velo_version
+            project_name=velo_project, version=version, notes=release_note_dict, velo_version=matching_velo_version
         )
 
     if input_args.deploy_to_environments:
@@ -175,7 +182,7 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
 if __name__ == "__main__":
     try:
         s = Settings()
-    except pydantic.ValidationError as err:
+    except ValidationError as err:
         logger.error(err)
         sys.exit(1)
     action(s)

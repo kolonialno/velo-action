@@ -1,5 +1,5 @@
 import json
-from dis import disco
+from typing import List
 
 from loguru import logger
 
@@ -34,7 +34,7 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(self, project_name, version, velo_version=None, notes=None, auto_select_packages=True):
+    def create(self, project_name, version, velo_version=None, notes=None):
         if self.exists(project_name, version, client=self._client):
             logger.info(
                 f"Release '{version}' already exists at "
@@ -44,29 +44,24 @@ class Release:
             )
             return None
         project_id = self._client.lookup_project_id(project_name)
-        if auto_select_packages:
+
+
+        packages = []
+        if velo_version is None:
             packages = self._determine_latest_deploy_packages(project_id)
         else:
-            packages = None
+            packages.append({
+                "ActionName": "run velo",
+                "Version": velo_version
+            })
 
-        print(packages)
-        return
         payload = {
             "ProjectId": project_id,
             "Version": version,
             "ReleaseNotes": json.dumps(notes),
-            "SelectedPackages": [
-                {
-                    "ActionName": "run velo",
-                    "StepName": "run velo",
-                    "PackageReferenceName": "",
-                    "Version": "0.2.10"
-                }
-            ]
+            "SelectedPackages": packages
         }
 
-        if packages:
-            payload["SelectedPackages"] = packages
 
         self._octo_object = self._client.post("api/releases", data=payload)
 
@@ -105,6 +100,21 @@ class Release:
             )
 
         return packages
+
+    def  _list_deploy_packages(self) -> List[str]:
+        """
+        A release needs to specify the version of all deployment steps. We fetch
+        the latest version by selecting the highest available SemVer.
+        """
+        packages: dict = self._client.get(
+            f"api/Spaces-1/feeds/feeds-builtin/packages/versions?packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+        )
+
+        versions = []
+
+        for pkg in packages["Items"]:
+            versions.append(pkg['Version'])
+        return versions
 
     @classmethod
     def exists(cls, project_name, version, client):

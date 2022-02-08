@@ -6,7 +6,7 @@ authors = ["Cloud-platform team <team-cloud-platform@oda.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
-semantic-version = "^2.8"
+semantic-version = "^2.9.0"
 appdirs = "^1.4"
 google = "^3.0"
 google-auth = "^2.1.0"
@@ -20,6 +20,7 @@ opentelemetry-exporter-otlp = "^1.6.2"
 PyYAML = "^6.0"
 types-PyYAML = "^6.0.3"
 loguru = "^0.6.0"
+semver = "^2.13.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

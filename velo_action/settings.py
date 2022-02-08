@@ -32,7 +32,6 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     octopus_api_key_secret: Optional[str] = None
     octopus_server_secret: Optional[str] = None
-    project: Optional[str] = None
     service_account_key: Optional[str] = None
     tenants: Union[
         str, List[str]
@@ -59,7 +58,6 @@ class Settings(BaseSettings):
     @validator(
         "version",
         "log_level",
-        "project",
         "service_account_key",
         "octopus_server_secret",
         "octopus_api_key_secret",
