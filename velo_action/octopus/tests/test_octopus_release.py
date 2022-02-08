@@ -44,35 +44,6 @@ def client():
 
 @mock_client_requests(
     [
-        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
-        Request("head", "api/projects/project-1/releases/v1.2.3", response=False),
-        Request(
-            "post",
-            "api/releases",
-            payload={
-                "ProjectId": "project-1",
-                "ReleaseNotes": '"Notes"',  # Json encoded
-                "Version": "v1.2.3",
-            },
-            response={
-                "Id": "release-1",
-                "ProjectId": "project-1",
-                "Version": "v1.2.3",
-            },
-        ),
-    ]
-)
-def test_create_release_without_packages(client):
-    rel = Release(client)
-    rel.create("ProjectName", "v1.2.3", "Notes", auto_select_packages=False)
-
-    assert rel.id() == "release-1"
-    assert rel.project_id() == "project-1"
-    assert rel.version() == "v1.2.3"
-
-
-@mock_client_requests(
-    [
         Request("get", "api/projects/Project-1", response={"Id": "project-1"}),
         Request("head", "api/projects/project-1/releases/v1.2.3", response=False),
         Request(
@@ -112,7 +83,37 @@ def test_create_release_without_packages(client):
 )
 def test_create_release_with_packages(client):
     rel = Release(client)
-    rel.create("Project-1", "v1.2.3", "Notes", auto_select_packages=True)
+    rel.create("Project-1", "v1.2.3", notes="Notes")
+
+    assert rel.id() == "release-1"
+    assert rel.project_id() == "project-1"
+    assert rel.version() == "v1.2.3"
+
+
+@mock_client_requests(
+    [
+        Request("get", "api/projects/Project-1", response={"Id": "project-1"}),
+        Request("head", "api/projects/project-1/releases/v1.2.3", response=False),
+        Request(
+            "post",
+            "api/releases",
+            payload={
+                "ProjectId": "project-1",
+                "ReleaseNotes": '"Notes"',  # Json encoded
+                "SelectedPackages": [{"ActionName": "run velo", "Version": "1.1.1"}],
+                "Version": "v1.2.3",
+            },
+            response={
+                "Id": "release-1",
+                "ProjectId": "project-1",
+                "Version": "v1.2.3",
+            },
+        ),
+    ]
+)
+def test_create_release_with_packages_specific_velo_version(client):
+    rel = Release(client)
+    rel.create("Project-1", "v1.2.3", notes="Notes", velo_version="1.1.1")
 
     assert rel.id() == "release-1"
     assert rel.project_id() == "project-1"
@@ -217,4 +218,23 @@ def test_exists(client):
 )
 def test_skip_create_existing_release(client):
     rel = Release(client)
-    rel.create("ProjectName", "v1.2.3", "Notes", auto_select_packages=False)
+    rel.create("ProjectName", "v1.2.3", notes="Notes", velo_version=None)
+
+
+@mock_client_requests(
+    [
+        Request(
+            "get",
+            (
+                "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
+                "packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+            ),
+            response={"Items": [{"Version": "0.1.9"}, {"Version": "1.0.0"}]},
+        ),
+    ]
+)
+def test_list_available_deploy_packages(client):
+    rel = Release(client)
+    versions = rel.list_available_deploy_packages()
+    assert versions == ["0.1.9", "1.0.0"]
+    assert len(versions) == 2

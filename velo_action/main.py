@@ -1,17 +1,17 @@
 import os
 import sys
 from pathlib import Path
-from pydantic import ValidationError
+
 import yaml
-
 from loguru import logger
+from pydantic import ValidationError
 
-from velo_action.utils import find_matching_version
 from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
 from velo_action.settings import Settings
+from velo_action.utils import find_matching_version
 from velo_action.version import generate_version
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,8 +89,6 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
 
     if input_args.create_release:
-        ## Read the app.yml/app.yaml file form the deploy folder and parse the velo version
-        ## To figure out what velo version we are deploying
         velo_config_path = None
         app_yml_path = Path.joinpath(deploy_folder, "app.yml")
         app_yaml_path = Path.joinpath(deploy_folder, "app.yaml")
@@ -102,14 +100,14 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             raise Exception(
                 f"Did not find an app.yml or app.yaml file in '{deploy_folder}'"
             )
-        
+
         velo_version = None
         velo_project = None
-        with open(velo_config_path, "r") as f:
-            app_yml = f.read()
+        with open(velo_config_path, "r") as file:
+            app_yml = file.read()
             velo_config = yaml.safe_load(app_yml)
-            velo_version = velo_config.get('version', None)
-            velo_project = velo_config.get('project', None)
+            velo_version = velo_config.get("version", None)
+            velo_project = velo_config.get("project", None)
 
         logger.info(
             f"Uploading artifacts to '{velo_artifact_bucket}/{velo_project}/{version}'"
@@ -140,14 +138,16 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             f"Creating a release for project '{velo_project}' with version '{version}'"
         )
 
-        
         release = Release(client=octo)
 
-        velo_versions = release._list_deploy_packages()
+        velo_versions = release.list_available_deploy_packages()
         matching_velo_version = find_matching_version(velo_versions, velo_version)
 
         release.create(
-            project_name=velo_project, version=version, notes=release_note_dict, velo_version=matching_velo_version
+            project_name=velo_project,
+            version=version,
+            notes=release_note_dict,
+            velo_version=matching_velo_version,
         )
 
     if input_args.deploy_to_environments:

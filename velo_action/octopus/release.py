@@ -45,23 +45,18 @@ class Release:
             return None
         project_id = self._client.lookup_project_id(project_name)
 
-
         packages = []
         if velo_version is None:
             packages = self._determine_latest_deploy_packages(project_id)
         else:
-            packages.append({
-                "ActionName": "run velo",
-                "Version": velo_version
-            })
+            packages.append({"ActionName": "run velo", "Version": velo_version})
 
         payload = {
             "ProjectId": project_id,
             "Version": version,
             "ReleaseNotes": json.dumps(notes),
-            "SelectedPackages": packages
+            "SelectedPackages": packages,
         }
-
 
         self._octo_object = self._client.post("api/releases", data=payload)
 
@@ -101,19 +96,22 @@ class Release:
 
         return packages
 
-    def  _list_deploy_packages(self) -> List[str]:
+    def list_available_deploy_packages(self) -> List[str]:
         """
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.
         """
         packages: dict = self._client.get(
-            f"api/Spaces-1/feeds/feeds-builtin/packages/versions?packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+            (
+                "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
+                "packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+            )
         )
 
         versions = []
 
         for pkg in packages["Items"]:
-            versions.append(pkg['Version'])
+            versions.append(pkg["Version"])
         return versions
 
     @classmethod

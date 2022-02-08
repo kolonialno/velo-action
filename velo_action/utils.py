@@ -1,7 +1,11 @@
-from semantic_version import Version,SimpleSpec
 from typing import List, Optional
 
-def find_matching_version(versions: List[str], version_to_match: Optional[float]) -> Optional[str]:
+from semantic_version import SimpleSpec, Version
+
+
+def find_matching_version(
+    versions: List[str], version_to_match: Optional[float]
+) -> Optional[str]:
     """
     Finds the highest matching version in a list of versions.
     using the python semantic_version package.
@@ -10,7 +14,6 @@ def find_matching_version(versions: List[str], version_to_match: Optional[float]
         return None
 
     versions = [Version.coerce(v) for v in versions]
-    s = SimpleSpec(str(version_to_match))
-    matching_version = s.select(versions)
+    parsed_versions = SimpleSpec(str(version_to_match))
+    matching_version = parsed_versions.select(versions)
     return str(matching_version)
-    
