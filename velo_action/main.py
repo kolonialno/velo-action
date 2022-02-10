@@ -108,7 +108,7 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             velo_config = yaml.safe_load(app_yml)
             velo_version = velo_config.get("version", None)
             velo_project = velo_config.get("project", None)
-        
+
         assert (
             velo_project is not None
         ), "The velo project name is missing, ensure theres a top level project in the projects app.yml."
