@@ -30,7 +30,7 @@ jobs:
         uses: marocchino/tool-versions-action@v1
         id: versions
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
         with:
           python-version: ${{ steps.versions.outputs.python }}
 
