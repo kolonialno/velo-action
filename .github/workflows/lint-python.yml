@@ -24,7 +24,7 @@ jobs:
           - black
           - flake8
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Read .tool-versions
         uses: marocchino/tool-versions-action@v1
