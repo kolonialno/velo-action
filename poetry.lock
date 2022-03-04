@@ -287,20 +287,19 @@ libcst = ["libcst (>=0.2.5)"]
 
 [[package]]
 name = "google-cloud-storage"
-version = "1.44.0"
+version = "2.1.0"
 description = "Google Cloud Storage API client library"
 category = "main"
 optional = false
-python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
+python-versions = ">=3.7"
 
 [package.dependencies]
-google-api-core = {version = ">=1.29.0,<3.0dev", markers = "python_version >= \"3.6\""}
-google-auth = {version = ">=1.25.0,<3.0dev", markers = "python_version >= \"3.6\""}
-google-cloud-core = {version = ">=1.6.0,<3.0dev", markers = "python_version >= \"3.6\""}
-google-resumable-media = {version = ">=1.3.0,<3.0dev", markers = "python_version >= \"3.6\""}
-protobuf = {version = "*", markers = "python_version >= \"3.6\""}
+google-api-core = ">=1.29.0,<3.0dev"
+google-auth = ">=1.25.0,<3.0dev"
+google-cloud-core = ">=1.6.0,<3.0dev"
+google-resumable-media = ">=1.3.0"
+protobuf = "*"
 requests = ">=2.18.0,<3.0.0dev"
-six = "*"
 
 [[package]]
 name = "google-crc32c"
@@ -990,7 +989,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "66fea5c5137dbfda9c27a96520d453ff24baadd6e199825d4316fbe151945b95"
+content-hash = "8f6a9d30be3926deea3e741829b5d758e21ff20b239fbfee98df8c8b62657e55"
 
 [metadata.files]
 appdirs = [
@@ -1103,8 +1102,8 @@ google-cloud-secret-manager = [
     {file = "google_cloud_secret_manager-2.9.0-py2.py3-none-any.whl", hash = "sha256:dafe09531a83b457f740f4cc50dc20a04e0ccef99020e338944499fdb72aca84"},
 ]
 google-cloud-storage = [
-    {file = "google-cloud-storage-1.44.0.tar.gz", hash = "sha256:29edbfeedd157d853049302bf5d104055c6f0cb7ef283537da3ce3f730073001"},
-    {file = "google_cloud_storage-1.44.0-py2.py3-none-any.whl", hash = "sha256:cd4a223e9c18d771721a85c98a9c01b97d257edddff833ba63b7b1f0b9b4d6e9"},
+    {file = "google-cloud-storage-2.1.0.tar.gz", hash = "sha256:0a5e7ab1a38d2c24be8e566e50b8b0daa8af8fd49d4ab312b1fda5c147429893"},
+    {file = "google_cloud_storage-2.1.0-py2.py3-none-any.whl", hash = "sha256:53e4f6030d771526e4dbe9c6000cca44eab812f39ae8c7a810be999473e4f02c"},
 ]
 google-crc32c = [
     {file = "google-crc32c-1.3.0.tar.gz", hash = "sha256:276de6273eb074a35bc598f8efbc00c7869c5cf2e29c90748fccc8c898c244df"},
