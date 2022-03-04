@@ -4,7 +4,10 @@ from typing import List, Optional, Union
 from loguru import logger
 from pydantic import BaseSettings, Field, validator
 
+from velo_action.version import generate_version
+
 logger.remove()
+GIT_COMMIT_HASH_LENGTH = 40
 
 
 class Settings(BaseSettings):
@@ -25,25 +28,65 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
+    project: str
     create_release: bool = False
     deploy_to_environments: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
+
     log_level: str = "INFO"
-    octopus_api_key_secret: Optional[str] = None
-    octopus_server_secret: Optional[str] = None
-    project: Optional[str] = None
+    octopus_api_key_secret: str
+    octopus_server_secret: str
+
+    # Optional since it is not needed for local testing
     service_account_key: Optional[str] = None
+
     tenants: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
-    velo_artifact_bucket_secret: Optional[str] = None
+    velo_artifact_bucket_secret: str
     version: Optional[str] = None
     wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
 
     # GITHUB_WORKSPACE is set in GitHub workflows
     workspace: str = Field(None, env=["input_workspace", "github_workspace"])
+
+    commit_id: str = Field(env_var="GITHUB_SHA")
+    branch_name: str = Field(env_var="GITHUB_REF")
+
+    github_server_url: str = Field(env_var="GITHUB_SERVER_URL")
+    github_repository: str = Field(env_var="GITHUB_REPOSITORY")
+
+    @validator("commit_id")
+    def validate_commit_id(cls, value):
+        if not value:
+            raise ValueError("The environment variable GITHUB_SHA must be present.")
+        if len(value) != GIT_COMMIT_HASH_LENGTH:
+            raise ValueError(
+                "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
+            )
+        return value
+
+    @validator("branch_name")
+    def validate_branch_name(cls, value):
+        if not value:
+            raise ValueError(
+                "The environment variable GITHUB_REF must be present, and contain the git branch name."
+            )
+        return value
+
+    @validator("create_release", always=True)
+    def create_release_if_deploy_to_envs(cls, value):
+        if value is None:
+            return generate_version()
+        return value
+
+    @validator("version", always=True)
+    def generate_version_if_no_supplied(cls, _, values):
+        if values["deploy_to_environments"]:
+            return True
+        return False
 
     @validator("deploy_to_environments", "tenants", pre=True)
     def split_list(cls, value):
