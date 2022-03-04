@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-import yaml
 from loguru import logger
 from pydantic import ValidationError
 
@@ -11,7 +10,7 @@ from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
 from velo_action.settings import Settings
-from velo_action.utils import find_matching_version
+from velo_action.utils import find_matching_version, read_app_spec
 from velo_action.version import generate_version
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,24 +100,14 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
                 f"Did not find an app.yml or app.yaml file in '{deploy_folder}'"
             )
 
-        velo_version = None
-        velo_project = None
-        with open(velo_config_path, "r") as file:
-            app_yml = file.read()
-            velo_config = yaml.safe_load(app_yml)
-            velo_version = velo_config.get("version", None)
-            velo_project = velo_config.get("project", None)
-
-        assert (
-            velo_project is not None
-        ), "The velo project name is missing, ensure theres a top level project in the projects app.yml."
+        velo_settings = read_app_spec(velo_config_path)
 
         logger.info(
-            f"Uploading artifacts to '{velo_artifact_bucket}/{velo_project}/{version}'"
+            f"Uploading artifacts to '{velo_artifact_bucket}/{velo_settings.project}/{version}'"
         )
 
         gcloud.upload_from_directory(
-            deploy_folder, velo_artifact_bucket, f"{velo_project}/{version}"
+            deploy_folder, velo_artifact_bucket, f"{velo_settings.project}/{version}"
         )
 
         commit_id = os.getenv("GITHUB_SHA")
@@ -139,16 +128,18 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
             "commit_url": f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{commit_id}",
         }
         logger.info(
-            f"Creating a release for project '{velo_project}' with version '{version}'"
+            f"Creating a release for project '{velo_settings.project}' with version '{version}'"
         )
 
         release = Release(client=octo)
 
-        velo_versions = release.list_available_deploy_packages()
-        matching_velo_version = find_matching_version(velo_versions, velo_version)
+        velo_bootstrapper_versions = release.list_available_deploy_packages()
+        matching_velo_version = find_matching_version(
+            velo_bootstrapper_versions, velo_settings.verison
+        )
 
         release.create(
-            project_name=velo_project,
+            project_name=velo_settings.project,
             version=version,
             notes=release_note_dict,
             velo_version=matching_velo_version,
@@ -163,13 +154,13 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
 
         for env in input_args.deploy_to_environments:
             for ten in tenants:
-                log = f"Deploying project '{velo_project}' version '{version}' to '{env}' "
+                log = f"Deploying project '{velo_settings.project}' version '{version}' to '{env}' "
                 if ten:
                     log += f"for tenant '{ten}'"
                 logger.info(log)
 
                 deploy = Deployment(
-                    project_name=velo_project,
+                    project_name=velo_settings.project,
                     version=version,
                     client=octo,
                 )
