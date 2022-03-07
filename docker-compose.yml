@@ -7,7 +7,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: env.dev-vars
+    env_file: .env
     environment:
       INPUT_WORKSPACE: /github/workspace
     volumes:
