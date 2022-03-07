@@ -9,7 +9,7 @@ from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
-from velo_action.settings import Settings
+from velo_action.settings import VELO_TRACE_ID_NAME, GithubSettings, Settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,7 +18,9 @@ VELO_PROJECT_NAME = "nube-velo-prod"
 LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
-def action(args: Settings):  # pylint: disable=too-many-branches
+def action(
+    args: Settings,
+):  # pylint: disable=too-many-branches
 
     logger.add(sys.stdout, level=args.log_level, format=LOG_FORMAT)
 
@@ -29,6 +31,7 @@ def action(args: Settings):  # pylint: disable=too-many-branches
         logger.exception("Starting trace failed", exc_info=err)
 
     logger.info("Starting velo-action")
+
     os.chdir(args.workspace)
 
     logger.info(f"Deploy to environments: {args.deploy_to_environments}")
@@ -82,7 +85,7 @@ def action(args: Settings):  # pylint: disable=too-many-branches
     if args.deploy_to_environments:
         deploy_vars = {}
         if trace_id:
-            deploy_vars["GithubSpanID"] = trace_id
+            deploy_vars[VELO_TRACE_ID_NAME] = trace_id
 
         tenants = args.tenants or [None]  # type: ignore
 
@@ -110,16 +113,20 @@ def action(args: Settings):  # pylint: disable=too-many-branches
 
 def create_release_notes(args: Settings) -> str:
     return (
-        f"Commit: {args.commit_id}"
-        f"Branch name: {args.branch_name}"
-        f"Commit url: {args.github_server_url}/{args.github_repository}/commit/{args.commit_id}"
+        f"Commit: {args.gh.github_sha}"
+        f"Branch name: {args.gh.github_ref_name}"
+        f"Commit url: {args.gh.github_server_url}/{args.gh.github_repository}/commit/{args.gh.github_sha}"
     )
 
 
 if __name__ == "__main__":
     try:
-        s = Settings()
+        gh = GithubSettings()
+
+        s = Settings(gh=gh)
+
     except pydantic.ValidationError as err:
         logger.error(err)
         sys.exit(1)
+
     action(s)

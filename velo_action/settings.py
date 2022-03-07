@@ -7,11 +7,60 @@ from pydantic import BaseSettings, Field, validator
 from velo_action.version import generate_version
 
 logger.remove()
+
+SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
+VELO_TRACE_ID_NAME = "VeloTraceID"
+
+
+class GithubSettings(BaseSettings):
+    """[Github Actions Workflow environment variables]
+
+    Required environment variables. These are present by default in the
+    Github Actions workflow.
+
+    See list of available Github ACtion Env vars
+    https://docs.github.com/en/actions/learn-github-actions/environment-variables
+
+    NB: This is a seperate class since these fields do not have the 'INPUT_' prefix.
+    """
+
+    # pylint: disable=no-self-argument,no-self-use
+
+    github_sha: str = Field(
+        env_var="GITHUB_SHA",
+        description="The commit SHA that triggered the workflow. "
+        "For example, ffac537e6cbbf934b08745a378932722df287a53.",
+    )
+
+    github_ref_name: str = Field(
+        env_var="GITHUB_REF_NAME",
+        description="The branch or tag name that triggered the workflow run. For example, feature-branch-1.",
+    )
+
+    github_server_url: str = Field(
+        env_var="GITHUB_SERVER_URL",
+        description="The URL of the GitHub server. For example: https://github.com.",
+    )
+
+    github_repository: str = Field(
+        env_var="GITHUB_REPOSITORY",
+        description="The owner and repository name. For example, octocat/Hello-World.",
+    )
+
+    @validator("github_sha")
+    def validate_commit_id(cls, value):
+        if not value:
+            raise ValueError("The environment variable GITHUB_SHA must be present.")
+        if len(value) != GIT_COMMIT_HASH_LENGTH:
+            raise ValueError(
+                "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
+            )
+        return value
 
 
 class Settings(BaseSettings):
-    """[Parse input arguments]
+    """[Parse action input arguments]
 
     The Github action only provides input arguments to the container as environment variables,
     with INPUT_ prefix on the argument name.
@@ -33,10 +82,18 @@ class Settings(BaseSettings):
     deploy_to_environments: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
-
+    version: Optional[str] = None
     log_level: str = "INFO"
-    octopus_api_key_secret: str
-    octopus_server_secret: str
+    workspace: str = Field(
+        env_var=["INPUT_WORKSPACE", "GITHUB_WORKSPACE"],
+        description="'INPUT_WORKSPACE' from the action takes precidence. "
+        "If this is not set use the 'GITHUB_WORKSPACE' which contain the path to the repo root.",
+    )
+
+    # GCP Secret name.
+    # The secrets are fetched at runtime.
+    octopus_api_key_secret: str = "velo_action_octopus_api_key"
+    octopus_server_secret: str = "velo_action_octopus_server"
 
     # Optional since it is not needed for local testing
     service_account_key: Optional[str] = None
@@ -44,37 +101,13 @@ class Settings(BaseSettings):
     tenants: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
-    velo_artifact_bucket_secret: str
-    version: Optional[str] = None
+
+    velo_artifact_bucket_secret: str = "velo_action_artifacts_bucket_name"
+
     wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
 
-    # GITHUB_WORKSPACE is set in GitHub workflows
-    workspace: str = Field(None, env=["input_workspace", "github_workspace"])
-
-    commit_id: str = Field(env_var="GITHUB_SHA")
-    branch_name: str = Field(env_var="GITHUB_REF")
-
-    github_server_url: str = Field(env_var="GITHUB_SERVER_URL")
-    github_repository: str = Field(env_var="GITHUB_REPOSITORY")
-
-    @validator("commit_id")
-    def validate_commit_id(cls, value):
-        if not value:
-            raise ValueError("The environment variable GITHUB_SHA must be present.")
-        if len(value) != GIT_COMMIT_HASH_LENGTH:
-            raise ValueError(
-                "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
-            )
-        return value
-
-    @validator("branch_name")
-    def validate_branch_name(cls, value):
-        if not value:
-            raise ValueError(
-                "The environment variable GITHUB_REF must be present, and contain the git branch name."
-            )
-        return value
+    gh: GithubSettings
 
     @validator("create_release", always=True)
     def create_release_if_deploy_to_envs(cls, value):
