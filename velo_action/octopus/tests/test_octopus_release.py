@@ -52,7 +52,7 @@ def client():
             "api/releases",
             payload={
                 "ProjectId": "project-1",
-                "ReleaseNotes": '"Notes"',  # Json encoded
+                "ReleaseNotes": "Notes",
                 "Version": "v1.2.3",
             },
             response={
@@ -99,7 +99,7 @@ def test_create_release_without_packages(client):
             "api/releases",
             payload={
                 "ProjectId": "project-1",
-                "ReleaseNotes": '"Notes"',  # Json encoded
+                "ReleaseNotes": "Notes",
                 "SelectedPackages": [{"ActionName": "AnAction", "Version": "v0.1.9"}],
                 "Version": "v1.2.3",
             },

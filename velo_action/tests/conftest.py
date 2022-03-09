@@ -37,6 +37,7 @@ def default_github_settings():
         github_ref_name="main",
         github_server_url="https://github.com",
         github_repository="octocat/Hello-World",
+        github_actor="octocat",
     )
 
 
