@@ -16,8 +16,7 @@ from velo_action.settings import (
     GithubSettings,
     resolve_workspace,
 )
-from velo_action.utils import find_matching_version, read_app_spec
-from velo_action.version import generate_version
+from velo_action.utils import read_app_spec
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,6 +35,12 @@ def action(
     except Exception as err:  # pylint: disable=broad-except
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
+
+    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
+    if not deploy_folder.is_dir():
+        raise SystemExit(
+            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
+        )
 
     logger.info("Starting velo-action")
 
@@ -63,20 +68,12 @@ def action(
         logger.warning("Nothing to do. Exciting now.")
         return
 
-    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)
-
-    if not deploy_folder.is_dir():
-        raise Exception(
-            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
-        )
-
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
-
     if args.create_release:
         velo_settings = read_app_spec(deploy_folder)
 
         logger.info(
-            f"Uploading artifacts to '{velo_artifact_bucket}/{args.project}/{args.version}'"
+            f"Uploading artifacts to '{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
         )
 
         gcloud.upload_from_directory(
@@ -91,16 +88,11 @@ def action(
 
         release = Release(client=octo)
 
-        velo_bootstrapper_versions = release.list_available_deploy_packages()
-        matching_velo_version = find_matching_version(
-            velo_bootstrapper_versions, velo_settings.verison
-        )
-
         release.create(
-            project_name=args.project,
-            version=args.version,
+            project_name=velo_settings.project,
+            project_version=args.version,
             notes=create_release_notes(github_settings),
-            velo_version=matching_velo_version,
+            velo_version=velo_settings.version,
         )
 
     if args.deploy_to_environments:

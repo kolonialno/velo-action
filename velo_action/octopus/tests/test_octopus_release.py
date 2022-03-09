@@ -1,7 +1,7 @@
 import pytest
 
 from velo_action.octopus.client import OctopusClient
-from velo_action.octopus.release import Release
+from velo_action.octopus.release import VELO_BOOTSTRAPPER_PACKAGE_ID, Release
 from velo_action.octopus.tests.test_decorators import Request, mock_client_requests
 from velo_action.settings import VELO_TRACE_ID_NAME
 
@@ -228,7 +228,7 @@ def test_skip_create_existing_release(client):
             "get",
             (
                 "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
-                "packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+                f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false"
             ),
             response={"Items": [{"Version": "0.1.9"}, {"Version": "1.0.0"}]},
         ),

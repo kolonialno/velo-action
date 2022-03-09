@@ -1,10 +1,20 @@
-from typing import List
+from typing import List, Optional
 
 from loguru import logger
+from semantic_version import SimpleSpec
 
 from velo_action.octopus.client import OctopusClient
+from velo_action.utils import find_matching_version
 
 _RELEASE_REGEX = r"^(|\+.*)$"
+
+# This name is set in Octopus deploy when creating the StepTemplate
+# https://octopusdeploy.prod.nube.tech/app#/Spaces-1/library/steptemplates/ActionTemplates-1?activeTab=settings
+VELO_BOOTSTRAPPER_ACTION_NAME = "run velo"
+
+# Id of the uploaded velo-bootstrapper NuGet package
+# https://octopusdeploy.prod.nube.tech/app#/Spaces-1/library/builtinrepository/versions/velo-bootstrapper
+VELO_BOOTSTRAPPER_PACKAGE_ID = "velo-bootstrapper"
 
 
 class Release:
@@ -33,38 +43,52 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(
+    def create(  # pylint: disable=inconsistent-return-statements
         self,
         project_name: str,
-        version: str,
-        velo_version: str = None,
+        project_version: str,
+        velo_version: Optional[SimpleSpec] = None,
         notes: str = None,
-        auto_select_packages: bool = True,
-    ):
-        if self.exists(project_name, version, client=self._client):
+    ) -> None:
+        if self.exists(project_name, project_version, client=self._client):
             logger.info(
-                f"Release '{version}' already exists at "
-                f"'{self._client._baseurl}/app#/Spaces-1/projects/"
-                f"{project_name}/deployments/releases/{version}'. "  # pylint: disable=protected-access
+                f"Release '{project_version}' already exists at "
+                f"'{self._client._baseurl}/app#/Spaces-1/projects/"  # pylint: disable=protected-access
+                f"{project_name}/deployments/releases/{project_version}'. "
                 "Skipping..."
             )
             return None
         project_id = self._client.lookup_project_id(project_name)
 
         packages = []
-        if velo_version is None:
+
+        version = self._resolve_velo_bootstrapper_version(velo_version)
+        if version is None:
             packages = self._determine_latest_deploy_packages(project_id)
         else:
-            packages.append({"ActionName": "run velo", "Version": velo_version})
+            packages.append(
+                {"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": version}
+            )
 
         payload = {
             "ProjectId": project_id,
-            "Version": version,
+            "Version": project_version,
             "ReleaseNotes": notes,
             "SelectedPackages": packages,
         }
 
         self._octo_object = self._client.post("api/releases", data=payload)
+
+    def _resolve_velo_bootstrapper_version(
+        self, velo_version: SimpleSpec
+    ) -> Optional[SimpleSpec]:
+        """Verifies that 'velo-bootstrapper' package in Ocopus Deploy exists with a
+        'velo_version'.
+
+        If not return None.
+        """
+        velo_bootstrapper_versions = self.list_available_deploy_packages()
+        return find_matching_version(velo_bootstrapper_versions, velo_version)
 
     def form_variable_id_mapping(self) -> dict:
         """
@@ -110,7 +134,7 @@ class Release:
         packages: dict = self._client.get(
             (
                 "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
-                "packageId=velo-bootstrapper&take=1000&includePreRelease=false&includeReleaseNotes=false"
+                f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false"
             )
         )
 

@@ -7,13 +7,13 @@ def create_release_notes(gh: GithubSettings) -> str:
     Shall be HTML formatted.
     """
     return f"""
-<b>Commit</b>: <a href={gh.github_server_url}/{gh.github_repository}/commit/{gh.github_sha}>{gh.github_sha}</a>
+<b>Commit</b>: <a href={gh.server_url}/{gh.repository}/commit/{gh.sha}>{gh.sha}</a>
 <br>
 <br>
-<b>Branch name</b>: <a href={gh.github_server_url}/{gh.github_repository}/tree/{gh.github_ref_name}>{gh.github_ref_name}</a>
+<b>Branch name</b>: <a href={gh.server_url}/{gh.repository}/tree/{gh.ref_name}>{gh.ref_name}</a>
 <br>
 <br>
-<b>Created by </b>: <a href={gh.github_server_url}/{gh.github_actor}>{gh.github_actor}</a>
+<b>Created by </b>: <a href={gh.server_url}/{gh.actor}>{gh.actor}</a>
 """.replace(
         "\n", " "
     )

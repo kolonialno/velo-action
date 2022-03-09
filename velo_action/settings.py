@@ -1,8 +1,10 @@
+# pylint: disable=no-self-argument,no-self-use
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from loguru import logger
-from pydantic import BaseSettings, Field, validator
+from pydantic import BaseModel, BaseSettings, Field, ValidationError, validator
+from semantic_version import SimpleSpec
 
 from velo_action.version import generate_version
 
@@ -11,6 +13,21 @@ logger.remove()
 SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
+APP_SPEC_FILENAME = ["app.yml", "app.yaml"]
+
+
+class VeloSettings(BaseModel):
+    """Model to parse the app.yml config file."""
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    project: str
+    version: Any = Field(..., alias="velo_version")
+
+    @validator("version")
+    def parse_as_semantic_version(cls, value):
+        return SimpleSpec(value)
 
 
 class GithubSettings(BaseSettings):
@@ -26,46 +43,24 @@ class GithubSettings(BaseSettings):
     """
 
     # pylint: disable=no-self-argument,no-self-use
+    class Config:
+        env_prefix = "GITHUB_"
 
-    github_workspace: str = Field(
-        env_var="GITHUB_WORKSPACE",
-        description="The default working directory on the runner for steps, "
-        "and the default location of your repository when using the checkout action. "
-        "For example, /home/runner/work/my-repo-name/my-repo-name.",
-    )
+    workspace: str
+    sha: str
+    ref_name: str
+    server_url: str
+    repository: str
+    actor: str
 
-    github_sha: str = Field(
-        env_var="GITHUB_SHA",
-        description="The commit SHA that triggered the workflow. "
-        "For example, ffac537e6cbbf934b08745a378932722df287a53.",
-    )
-
-    github_ref_name: str = Field(
-        env_var="GITHUB_REF_NAME",
-        description="The branch or tag name that triggered the workflow run. For example, feature-branch-1.",
-    )
-
-    github_server_url: str = Field(
-        env_var="GITHUB_SERVER_URL",
-        description="The URL of the GitHub server. For example: https://github.com.",
-    )
-
-    github_repository: str = Field(
-        env_var="GITHUB_REPOSITORY",
-        description="The owner and repository name. For example, octocat/Hello-World.",
-    )
-
-    github_actor: str = Field(
-        env_var="GITHUB_ACTOR",
-        description="The name of the person or app that initiated the workflow. For example, octocat.",
-    )
-
-    @validator("github_sha")
+    @validator("sha")
     def validate_commit_id(cls, value):
         if not value:
-            raise ValueError("The environment variable GITHUB_SHA must be present.")
+            raise ValidationError(
+                "The environment variable GITHUB_SHA must be present."
+            )
         if len(value) != GIT_COMMIT_HASH_LENGTH:
-            raise ValueError(
+            raise ValidationError(
                 "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
             )
         return value
@@ -89,9 +84,7 @@ class ActionInputs(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
-    project: Optional[str]
     workspace: Optional[str] = None
-
     deploy_to_environments: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
@@ -201,6 +194,6 @@ def resolve_workspace(
     every Github Action Workflow
     """
     if action_inputs.workspace is None:
-        return github_settings.github_workspace
+        return github_settings.workspace
 
     return action_inputs.workspace

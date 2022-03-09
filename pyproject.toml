@@ -50,5 +50,7 @@ exclude = '''
   | build
   | dist
   | migrations
+  | .terraform
+  | temp-deploy
 )/
 '''

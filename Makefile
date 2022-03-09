@@ -52,7 +52,7 @@ mypy:
 	poetry run mypy --config-file=.mypy.ini velo_action
 
 pylint:
-	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
+	poetry run pylint --rcfile=.pylintrc --fail-under=10 velo_action
 
 isort:
 	poetry run isort .

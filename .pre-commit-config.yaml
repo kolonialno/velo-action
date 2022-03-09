@@ -65,4 +65,4 @@ repos:
     hooks:
       - id: pylint
         types: [python]
-        args: ["--rcfile=.pylintrc", "--fail-under=8"]
+        args: ["--rcfile=.pylintrc", "--fail-under=10"]
