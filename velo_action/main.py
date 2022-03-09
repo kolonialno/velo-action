@@ -9,143 +9,110 @@ from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
-from velo_action.settings import Settings
-from velo_action.version import generate_version
+from velo_action.release_note import create_release_notes
+from velo_action.settings import (
+    VELO_TRACE_ID_NAME,
+    ActionInputs,
+    GithubSettings,
+    resolve_workspace,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
 VELO_PROJECT_NAME = "nube-velo-prod"
+LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
-def action(input_args: Settings):  # pylint: disable=too-many-branches
-    # TODO: These kind of logic verifiers (if this then that) should be separated into its own function to make it easily testable
-    if input_args.deploy_to_environments:
-        input_args.create_release = True
-
-    log_format = "{time:YYYY-MM-DD HH:mm:ss} {message}"
-    logger.add(sys.stdout, level=input_args.log_level, format=log_format)
+def action(
+    args: ActionInputs,
+    github_settings: GithubSettings,
+):  # pylint: disable=too-many-branches
 
     try:
-        trace_id = tracing_helpers.start_trace(input_args.service_account_key)  # type: ignore
+        trace_id = tracing_helpers.start_trace(args.service_account_key)  # type: ignore
     except Exception as err:  # pylint: disable=broad-except
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
 
     logger.info("Starting velo-action")
-    os.chdir(input_args.workspace)
 
-    if input_args.service_account_key:
-        logger.info(f"Service account: {input_args.service_account_key[:15]}")
+    # Read secrets early to fail fast
+    gcloud = gcp.GCP(args.service_account_key)
 
-    logger.info(f"Deploy to environments: {input_args.deploy_to_environments}")
+    octopus_server = gcloud.lookup_data(args.octopus_server_secret, VELO_PROJECT_NAME)
+    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, VELO_PROJECT_NAME)
+    velo_artifact_bucket = gcloud.lookup_data(
+        args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
+    )
 
-    if input_args.tenants:
-        logger.info(f"Tenants: {input_args.tenants}")
+    os.chdir(args.workspace)
 
-    logger.info(f"Create release: {input_args.create_release}")
+    logger.info(f"Deploy to environments: {args.deploy_to_environments}")
+    if args.tenants:
+        logger.info(f"Tenants: {args.tenants}")
 
-    if input_args.version is None:
-        version = generate_version()
-    else:
-        version = input_args.version
+    logger.info(f"Create release: {args.create_release}")
+    logger.info(f"Version: {args.version}")
 
-    logger.info(f"Version: {version}")
-    github.actions_output("version", version)
+    github.actions_output("version", args.version)
 
-    if not input_args.create_release and not input_args.deploy_to_environments:
+    if not args.create_release and not args.deploy_to_environments:
         logger.warning("Nothing to do. Exciting now.")
         return
 
-    deploy_folder = Path.joinpath(Path(input_args.workspace), VELO_DEPLOY_FOLDER_NAME)
+    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)
 
     if not deploy_folder.is_dir():
         raise Exception(
-            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{input_args.workspace}'."
+            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
         )
-
-    if not input_args.octopus_server_secret:
-        raise ValueError("Octopus server secret not specified")
-    if not input_args.octopus_api_key_secret:
-        raise ValueError("Octopus api key secret not specified")
-    if not input_args.velo_artifact_bucket_secret:
-        raise ValueError("Artifact bucket secret not specified")
-    if not input_args.project:
-        raise ValueError("Project not specified")
-    if not input_args.service_account_key:
-        logger.warning("GCP service account key not specified")
-
-    gcloud = gcp.GCP(input_args.service_account_key)
-    octopus_server = gcloud.lookup_data(
-        input_args.octopus_server_secret, VELO_PROJECT_NAME
-    )
-    octopus_api_key = gcloud.lookup_data(
-        input_args.octopus_api_key_secret, VELO_PROJECT_NAME
-    )
-    velo_artifact_bucket = gcloud.lookup_data(
-        input_args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
-    )
 
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
 
-    if input_args.create_release:
+    if args.create_release:
         logger.info(
-            f"Uploading artifacts to '{velo_artifact_bucket}/{input_args.project}/{version}'"
+            f"Uploading artifacts to '{velo_artifact_bucket}/{args.project}/{args.version}'"
         )
         gcloud.upload_from_directory(
-            deploy_folder, velo_artifact_bucket, f"{input_args.project}/{version}"
+            deploy_folder, velo_artifact_bucket, f"{args.project}/{args.version}"
         )
 
-        commit_id = os.getenv("GITHUB_SHA")
-        branch_name = os.getenv("GITHUB_REF")
-        assert (
-            commit_id is not None
-        ), "The environment variable GITHUB_SHA must be present."
-        assert (
-            len(commit_id) == 40
-        ), "The environment variable GITHUB_SHA must contain the full git commit hash with 40 characters."
-        assert (
-            branch_name is not None
-        ), "The environment variable GITHUB_REF must be present, and contain the git branch name."
-
-        release_note_dict = {
-            "commit_id": commit_id,
-            "branch_name": branch_name,
-            "commit_url": f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{commit_id}",
-        }
         logger.info(
-            f"Creating a release for project '{input_args.project}' with version '{version}'"
+            f"Creating a release for project '{args.project}' with version '{args.version}'"
         )
 
         release = Release(client=octo)
         release.create(
-            project_name=input_args.project, version=version, notes=release_note_dict
+            project_name=args.project,
+            version=args.version,
+            notes=create_release_notes(github_settings),
         )
 
-    if input_args.deploy_to_environments:
+    if args.deploy_to_environments:
         deploy_vars = {}
         if trace_id:
-            deploy_vars["GithubSpanID"] = trace_id
+            deploy_vars[VELO_TRACE_ID_NAME] = trace_id
 
-        tenants = input_args.tenants or [None]  # type: ignore
+        tenants = args.tenants or [None]  # type: ignore
 
-        for env in input_args.deploy_to_environments:
+        for env in args.deploy_to_environments:
             for ten in tenants:
-                log = f"Deploying project '{input_args.project}' version '{version}' to '{env}' "
+                log = f"Deploying project '{args.project}' version '{args.version}' to '{env}' "
                 if ten:
                     log += f"for tenant '{ten}'"
                 logger.info(log)
 
                 deploy = Deployment(
-                    project_name=input_args.project,
-                    version=version,
+                    project_name=args.project,
+                    version=args.version,
                     client=octo,
                 )
 
                 deploy.create(
                     env_name=env,
                     tenant=ten,
-                    wait_seconds=input_args.wait_for_success_seconds,
+                    wait_seconds=args.wait_for_success_seconds,
                     variables=deploy_vars,
                 )
     logger.info("Done")
@@ -153,8 +120,14 @@ def action(input_args: Settings):  # pylint: disable=too-many-branches
 
 if __name__ == "__main__":
     try:
-        s = Settings()
+        gh = GithubSettings()
+        s = ActionInputs()
+
+        s.workspace = resolve_workspace(s, gh)
+
     except pydantic.ValidationError as err:
         logger.error(err)
         sys.exit(1)
-    action(s)
+
+    logger.add(sys.stdout, level=s.log_level, format=LOG_FORMAT)
+    action(s, gh)

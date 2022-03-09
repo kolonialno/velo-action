@@ -55,6 +55,7 @@ class GCP:
             if os.path.isfile(local_file):
                 blob = bucket.blob(remote_path)
                 blob.upload_from_filename(local_file)
+                logger.info(f"Uploading {relative_path}")
 
     def lookup_data(self, key, project_id, version=None):
         logger.debug(f"Looking for '{key}' in '{project_id}', with version '{version}'")

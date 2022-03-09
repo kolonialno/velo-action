@@ -16,7 +16,7 @@ from opentelemetry.trace import set_span_in_context
 from velo_action.github import request_github_workflow_data
 
 
-def init_tracer(service_acc_key: str, service="velo-action"):
+def init_tracer(service_acc_key: str, service: str) -> TracerProvider:
     trace.set_tracer_provider(
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )

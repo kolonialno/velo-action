@@ -1,9 +1,9 @@
 import json
-from dis import disco
 
 from loguru import logger
 
 from velo_action.octopus.client import OctopusClient
+from velo_action.settings import ActionInputs
 
 _RELEASE_REGEX = r"^(|\+.*)$"
 
@@ -34,7 +34,13 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(self, project_name, version, notes=None, auto_select_packages=True):
+    def create(
+        self,
+        project_name: str,
+        version: str,
+        notes: str = None,
+        auto_select_packages: bool = True,
+    ):
         if self.exists(project_name, version, client=self._client):
             logger.info(
                 f"Release '{version}' already exists at "
@@ -52,7 +58,7 @@ class Release:
         payload = {
             "ProjectId": project_id,
             "Version": version,
-            "ReleaseNotes": json.dumps(notes),
+            "ReleaseNotes": notes,
         }
 
         if packages:
