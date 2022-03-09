@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 from loguru import logger
@@ -34,7 +33,14 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(self, project_name, version, velo_version=None, notes=None):
+    def create(
+        self,
+        project_name: str,
+        version: str,
+        velo_version: str = None,
+        notes: str = None,
+        auto_select_packages: bool = True,
+    ):
         if self.exists(project_name, version, client=self._client):
             logger.info(
                 f"Release '{version}' already exists at "
@@ -54,7 +60,7 @@ class Release:
         payload = {
             "ProjectId": project_id,
             "Version": version,
-            "ReleaseNotes": json.dumps(notes),
+            "ReleaseNotes": notes,
             "SelectedPackages": packages,
         }
 

@@ -20,7 +20,7 @@ class VeloSettings(BaseModel):
         "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/."
 
 
-def read_app_spec(filepath: Path) -> VeloSettings:
+def read_app_spec(deploy_folder: Path) -> VeloSettings:
     """Parse the app.yml
 
     The attribute names to read from the app_spec (app.yml) at the root level.
@@ -28,14 +28,24 @@ def read_app_spec(filepath: Path) -> VeloSettings:
     """
     VELO_VERSION_APP_SPEC_ATTRIBUTE_NAME = "velo_version"
     VELO_PROJECT_APP_SPEC_ATTRIBUTE_NAME = "project"
+    APP_SPEC_FILENAME = ["app.yml", "app.yaml"]
 
-    with open(filepath, "r") as file:
-        app_yml = file.read()
-        velo_config = yaml.safe_load(app_yml)
-        return VeloSettings(
-            version=velo_config.get(VELO_VERSION_APP_SPEC_ATTRIBUTE_NAME, None),
-            version=velo_config.get(VELO_PROJECT_APP_SPEC_ATTRIBUTE_NAME, None),
-        )
+    for filename in APP_SPEC_FILENAME:
+        filepath = Path.joinpath(deploy_folder, filename)
+        if filepath.is_file():
+            with open(filepath, "r") as file:
+                app_yml = file.read()
+                velo_config = yaml.safe_load(app_yml)
+                return VeloSettings.parse_obj(velo_config)
+                # return VeloSettings(
+                #     version=velo_config.get(VELO_VERSION_APP_SPEC_ATTRIBUTE_NAME, None),
+                #     version=velo_config.get(VELO_PROJECT_APP_SPEC_ATTRIBUTE_NAME, None),
+                # )
+        else:
+            raise FileNotFoundError(
+                f"Did not find an app.yml or app.yaml file in '{deploy_folder}'"
+            )
+
 
 
 def find_matching_version(versions: List[str], version_to_match: str) -> Optional[str]:

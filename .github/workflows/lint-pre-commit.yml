@@ -19,11 +19,11 @@ jobs:
           - end-of-file-fixer
           - sort-simple-yaml
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
 
       - uses: pre-commit/action@v2.0.3
         name: ${{ matrix.id }}

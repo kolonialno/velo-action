@@ -3,6 +3,7 @@ import pytest
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import Release
 from velo_action.octopus.tests.test_decorators import Request, mock_client_requests
+from velo_action.settings import VELO_TRACE_ID_NAME
 
 
 @pytest.fixture
@@ -69,7 +70,7 @@ def client():
             "api/releases",
             payload={
                 "ProjectId": "project-1",
-                "ReleaseNotes": '"Notes"',  # Json encoded
+                "ReleaseNotes": "Notes",
                 "SelectedPackages": [{"ActionName": "AnAction", "Version": "v0.1.9"}],
                 "Version": "v1.2.3",
             },
@@ -149,7 +150,7 @@ def test_by_project_name_and_version(client):
                 "Variables": [
                     {
                         "Id": "abcdef0123456789",
-                        "Name": "GithubSpanID",
+                        "Name": VELO_TRACE_ID_NAME,
                     }
                 ]
             },
@@ -158,7 +159,7 @@ def test_by_project_name_and_version(client):
 )
 def test_form_variables(prepared_release):
     var_ids = prepared_release.form_variable_id_mapping()
-    assert var_ids == {"GithubSpanID": "abcdef0123456789"}
+    assert var_ids == {VELO_TRACE_ID_NAME: "abcdef0123456789"}
 
 
 @mock_client_requests(

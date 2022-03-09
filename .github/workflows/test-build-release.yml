@@ -17,14 +17,14 @@ jobs:
     name: Test
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Read .tool-versions
         uses: marocchino/tool-versions-action@v1
         id: versions
 
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ steps.versions.outputs.python }}
 
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-20.04
     name: Build & push image
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         name: Checkout
         with:
           fetch-depth: 0 # required to get a unique ref
@@ -91,11 +91,11 @@ jobs:
       - test
       - build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # required to get a unique ref
 
-      - uses: kolonialno/velo-action@v0.3.0
+      - uses: kolonialno/velo-action@v0.4.0
         with:
           create_release: 'True'
           project: velo-action
