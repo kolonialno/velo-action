@@ -31,26 +31,6 @@ resource "google_storage_bucket_iam_member" "velo_action_storage_admin_nube_hub"
   member = "serviceAccount:${google_service_account.velo_action.email}"
 }
 
-// allow velo_action gsa to push and pull images to nube-artifacts registry
-resource "google_artifact_registry_repository_iam_member" "velo_action_nube_docker_public_registry_writer_access" {
-  provider   = google-beta
-  project    = "nube-artifacts-${var.environment}"
-  location   = "europe"
-  repository = "nube-container-images-public"
-  role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:${google_service_account.velo_action.email}"
-}
-
-// allow velo_action gsa to push and pull images to nube-artifacts registry
-resource "google_artifact_registry_repository_iam_member" "velo_action_nube_docker_registry_writer_access" {
-  provider   = google-beta
-  project    = "nube-artifacts-${var.environment}"
-  location   = "europe"
-  repository = "nube-container-images"
-  role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:${google_service_account.velo_action.email}"
-}
-
 // allow velo_action gsa to push and pull images to nube-hub artifacts registry
 resource "google_artifact_registry_repository_iam_member" "docker_public_registry_writer_access" {
   provider   = google-beta
