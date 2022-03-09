@@ -20,13 +20,13 @@ image_size:
 	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
 
 run:
-	. ./.env.dev && poetry run python velo_action/main.py
+	. ./env.dev && poetry run python velo_action/main.py
 
 run_docker:
-	. ./.env.dev && docker-compose build && docker-compose run --rm velo-action
+	. ./env.dev && docker-compose build && docker-compose run --rm velo-action
 
 run_docker_shell:
-	. ./.env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
+	. ./env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
 
 velo_render_staging:
 	velo deploy-local-dir --environment staging

@@ -27,6 +27,13 @@ class GithubSettings(BaseSettings):
 
     # pylint: disable=no-self-argument,no-self-use
 
+    github_workspace: str = Field(
+        env_var="GITHUB_WORKSPACE",
+        description="The default working directory on the runner for steps, "
+        "and the default location of your repository when using the checkout action. "
+        "For example, /home/runner/work/my-repo-name/my-repo-name.",
+    )
+
     github_sha: str = Field(
         env_var="GITHUB_SHA",
         description="The commit SHA that triggered the workflow. "
@@ -48,6 +55,11 @@ class GithubSettings(BaseSettings):
         description="The owner and repository name. For example, octocat/Hello-World.",
     )
 
+    github_actor: str = Field(
+        env_var="GITHUB_ACTOR",
+        description="The name of the person or app that initiated the workflow. For example, octocat.",
+    )
+
     @validator("github_sha")
     def validate_commit_id(cls, value):
         if not value:
@@ -59,7 +71,7 @@ class GithubSettings(BaseSettings):
         return value
 
 
-class Settings(BaseSettings):
+class ActionInputs(BaseSettings):
     """[Parse action input arguments]
 
     The Github action only provides input arguments to the container as environment variables,
@@ -77,23 +89,21 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
-    project: str
-    create_release: bool = False
+    project: Optional[str]
+
     deploy_to_environments: Union[
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
+    create_release: bool = False
     version: Optional[str] = None
-    log_level: str = "INFO"
-    workspace: str = Field(
-        env_var=["INPUT_WORKSPACE", "GITHUB_WORKSPACE"],
-        description="'INPUT_WORKSPACE' from the action takes precidence. "
-        "If this is not set use the 'GITHUB_WORKSPACE' which contain the path to the repo root.",
-    )
 
-    # GCP Secret name.
+    log_level: str = "INFO"
+
+    workspace: str = Field(default=None, env_var=["INPUT_WORKSPACE"])
+
     # The secrets are fetched at runtime.
-    octopus_api_key_secret: str = "velo_action_octopus_api_key"
-    octopus_server_secret: str = "velo_action_octopus_server"
+    octopus_api_key_secret: Optional[str] = "velo_action_octopus_api_key"
+    octopus_server_secret: Optional[str] = "velo_action_octopus_server"
 
     # Optional since it is not needed for local testing
     service_account_key: Optional[str] = None
@@ -102,24 +112,25 @@ class Settings(BaseSettings):
         str, List[str]
     ] = []  # see https://github.com/samuelcolvin/pydantic/issues/1458
 
-    velo_artifact_bucket_secret: str = "velo_action_artifacts_bucket_name"
+    velo_artifact_bucket_secret: Optional[str] = "velo_action_artifacts_bucket_name"
 
     wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
 
-    gh: GithubSettings
-
     @validator("create_release", always=True)
-    def create_release_if_deploy_to_envs(cls, value):
-        if value is None:
-            return generate_version()
-        return value
+    def validate_create_release(cls, value, values):
+        if value is True:
+            return True
 
-    @validator("version", always=True)
-    def generate_version_if_no_supplied(cls, _, values):
         if values["deploy_to_environments"]:
             return True
         return False
+
+    @validator("version", always=True)
+    def generate_version_if_no_supplied(cls, value):
+        if value is None:
+            return generate_version()
+        return value
 
     @validator("deploy_to_environments", "tenants", pre=True)
     def split_list(cls, value):
@@ -159,7 +170,7 @@ class Settings(BaseSettings):
     @validator("workspace")
     def absolute_path(cls, value):
         if value is None:
-            value = "."
+            return None
 
         path = Path(value).expanduser().resolve()
         if not path.exists():
@@ -178,3 +189,20 @@ class Settings(BaseSettings):
             if not values["wait_for_success_seconds"]:
                 values["wait_for_success_seconds"] = 600
         return False
+
+
+def resolve_workspace(
+    action_inputs: ActionInputs, github_settings: GithubSettings
+) -> str:
+    """Use the workspace from the input arguments or the github settings.
+
+    If `INPUT_WORKSPACE' from the action.yml is not set. We assume the `.deploy` folder
+    is in the repo root.
+
+    Path to this is given by the env var 'GITHUB_WORKSPACE' which is present in
+    every Github Action Workflow
+    """
+    if action_inputs.workspace is None:
+        return github_settings.github_workspace
+
+    return action_inputs.workspace

@@ -9,7 +9,13 @@ from velo_action import gcp, github, tracing_helpers
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
-from velo_action.settings import VELO_TRACE_ID_NAME, GithubSettings, Settings
+from velo_action.release_note import create_release_notes
+from velo_action.settings import (
+    VELO_TRACE_ID_NAME,
+    ActionInputs,
+    GithubSettings,
+    resolve_workspace,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,10 +25,9 @@ LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
 def action(
-    args: Settings,
+    args: ActionInputs,
+    github_settings: GithubSettings,
 ):  # pylint: disable=too-many-branches
-
-    logger.add(sys.stdout, level=args.log_level, format=LOG_FORMAT)
 
     try:
         trace_id = tracing_helpers.start_trace(args.service_account_key)  # type: ignore
@@ -31,6 +36,15 @@ def action(
         logger.exception("Starting trace failed", exc_info=err)
 
     logger.info("Starting velo-action")
+
+    # Read secrets early to fail fast
+    gcloud = gcp.GCP(args.service_account_key)
+
+    octopus_server = gcloud.lookup_data(args.octopus_server_secret, VELO_PROJECT_NAME)
+    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, VELO_PROJECT_NAME)
+    velo_artifact_bucket = gcloud.lookup_data(
+        args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
+    )
 
     os.chdir(args.workspace)
 
@@ -54,14 +68,6 @@ def action(
             f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
         )
 
-    gcloud = gcp.GCP(args.service_account_key)
-
-    octopus_server = gcloud.lookup_data(args.octopus_server_secret, VELO_PROJECT_NAME)
-    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, VELO_PROJECT_NAME)
-    velo_artifact_bucket = gcloud.lookup_data(
-        args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
-    )
-
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
 
     if args.create_release:
@@ -72,14 +78,15 @@ def action(
             deploy_folder, velo_artifact_bucket, f"{args.project}/{args.version}"
         )
 
-        release_note_dict = create_release_notes(args)
         logger.info(
             f"Creating a release for project '{args.project}' with version '{args.version}'"
         )
 
         release = Release(client=octo)
         release.create(
-            project_name=args.project, version=args.version, notes=release_note_dict
+            project_name=args.project,
+            version=args.version,
+            notes=create_release_notes(github_settings),
         )
 
     if args.deploy_to_environments:
@@ -111,22 +118,16 @@ def action(
     logger.info("Done")
 
 
-def create_release_notes(args: Settings) -> str:
-    return (
-        f"Commit: {args.gh.github_sha}"
-        f"Branch name: {args.gh.github_ref_name}"
-        f"Commit url: {args.gh.github_server_url}/{args.gh.github_repository}/commit/{args.gh.github_sha}"
-    )
-
-
 if __name__ == "__main__":
     try:
         gh = GithubSettings()
+        s = ActionInputs()
 
-        s = Settings(gh=gh)
+        s.workspace = resolve_workspace(s, gh)
 
     except pydantic.ValidationError as err:
         logger.error(err)
         sys.exit(1)
 
-    action(s)
+    logger.add(sys.stdout, level=s.log_level, format=LOG_FORMAT)
+    action(s, gh)
