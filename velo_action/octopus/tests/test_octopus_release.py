@@ -269,9 +269,7 @@ def test_create_octopus_package_payload_no_velo_version(prepared_release):
     """When a velo_version does not exist. Exit with an error"""
     # pylint: disable=protected-access
     with pytest.raises(SystemExit):
-        prepared_release._create_octopus_package_payload(
-            prepared_release.project_id(), SimpleSpec("0.0.1")
-        )
+        prepared_release._create_octopus_package_payload(SimpleSpec("0.0.1"))
 
 
 @mock_client_requests(
@@ -289,6 +287,6 @@ def test_create_octopus_package_payload_no_velo_version(prepared_release):
 def test_create_octopus_package_payload_with_velo_version(prepared_release):
     """When a velo_version is spesified, use that verison"""
     # pylint: disable=protected-access
-    assert prepared_release._create_octopus_package_payload(
-        prepared_release.project_id(), SimpleSpec("0.1.9")
-    ) == [{"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": "0.1.9"}]
+    assert prepared_release._create_octopus_package_payload(SimpleSpec("0.1.9")) == [
+        {"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": "0.1.9"}
+    ]
