@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import List, Optional
 
@@ -32,12 +33,12 @@ def read_app_spec(deploy_folder: Path) -> VeloSettings:  # type: ignore  # pylin
     except Exception as error:  # pylint: disable=broad-except
         # This allows for custom exit message when the app.yml is not valid.
         if error.args[0][0]._loc == "project":  # pylint: disable=protected-access
-            raise SystemExit(  # pylint: disable=raise-missing-from
+            sys.exit(  # pylint: disable=raise-missing-from
                 "'project' field is required in the AppSpec (app.yml). "
                 "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
             )
         if error.args[0][0]._loc == "velo_version":  # pylint: disable=protected-access
-            raise SystemExit(  # pylint: disable=raise-missing-from
+            sys.exit(  # pylint: disable=raise-missing-from
                 "'velo_version' field is required in the AppSpec (app.yml). "
                 "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
             )

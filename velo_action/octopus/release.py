@@ -1,7 +1,8 @@
-from typing import List, Optional
+import sys
+from typing import Dict, List, Optional
 
 from loguru import logger
-from semantic_version import SimpleSpec
+from semantic_version import SimpleSpec, Version
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.utils import find_matching_version
@@ -47,9 +48,13 @@ class Release:
         self,
         project_name: str,
         project_version: str,
-        velo_version: Optional[SimpleSpec] = None,
+        velo_version: SimpleSpec,
         notes: str = None,
     ) -> None:
+        assert isinstance(
+            velo_version, SimpleSpec
+        ), "velo_version is not a SimpleSpec type"
+
         if self.exists(project_name, project_version, client=self._client):
             logger.info(
                 f"Release '{project_version}' already exists at "
@@ -58,37 +63,50 @@ class Release:
                 "Skipping..."
             )
             return None
+
         project_id = self._client.lookup_project_id(project_name)
-
-        packages = []
-
-        version = self._resolve_velo_bootstrapper_version(velo_version)
-        if version is None:
-            packages = self._determine_latest_deploy_packages(project_id)
-        else:
-            packages.append(
-                {"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": version}
-            )
+        package = self._create_octopus_package_payload(velo_version)
 
         payload = {
             "ProjectId": project_id,
             "Version": project_version,
             "ReleaseNotes": notes,
-            "SelectedPackages": packages,
+            "SelectedPackages": package,
         }
 
         self._octo_object = self._client.post("api/releases", data=payload)
 
-    def _resolve_velo_bootstrapper_version(
+    def _create_octopus_package_payload(
         self, velo_version: SimpleSpec
-    ) -> Optional[SimpleSpec]:
-        """Verifies that 'velo-bootstrapper' package in Ocopus Deploy exists with a
-        'velo_version'.
+    ) -> List[Dict[str, str]]:
+        """
+        Determine what version of the Velo-bootstrapper package to use based on the `velo_version`.
 
-        If not return None.
+        If velo_version does not exist fail and exit.
+        """
+        version = self._resolve_velo_bootstrapper_version(velo_version)
+
+        if version is None:
+            sys.exit(
+                f"Velo verison {velo_version} does not exist. "
+                "Make sure the version requirement you set in 'velo_version' in the AppSpec exists. "
+                "You can find Velo releases at https://github.com/kolonialno/velo/releases. "
+                "Exiting..."
+            )
+
+        return [{"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": str(version)}]
+
+    def _resolve_velo_bootstrapper_version(
+        self, version_spec: SimpleSpec
+    ) -> Optional[Version]:
+        """Resolves the 'version_spec' to a valid 'velo-bootstrapper' package in Ocopus Deploy
+
+        If non is found not return None.
         """
         velo_bootstrapper_versions = self.list_available_deploy_packages()
-        return find_matching_version(velo_bootstrapper_versions, velo_version)
+        return find_matching_version(
+            versions=velo_bootstrapper_versions, version_to_match=version_spec
+        )
 
     def form_variable_id_mapping(self) -> dict:
         """
@@ -101,7 +119,7 @@ class Release:
         var_ids = {v["Name"]: v["Id"] for v in variables}
         return var_ids
 
-    def _determine_latest_deploy_packages(self, project_id) -> list:
+    def _determine_latest_deploy_packages(self, project_id) -> List[Dict[str, str]]:
         """
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.

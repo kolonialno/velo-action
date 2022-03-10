@@ -38,7 +38,7 @@ def action(
 
     deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
     if not deploy_folder.is_dir():
-        raise SystemExit(
+        sys.exit(
             f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
         )
 
