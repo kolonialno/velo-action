@@ -4,15 +4,17 @@
 </h1>
 
 <p align="center">
-  A Github Action to create releases
+  A GitHub Action to create releases and trigger deployments
 </p>
 
-This Github actions is part of the Velo deploy system at Oda.
+This GitHub actions is part of the Velo deploy system at Oda.
 
-This repo is public since Github actions does not yet [support actions in private repos](https://github.com/github/roadmap/issues/74).
+This repo is public since GitHub actions does not yet
+[support actions in private repos](https://github.com/github/roadmap/issues/74).
 
 ## Documentation
 
-- [Usage instruction](https://github.com/kolonialno/velo). Found in Velo repo.
+- [Usage instruction](https://github.com/kolonialno/velo)
+- [Development](docs/development.md)
 - [How to perform a new release](docs/release.md)
-- [Changelog](../main/changelog.md)
+- [Changelog](changelog.md)

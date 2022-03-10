@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.4.0 (2022-02-01)
+
+Breaking changes:
+
+- action input `octopus_cli_api_key_secret` is renamed to `octopus_api_key_secret`
+- action input `octopus_cli_server_secret` is renamed to `octopus_server_secret`
+
+Please update your GitHub workflows where needed.
+
+Features:
+
+- New input `wait_for_success_seconds` to specify that the action waits until Octopus Deploy is finished.
+  Deprecates the input `wait_for_deployment`
+
+Other:
+
+- Interact with Octopus Deploy using the API. The Octo CLI is no longer part of the container.
+
 ## v0.3.0 (2021-12-22)
 
 - Remove generation of semantic version numbers (SemVer). Default is now the shortened git

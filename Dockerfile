@@ -3,8 +3,7 @@
 # TLDR; no WORKDIR, must run as USER root
 FROM python:3.10.2-slim as python
 
-ARG OCTOPUSCLI_VERSION='7.4.3437'
-ARG POETRY_VERSION='1.1.6'
+ARG POETRY_VERSION='1.1.12'
 
 RUN apt-get update -y \
     && apt-get install --no-install-recommends -y \
@@ -17,11 +16,9 @@ RUN apt-get update -y \
         wget \
         ca-certificates \
         apt-transport-https \
-    && sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" \
-    && curl -sSfL https://apt.octopus.com/public.key | apt-key add - \
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
-    && apt-get update -y && apt-get install -y octopuscli=$OCTOPUSCLI_VERSION google-cloud-sdk \
+    && apt-get update -y && apt-get install -y google-cloud-sdk \
     && apt-get clean
 
 ENV GITHUB_WORKSPACE '/github/workspace/'
@@ -38,9 +35,7 @@ ENV POETRY_VERSION=$POETRY_VERSION
 
 # Separate dependencies from the rest of the app to
 # take advantage of cached builds
-COPY pyproject.toml /app/pyproject.toml
-COPY poetry.lock /app/poetry.lock
-COPY poetry.toml /app/poetry.toml
+COPY pyproject.toml poetry.lock poetry.toml /app/
 
 # When using image as devcontainer have the option to install dev dependencies
 ARG POETRY_INSTALL_ARGS='--no-dev'

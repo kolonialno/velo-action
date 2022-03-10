@@ -1,9 +1,3 @@
-# Byte-compiled / optimized / DLL files
-# Distribution / packaging
-# Environments
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-# mypy
-# pyenv
 *$py.class
 *.py[cod]
 .Python
@@ -20,8 +14,7 @@ Makefile
 __pycache__/
 __pypackages__/
 appversion.json
-appversion.json
 appversion.txt
-appversion.txt
-deploy
 key.json
+releasenotes.html
+temp-deploy
