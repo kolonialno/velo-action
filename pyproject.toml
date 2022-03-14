@@ -23,7 +23,7 @@ loguru = "^0.6.0"
 semver = "^2.13.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0"
+pytest = "^7.1"
 black = "^22.1.0"
 flake8 = "^4.0"
 flake8-bugbear = "^22.1"
