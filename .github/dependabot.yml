@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: pip
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"] # ignore patch updates
@@ -13,7 +13,7 @@ updates:
   - package-ecosystem: docker
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"] # ignore patch updates
@@ -22,7 +22,7 @@ updates:
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"] # ignore patch updates
@@ -31,7 +31,7 @@ updates:
   - package-ecosystem: terraform
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"] # ignore patch updates
