@@ -15,6 +15,11 @@ GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
 APP_SPEC_FILENAME = ["app.yml", "app.yaml"]
 
+# Name of the fields in the AppSpec.
+# These must math what is set in the AppSpec in Velo repo.
+APP_SPEC_FIELD_PROJECT = "project"
+APP_SPEC_FIELD_VELO_VERSION = "velo_version"
+
 
 class VeloSettings(BaseModel):
     """Model to parse the app.yml config file."""
@@ -22,11 +27,11 @@ class VeloSettings(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    project: str
-    version_spec: Any = Field(..., alias="velo_version")
+    project: str = Field(..., alias=APP_SPEC_FIELD_PROJECT)
+    version_spec: Any = Field(..., alias=APP_SPEC_FIELD_VELO_VERSION)
 
     @validator("version_spec")
-    def parse_as_semantic_version(cls, value):
+    def parse_as_semantic_version(cls, value) -> SimpleSpec:
         return SimpleSpec(value)
 
 
