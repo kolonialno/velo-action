@@ -23,9 +23,9 @@ class VeloSettings(BaseModel):
         arbitrary_types_allowed = True
 
     project: str
-    version: Any = Field(..., alias="velo_version")
+    version_spec: Any = Field(..., alias="velo_version")
 
-    @validator("version")
+    @validator("version_spec")
     def parse_as_semantic_version(cls, value):
         return SimpleSpec(value)
 
@@ -146,7 +146,7 @@ class ActionInputs(BaseSettings):
         pre=True,
     )
     def normalize_str(cls, value):
-        """normalise the input from github actions so we get _real_ none-values"""
+        """Normalise the input from github actions so we get _real_ none-values"""
         if value in ("None", ""):
             return None
         return value

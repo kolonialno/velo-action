@@ -57,7 +57,7 @@ def test_read_app_spec_file():
             file.flush()
             velo_settings = read_app_spec(Path(tmpdir))
             assert velo_settings.project == "test"
-            assert velo_settings.version == SimpleSpec("1.0.0")
+            assert velo_settings.version_spec == SimpleSpec("1.0.0")
 
 
 @pytest.mark.parametrize("app_spec", ["project: test", "velo_version: 1.0.2"])

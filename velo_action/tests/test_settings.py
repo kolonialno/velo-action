@@ -8,14 +8,14 @@ from semantic_version import SimpleSpec
 from velo_action.settings import GithubSettings, VeloSettings
 
 
-@pytest.mark.parametrize("version", ["1.2.3", ">5.2.1", ">=0.4,<0.5"])
-def test_velo_settings_parse_version_valid(version):
+@pytest.mark.parametrize("version_spec", ["1.2.3", ">5.2.1", ">=0.4,<0.5"])
+def test_velo_settings_parse_version_valid(version_spec):
 
     settings = VeloSettings(
         project="ProjectName",
-        velo_version=version,
+        velo_version=version_spec,
     )
-    assert settings.version == SimpleSpec(version)
+    assert settings.version_spec == SimpleSpec(version_spec)
 
 
 @patch.dict(

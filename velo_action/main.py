@@ -92,7 +92,7 @@ def action(
             project_name=velo_settings.project,
             project_version=args.version,
             notes=create_release_notes(github_settings),
-            velo_version=velo_settings.version,
+            velo_version=velo_settings.version_spec,
         )
 
     if args.deploy_to_environments:
@@ -132,7 +132,8 @@ if __name__ == "__main__":
         s.workspace = resolve_workspace(s, gh)
 
     except ValidationError as err:
-        logger.error(err)
+        # Logger is not instantiated yet
+        print(err)
         sys.exit(1)
 
     logger.add(sys.stdout, level=s.log_level, format=LOG_FORMAT)

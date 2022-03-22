@@ -69,7 +69,7 @@ class GCP:
                     "name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"
                 }
             ).payload.data.decode("utf-8")
-        except PermissionDenied as err:
+        except PermissionDenied:
             msg = (
                 f"Missing permission to access secret '{key}' in project '{project_id}'"
             )
@@ -79,7 +79,7 @@ class GCP:
                     ". Elevate your permissions with:\nklipy power elevate --group "
                     "nube.project.editor.nube-velo-prod"
                 )
-            raise RuntimeError(msg) from err
+            raise SystemExit(msg)  # pylint: disable=raise-missing-from
 
         return secret
 
