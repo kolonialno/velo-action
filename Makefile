@@ -12,9 +12,11 @@ tests:
 
 image: image_tag
 	docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:dev
 
 push: image
 	docker push ${IMAGE_NAME}:${IMAGE_TAG}
+	docker push ${IMAGE_NAME}:dev
 
 image_size:
 	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
