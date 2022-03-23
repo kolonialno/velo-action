@@ -134,7 +134,7 @@ def test_create_release_with_packages(client, default_github_settings):
 def test_create_release_with_packages_specific_velo_version(
     client, default_github_settings
 ):
-    """Create a release with a spesific Velo verison that exists"""
+    """Create a release with a spesific Velo version that exists"""
     rel = Release(client)
     with patch(
         "velo_action.octopus.release.create_release_notes", return_value="Notes"
@@ -308,7 +308,7 @@ def test_resolve_velo_bootstrapper_version_exist(prepared_release):
 
 
 def test_create_octopus_package_payload_with_velo_version(prepared_release):
-    """When a velo_version is spesified, use that verison"""
+    """When a velo_version is spesified, use that version"""
     assert prepared_release._create_octopus_package_payload(
         package=VELO_BOOTSTRAPPER_ACTION_NAME, version=Version("0.1.9")
     ) == [{"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": "0.1.9"}]

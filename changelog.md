@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.5.0
+## v1.0.0
+
+New major release of Velo-action with a couple of breaking changes.
 
 Breaking changes:
 
@@ -20,7 +22,7 @@ Breaking changes:
 
 - Velo version field in the AppSpec is now required
 
-  Previously each release created would use the latest released Velo verison. This resulted in little transparency to the end-users a lot of errors when new Velo verison where deployed.
+  Previously each release created would use the latest released Velo version. This resulted in little transparency to the end-users a lot of errors when new Velo version where deployed.
 
   You could suddenly have an error from a new Velo release, without you knowing about it.
 
@@ -38,7 +40,7 @@ Breaking changes:
   ```yml
   # .deploy/app.yml
   ...
-  velo_verison: '>0.4,<0.5'
+  velo_version: '>0.4,<0.5'
   vars:
     ...
   ```
@@ -46,7 +48,7 @@ Breaking changes:
   ```yml
   # .deploy/app.yml
   ...
-  velo_verison: '0.4.38
+  velo_version: '0.4.38
   vars:
     ...
   ```

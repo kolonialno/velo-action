@@ -1,6 +1,7 @@
 import base64
 import datetime as dt
 import os
+from typing import Any, Optional
 
 import gcp
 from loguru import logger
@@ -16,7 +17,7 @@ from opentelemetry.trace import set_span_in_context
 from velo_action.github import request_github_workflow_data
 
 
-def init_tracer(service_acc_key: str, service: str) -> TracerProvider:
+def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
     trace.set_tracer_provider(
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
@@ -40,7 +41,7 @@ def init_tracer(service_acc_key: str, service: str) -> TracerProvider:
     return trace.get_tracer(__name__)
 
 
-def print_trace_link(span):
+def print_trace_link(span: Any) -> None:
     trace_host = "https://grafana.infra.nube.tech"
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
@@ -121,7 +122,7 @@ def stringify_span(span):
     return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
 
 
-def construct_github_action_trace(tracer):
+def construct_github_action_trace(tracer) -> Any:
     if os.environ.get("TOKEN") is None:
         logger.info("No github token found to inspect workflows.. Skipping trace!")
         return None
@@ -145,16 +146,6 @@ def construct_github_action_trace(tracer):
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
         if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
-            logger.info("Current wf_span:")
-            logger.info(stringify_span(wf_span_dict["span"]))
+            logger.debug(f"Current wf_span: {stringify_span(wf_span_dict['span'])}")
     span.end(span_dict["end"] or None)
     return span
-
-
-def start_trace(service_acc_key: str) -> str:
-    tracer = init_tracer(service_acc_key, service="velo-action")
-    span = construct_github_action_trace(tracer)
-    if span is None:
-        return "None"
-    print_trace_link(span)
-    return stringify_span(span)

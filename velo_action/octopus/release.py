@@ -78,7 +78,7 @@ class Release:
         velo_version = self._resolve_velo_bootstrapper_version(velo_version_spec)
         if velo_version is None:
             sys.exit(
-                f"Velo verison spec '{velo_version_spec}' does not resolve to a valid Velo version. "
+                f"Velo version spec '{velo_version_spec}' does not resolve to a valid Velo version. "
                 f"Make sure the version requirement you set in '{APP_SPEC_FIELD_VELO_VERSION}' in the AppSpec exists. "
                 f"You can find Velo releases at {VELO_RELEASE_GITUHB_URL}. "
                 "Exiting..."

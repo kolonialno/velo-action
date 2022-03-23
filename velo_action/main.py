@@ -5,7 +5,7 @@ from pathlib import Path
 from loguru import logger
 from pydantic import ValidationError
 
-from velo_action import gcp, github, tracing_helpers
+from velo_action import gcp, github
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
@@ -14,6 +14,12 @@ from velo_action.settings import (
     ActionInputs,
     GithubSettings,
     resolve_workspace,
+)
+from velo_action.tracing_helpers import (
+    construct_github_action_trace,
+    init_tracer,
+    print_trace_link,
+    stringify_span,
 )
 from velo_action.utils import read_velo_settings
 
@@ -31,7 +37,9 @@ def action(
     logger.info("Starting velo-action")
 
     try:
-        trace_id = tracing_helpers.start_trace(args.service_account_key)  # type: ignore
+        tracer = init_tracer(args.service_account_key, service="velo-action")
+        span = construct_github_action_trace(tracer)
+        trace_id = stringify_span(span)
     except Exception as err:  # pylint: disable=broad-except
         trace_id = None
         logger.exception("Starting trace failed", exc_info=err)
@@ -124,6 +132,9 @@ def action(
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
+
+    print_trace_link(span)
+
     logger.info("Done")
     return None
 

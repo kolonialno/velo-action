@@ -54,7 +54,7 @@ def test_read_app_spec_file_not_found():
 
 
 def test_read_app_spec_file_sucess():
-    """Read project and velo_verison from app.yml"""
+    """Read project and velo_version from app.yml"""
     with TemporaryDirectory() as tmpdir:
         filename = Path.joinpath(Path(tmpdir), "app.yml")
         with open(filename, "w", encoding="utf-8") as file:
