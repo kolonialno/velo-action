@@ -14,11 +14,17 @@ SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
 APP_SPEC_FILENAMES = ["app.yml", "app.yaml"]
+VELO_RELEASE_GITUHB_URL = "https://github.com/kolonialno/velo/releases"
+VELO_SEM_VER_SPEC_DOCS_URL = "https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec"
+
 
 # Name of the fields in the AppSpec.
-# These must math what is set in the AppSpec in Velo repo.
+# These must match what is set in the AppSpec in Velo repo.
 APP_SPEC_FIELD_PROJECT = "project"
 APP_SPEC_FIELD_VELO_VERSION = "velo_version"
+
+# Name of the fields in the Velo-bootstrapper.
+VELO_VERSION_VARIABLE_NAME = "VELO_VERSION"
 
 
 class VeloSettings(BaseModel):
@@ -32,7 +38,15 @@ class VeloSettings(BaseModel):
 
     @validator("version_spec")
     def parse_as_semantic_version(cls, value) -> SimpleSpec:
-        return SimpleSpec(value)
+        try:
+            version_spec = SimpleSpec(value)
+            return version_spec
+        except ValueError:
+            raise SystemExit(  # pylint: disable=raise-missing-from
+                f"{APP_SPEC_FIELD_VELO_VERSION}: '{value}' in the AppSpec is not a valid semantic version spesification.\n"
+                f"See {VELO_SEM_VER_SPEC_DOCS_URL} for valid syntax,\n"
+                f"and {VELO_RELEASE_GITUHB_URL} for valid releases."
+            )
 
 
 class GithubSettings(BaseSettings):
@@ -113,6 +127,9 @@ class ActionInputs(BaseSettings):
 
     wait_for_success_seconds: int = 0
     wait_for_deployment: bool = False
+
+    # Variables making debugging easier
+    velo_project: str = "nube-velo-prod"  # Project where Velo secrets are stored
 
     @validator("create_release", always=True)
     def validate_create_release(cls, value, values):

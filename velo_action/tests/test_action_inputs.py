@@ -7,8 +7,8 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
+from velo_action.conftest import fill_default_action_envvars
 from velo_action.settings import ActionInputs, resolve_workspace
-from velo_action.tests.conftest import fill_default_action_envvars
 
 
 @patch("velo_action.settings.generate_version", return_value="4be1d57")

@@ -30,6 +30,12 @@ run_docker:
 run_docker_shell:
 	. ./env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
 
+velo_render_dev:
+	velo deploy-local-dir --environment dev
+
+velo_deploy_dev:
+	velo deploy-local-dir --environment dev --do-deploy
+
 velo_render_staging:
 	velo deploy-local-dir --environment staging
 

@@ -1,5 +1,8 @@
+# pylint: disable=protected-access
+from unittest.mock import patch
+
 import pytest
-from semantic_version import SimpleSpec
+from semantic_version import SimpleSpec, Version
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.release import (
@@ -56,8 +59,8 @@ def client():
             f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false",
             response={"Items": [{"Version": "0.1.9"}, {"Version": "1.0.0"}]},
         ),
-        Request("get", "api/projects/Project-1", response={"Id": "project-1"}),
         Request("head", "api/projects/project-1/releases/1.2.3", response=False),
+        Request("get", "api/projects/Project-1", response={"Id": "project-1"}),
         Request(
             "post",
             "api/releases",
@@ -77,17 +80,20 @@ def client():
         ),
     ]
 )
-def test_create_release_with_packages(client):
+def test_create_release_with_packages(client, default_github_settings):
     """Verify that a release use the lates verion of the velo-bootstrapper package, when
     'velo_version' is not specified.
     """
     rel = Release(client)
-    rel.create(
-        project_name="Project-1",
-        project_version="1.2.3",
-        notes="Notes",
-        velo_version=SimpleSpec("0.1.9"),
-    )
+    with patch(
+        "velo_action.octopus.release.create_release_notes", return_value="Notes"
+    ):
+        rel.create(
+            project_name="Project-1",
+            project_version="1.2.3",
+            github_settings=default_github_settings,
+            velo_version_spec=SimpleSpec("0.1.9"),
+        )
 
     assert rel.id() == "release-1"
     assert rel.project_id() == "project-1"
@@ -125,10 +131,20 @@ def test_create_release_with_packages(client):
         ),
     ]
 )
-def test_create_release_with_packages_specific_velo_version(client):
+def test_create_release_with_packages_specific_velo_version(
+    client, default_github_settings
+):
     """Create a release with a spesific Velo verison that exists"""
     rel = Release(client)
-    rel.create("Project-1", "1.2.3", notes="Notes", velo_version=SimpleSpec(">1.0.0"))
+    with patch(
+        "velo_action.octopus.release.create_release_notes", return_value="Notes"
+    ):
+        rel.create(
+            "Project-1",
+            "1.2.3",
+            github_settings=default_github_settings,
+            velo_version_spec=SimpleSpec(">1.0.0"),
+        )
 
     assert rel.id() == "release-1"
     assert rel.project_id() == "project-1"
@@ -199,7 +215,6 @@ def test_form_variables(prepared_release):
     ]
 )
 def test_determine_latest_deploy_packages(prepared_release):
-    # pylint: disable=protected-access
     assert prepared_release._determine_latest_deploy_packages(
         prepared_release.project_id()
     ) == [{"ActionName": "FirstAction", "Version": "0.1.9"}]
@@ -231,9 +246,14 @@ def test_exists(client):
         Request("head", "api/projects/project-1/releases/1.2.3", response=True),
     ]
 )
-def test_skip_create_existing_release(client):
+def test_skip_create_existing_release(client, default_github_settings):
     rel = Release(client)
-    rel.create("ProjectName", "1.2.3", notes="Notes", velo_version=SimpleSpec(">0.1"))
+    rel.create(
+        "ProjectName",
+        "1.2.3",
+        github_settings=default_github_settings,
+        velo_version_spec=SimpleSpec(">0.1"),
+    )
 
 
 @mock_client_requests(
@@ -265,28 +285,30 @@ def test_list_available_deploy_packages(client):
         ),
     ]
 )
-def test_create_octopus_package_payload_no_velo_version(prepared_release):
+def test_resolve_velo_bootstrapper_version_no_velo_version(prepared_release):
     """When a velo_version does not exist. Exit with an error"""
-    # pylint: disable=protected-access
-    with pytest.raises(SystemExit):
-        prepared_release._create_octopus_package_payload(SimpleSpec("0.0.1"))
+    version = prepared_release._resolve_velo_bootstrapper_version(SimpleSpec("0.0.1"))
+    assert version is None
 
 
 @mock_client_requests(
     [
         Request(
             "get",
-            (
-                "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
-                f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false"
-            ),
+            "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
+            f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false",
             response={"Items": [{"Version": "0.1.9"}, {"Version": "1.0.0"}]},
         ),
     ]
 )
+def test_resolve_velo_bootstrapper_version_exist(prepared_release):
+    """When a velo_version exist, return it"""
+    version = prepared_release._resolve_velo_bootstrapper_version(SimpleSpec("0.1.9"))
+    assert version == Version("0.1.9")
+
+
 def test_create_octopus_package_payload_with_velo_version(prepared_release):
     """When a velo_version is spesified, use that verison"""
-    # pylint: disable=protected-access
-    assert prepared_release._create_octopus_package_payload(SimpleSpec("0.1.9")) == [
-        {"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": "0.1.9"}
-    ]
+    assert prepared_release._create_octopus_package_payload(
+        package=VELO_BOOTSTRAPPER_ACTION_NAME, version=Version("0.1.9")
+    ) == [{"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": "0.1.9"}]

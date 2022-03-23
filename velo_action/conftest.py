@@ -6,7 +6,7 @@ import yaml
 
 from velo_action.settings import ActionInputs, GithubSettings
 
-_ACTION_FILE = os.path.dirname(__file__) + "/../../action.yml"
+_ACTION_FILE = os.path.dirname(__file__) + "/../action.yml"
 
 
 def fill_default_action_envvars(monkeypatch):

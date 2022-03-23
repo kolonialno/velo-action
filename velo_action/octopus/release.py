@@ -5,6 +5,12 @@ from loguru import logger
 from semantic_version import SimpleSpec, Version
 
 from velo_action.octopus.client import OctopusClient
+from velo_action.settings import (
+    APP_SPEC_FIELD_VELO_VERSION,
+    VELO_RELEASE_GITUHB_URL,
+    VELO_VERSION_VARIABLE_NAME,
+    GithubSettings,
+)
 from velo_action.utils import find_matching_version
 
 _RELEASE_REGEX = r"^(|\+.*)$"
@@ -22,7 +28,7 @@ class Release:
     _octo_object: dict = {}
 
     def __init__(self, client=None):
-        self._client: OctopusClient = client
+        self.client: OctopusClient = client
 
     @classmethod
     def from_project_and_version(
@@ -48,54 +54,57 @@ class Release:
         self,
         project_name: str,
         project_version: str,
-        velo_version: SimpleSpec,
-        notes: str = None,
+        velo_version_spec: SimpleSpec,
+        github_settings: GithubSettings,
     ) -> None:
         assert isinstance(
-            velo_version, SimpleSpec
-        ), "velo_version is not a SimpleSpec type"
+            velo_version_spec, SimpleSpec
+        ), "velo_version_spec is not a SimpleSpec type"
 
-        if self.exists(project_name, project_version, client=self._client):
+        if self.exists(project_name, project_version, client=self.client):
             logger.info(
                 f"Release '{project_version}' already exists at "
-                f"'{self._client._baseurl}/app#/Spaces-1/projects/"  # pylint: disable=protected-access
+                f"'{self.client.baseurl}/app#/Spaces-1/projects/"
                 f"{project_name}/deployments/releases/{project_version}'. "
                 "Skipping..."
             )
             return None
 
-        project_id = self._client.lookup_project_id(project_name)
-        package = self._create_octopus_package_payload(velo_version)
+        logger.info(
+            f"Creating a release for project '{project_name}' with version '{project_version}'"
+        )
+        project_id = self.client.lookup_project_id(project_name)
+
+        velo_version = self._resolve_velo_bootstrapper_version(velo_version_spec)
+        if velo_version is None:
+            sys.exit(
+                f"Velo verison spec '{velo_version_spec}' does not resolve to a valid Velo version. "
+                f"Make sure the version requirement you set in '{APP_SPEC_FIELD_VELO_VERSION}' in the AppSpec exists. "
+                f"You can find Velo releases at {VELO_RELEASE_GITUHB_URL}. "
+                "Exiting..."
+            )
+        package = self._create_octopus_package_payload(
+            package=VELO_BOOTSTRAPPER_ACTION_NAME, version=velo_version
+        )
 
         payload = {
             "ProjectId": project_id,
             "Version": project_version,
-            "ReleaseNotes": notes,
+            "ReleaseNotes": create_release_notes(
+                github_settings, project_name, str(velo_version), self.client.baseurl
+            ),
             "SelectedPackages": package,
         }
 
-        self._octo_object = self._client.post("api/releases", data=payload)
+        self._octo_object = self.client.post("api/releases", data=payload)
         return None
 
+    @classmethod
     def _create_octopus_package_payload(
-        self, velo_version: SimpleSpec
+        cls, package: str, version: Version
     ) -> List[Dict[str, str]]:
-        """
-        Determine what version of the Velo-bootstrapper package to use based on the `velo_version`.
-
-        If velo_version does not exist fail and exit.
-        """
-        version = self._resolve_velo_bootstrapper_version(velo_version)
-
-        if version is None:
-            sys.exit(
-                f"Velo verison {velo_version} does not exist. "
-                "Make sure the version requirement you set in 'velo_version' in the AppSpec exists. "
-                "You can find Velo releases at https://github.com/kolonialno/velo/releases. "
-                "Exiting..."
-            )
-
-        return [{"ActionName": VELO_BOOTSTRAPPER_ACTION_NAME, "Version": str(version)}]
+        """Create payload for a Octopus Deploy pacakge to be used in a release."""
+        return [{"ActionName": package, "Version": str(version)}]
 
     def _resolve_velo_bootstrapper_version(
         self, version_spec: SimpleSpec
@@ -115,7 +124,7 @@ class Release:
         """
         links = self._octo_object["Links"]
         path = links["ProjectVariableSnapshot"]
-        project_vars = self._client.get(path)
+        project_vars = self.client.get(path)
         variables = project_vars.get("Variables", [])
         var_ids = {v["Name"]: v["Id"] for v in variables}
         return var_ids
@@ -125,13 +134,13 @@ class Release:
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.
         """
-        template: dict = self._client.get(
+        template: dict = self.client.get(
             f"api/projects/{project_id}/deploymentprocesses/template"
         )
 
         packages = []
         for pkg in template["Packages"]:
-            ver = self._client.get(
+            ver = self.client.get(
                 f"api/feeds/{pkg['FeedId']}/packages/versions?"
                 f"packageId={pkg['PackageId']}&preReleaseTag={_RELEASE_REGEX}&take=1"
             )
@@ -150,7 +159,7 @@ class Release:
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.
         """
-        packages: dict = self._client.get(
+        packages: dict = self.client.get(
             (
                 "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
                 f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false"
@@ -167,3 +176,28 @@ class Release:
     def exists(cls, project_name, version, client):
         project_id = client.lookup_project_id(project_name)
         return client.head(f"api/projects/{project_id}/releases/{version}")
+
+
+def create_release_notes(
+    github: GithubSettings, project_name: str, velo_version: str, octopus_url: str
+) -> str:
+    """Create release notes for a Octopus Deploy"""
+    return f"""
+<b>Commit</b>: <a href={github.server_url}/{github.repository}/commit/{github.sha}>{github.sha}</a>
+<br>
+<br>
+<b>Branch name</b>: <a href={github.server_url}/{github.repository}/tree/{github.ref_name}>{github.ref_name}</a>
+<br>
+<br>
+<b>Created by </b>: <a href={github.server_url}/{github.actor}>{github.actor}</a>
+<br>
+<br>
+<b>Velo version</b>: <a href={VELO_RELEASE_GITUHB_URL}/tag/{velo_version}>{velo_version}</a>
+<br>
+<br>
+The Velo version can be changed by setting the <b>{VELO_VERSION_VARIABLE_NAME}</b>
+variable to a valid <a href={VELO_RELEASE_GITUHB_URL}>release</a> in
+<a href={octopus_url}/app#/Spaces-1/projects/{project_name}/variables>Octopus Project Variables</a>.
+""".replace(
+        "\n", " "
+    )
