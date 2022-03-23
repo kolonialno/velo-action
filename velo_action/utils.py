@@ -8,13 +8,13 @@ from semantic_version import SimpleSpec, Version
 from velo_action.settings import (
     APP_SPEC_FIELD_PROJECT,
     APP_SPEC_FIELD_VELO_VERSION,
-    APP_SPEC_FILENAME,
+    APP_SPEC_FILENAMES,
     VeloSettings,
 )
 
 
 def resolve_app_spec_filename(deploy_folder: Path) -> Path:
-    for filename in APP_SPEC_FILENAME:
+    for filename in APP_SPEC_FILENAMES:
         filepath = Path.joinpath(deploy_folder, filename)
         if filepath.is_file():
             return filepath
@@ -31,12 +31,8 @@ def read_file(file: Path):
         return stream.read()
 
 
-def read_app_spec(deploy_folder: Path) -> VeloSettings:  # type: ignore  # pylint: disable=inconsistent-return-statements
-    """Parse the app.yml
-
-    The attribute names to read from the app_spec (app.yml) at the root level.
-    These must not be changed unless Velo is also changed.
-    """
+def read_velo_settings(deploy_folder: Path) -> VeloSettings:
+    """Parse the AppSpec (app.yml)"""
     filepath = resolve_app_spec_filename(deploy_folder)
 
     project = read_field_from_app_spec(APP_SPEC_FIELD_PROJECT, filepath)
@@ -55,17 +51,17 @@ def read_app_spec(deploy_folder: Path) -> VeloSettings:  # type: ignore  # pylin
     return VeloSettings(project=project, velo_version=velo_version)
 
 
-def read_field_from_app_spec(field: str, app_spec_filename: Path) -> Optional[str]:
+def read_field_from_app_spec(field: str, filename: Path) -> Optional[str]:
     """Read the project field from the app.yml.
 
     Cannot assume the app.yml is rendered,
     hence we cannot read the files as YAML.
     """
-    with open(app_spec_filename, encoding="utf-8") as file:
+    with open(filename, encoding="utf-8") as file:
         lines = file.readlines()
         for line in lines:
             if line.startswith(f"{field}:"):
-                return line.split(":")[1].strip()
+                return line.split(":")[1].strip().strip('"').strip("'")
     return None
 
 

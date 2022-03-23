@@ -16,7 +16,7 @@ from velo_action.settings import (
     GithubSettings,
     resolve_workspace,
 )
-from velo_action.utils import read_app_spec
+from velo_action.utils import read_velo_settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,7 +70,7 @@ def action(
 
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
     if args.create_release:
-        velo_settings = read_app_spec(deploy_folder)
+        velo_settings = read_velo_settings(deploy_folder)
 
         logger.info(
             f"Uploading artifacts to '{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"

@@ -44,7 +44,7 @@ class Release:
     def version(self) -> str:
         return self._octo_object.get("Version", "")
 
-    def create(  # pylint: disable=inconsistent-return-statements
+    def create(
         self,
         project_name: str,
         project_version: str,
@@ -75,6 +75,7 @@ class Release:
         }
 
         self._octo_object = self._client.post("api/releases", data=payload)
+        return None
 
     def _create_octopus_package_payload(
         self, velo_version: SimpleSpec

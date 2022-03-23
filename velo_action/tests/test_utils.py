@@ -1,10 +1,15 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import mock_open, patch
 
 import pytest
 from semantic_version import SimpleSpec, Version
 
-from velo_action.utils import find_matching_version, read_app_spec
+from velo_action.utils import (
+    find_matching_version,
+    read_field_from_app_spec,
+    read_velo_settings,
+)
 
 
 def test_should_find_version_that_is_exact_match():
@@ -45,7 +50,7 @@ def test_should_find_version_that_matches_only_major_highest_minor_low():
 
 def test_read_app_spec_file_not_found():
     with pytest.raises(FileNotFoundError):
-        read_app_spec(Path("/tmp/not-found"))
+        read_velo_settings(Path("/tmp/not-found"))
 
 
 def test_read_app_spec_file_sucess():
@@ -55,18 +60,42 @@ def test_read_app_spec_file_sucess():
         with open(filename, "w", encoding="utf-8") as file:
             file.write("velo_version: 1.0.0\nproject: test\n")
             file.flush()
-            velo_settings = read_app_spec(Path(tmpdir))
+            velo_settings = read_velo_settings(Path(tmpdir))
             assert velo_settings.project == "test"
             assert velo_settings.version_spec == SimpleSpec("1.0.0")
 
 
-@pytest.mark.parametrize("app_spec", ["project: test", "velo_version: 1.0.2"])
+@pytest.mark.parametrize(
+    "app_spec",
+    ['"project": "test"', 'velo_version: "1.0.2"'],
+)
 def test_read_app_spec_file_exit_on_missing_fields(app_spec):
-    """Exit if the project attribute is not present"""
+    """SystemExit if one of the required fields are not present
+
+    Here: project and velo_version
+    """
     with TemporaryDirectory() as temp:
         filename = Path.joinpath(Path(temp), "app.yml")
         with open(filename, "w", encoding="utf-8") as file:
             file.write(app_spec)
             file.flush()
             with pytest.raises(SystemExit):
-                read_app_spec(Path(temp))
+                read_velo_settings(Path(temp))
+
+
+@pytest.mark.parametrize(
+    "app_spec,field,result",
+    [
+        ("project: test", "project", "test"),
+        ("dummy_field: some:test", "dummy_field", "some"),
+        ('velo_version: ">=0.4,<0.5"', "velo_version", ">=0.4,<0.5"),
+        ("velo_version: no_quotes", "velo_version", "no_quotes"),
+        ("velo_version: ~=2.2", "velo_version", "~=2.2"),
+    ],
+)
+def test_read_field_from_app_spec_sucess(app_spec, field, result):
+    """Verify the read field from app spec handles edge cases."""
+
+    with patch("builtins.open", mock_open(read_data=app_spec)):
+        field = read_field_from_app_spec(field=field, filename=Path("/mocked"))
+        assert field == result

@@ -13,7 +13,7 @@ logger.remove()
 SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
-APP_SPEC_FILENAME = ["app.yml", "app.yaml"]
+APP_SPEC_FILENAMES = ["app.yml", "app.yaml"]
 
 # Name of the fields in the AppSpec.
 # These must math what is set in the AppSpec in Velo repo.
