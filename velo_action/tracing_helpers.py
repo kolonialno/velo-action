@@ -29,7 +29,10 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
     if not password:
-        logger.info("Traces cannot be send without password.")
+        raise ValueError(
+            "OTEL_TEMPO_PASSWORD environment variable not set. Traces cannot be send without password."
+        )
+
     basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
@@ -45,7 +48,7 @@ def print_trace_link(span: Any) -> None:
     trace_host = "https://grafana.infra.nube.tech"
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
-    logger.info(
+    print(
         f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
         f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D\n---"
     )
@@ -124,8 +127,9 @@ def stringify_span(span):
 
 def construct_github_action_trace(tracer) -> Any:
     if os.environ.get("TOKEN") is None:
-        logger.info("No github token found to inspect workflows.. Skipping trace!")
-        return None
+        raise ValueError(
+            "TOKEN environment variable not set. Traces cannot be send without token."
+        )
 
     total_action_dict = request_github_workflow_data()
 

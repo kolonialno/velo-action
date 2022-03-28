@@ -34,15 +34,15 @@ def action(
     github_settings: GithubSettings,
 ) -> None:  # pylint: disable=too-many-branches
 
-    logger.info("Starting velo-action")
-
     try:
+        init_trace = False
         tracer = init_tracer(args.service_account_key, service="velo-action")
         span = construct_github_action_trace(tracer)
         trace_id = stringify_span(span)
-    except Exception as err:  # pylint: disable=broad-except
+        init_trace = True
+    except Exception as error:  # pylint: disable=broad-except
         trace_id = None
-        logger.exception("Starting trace failed", exc_info=err)
+        logger.warning(f"Starting trace failed: {error}", exc_info=error)
 
     deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
     if not deploy_folder.is_dir():
@@ -133,7 +133,8 @@ def action(
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
 
-    print_trace_link(span)
+    if init_trace:
+        print_trace_link(span)
 
     logger.info("Done")
     return None

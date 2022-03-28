@@ -1,4 +1,3 @@
-# pylint: disable=protected-access
 import pytest
 
 from velo_action.octopus.release import create_release_notes
@@ -16,9 +15,7 @@ def test_create_release_note_write_to_file() -> None:
         repository="kolonialno/example-deploy-project",
         actor="kolonialno",
     )
-    notes = create_release_notes(
-        github=github, project_name="test", velo_version="1.2.3", octopus_url="test"
-    )
+    notes = create_release_notes(github=github)
 
     with open("releasenotes.html", "w", encoding="utf-8") as file:
         file.write(notes)

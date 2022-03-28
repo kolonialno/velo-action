@@ -8,7 +8,6 @@ from velo_action.octopus.client import OctopusClient
 from velo_action.settings import (
     APP_SPEC_FIELD_VELO_VERSION,
     VELO_RELEASE_GITUHB_URL,
-    VELO_VERSION_VARIABLE_NAME,
     GithubSettings,
 )
 from velo_action.utils import find_matching_version
@@ -57,6 +56,7 @@ class Release:
         velo_version_spec: SimpleSpec,
         github_settings: GithubSettings,
     ) -> None:
+
         assert isinstance(
             velo_version_spec, SimpleSpec
         ), "velo_version_spec is not a SimpleSpec type"
@@ -90,9 +90,7 @@ class Release:
         payload = {
             "ProjectId": project_id,
             "Version": project_version,
-            "ReleaseNotes": create_release_notes(
-                github_settings, project_name, str(velo_version), self.client.baseurl
-            ),
+            "ReleaseNotes": create_release_notes(github_settings),
             "SelectedPackages": package,
         }
 
@@ -178,9 +176,7 @@ class Release:
         return client.head(f"api/projects/{project_id}/releases/{version}")
 
 
-def create_release_notes(
-    github: GithubSettings, project_name: str, velo_version: str, octopus_url: str
-) -> str:
+def create_release_notes(github: GithubSettings) -> str:
     """Create release notes for a Octopus Deploy"""
     return f"""
 <b>Commit</b>: <a href={github.server_url}/{github.repository}/commit/{github.sha}>{github.sha}</a>
@@ -190,14 +186,6 @@ def create_release_notes(
 <br>
 <br>
 <b>Created by </b>: <a href={github.server_url}/{github.actor}>{github.actor}</a>
-<br>
-<br>
-<b>Velo version</b>: <a href={VELO_RELEASE_GITUHB_URL}/tag/{velo_version}>{velo_version}</a>
-<br>
-<br>
-The Velo version can be changed by setting the <b>{VELO_VERSION_VARIABLE_NAME}</b>
-variable to a valid <a href={VELO_RELEASE_GITUHB_URL}>release</a> in
-<a href={octopus_url}/app#/Spaces-1/projects/{project_name}/variables>Octopus Project Variables</a>.
 """.replace(
         "\n", " "
     )
