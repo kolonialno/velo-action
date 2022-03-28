@@ -1,8 +1,10 @@
+import pytest
+
 from velo_action.octopus.release import create_release_notes
 from velo_action.settings import GithubSettings
 
 
-# @pytest.mark.skip("Only for local testing. Used to write release notes to HTML file")
+@pytest.mark.skip("Only for local testing. Used to write release notes to HTML file")
 def test_create_release_note_write_to_file() -> None:
     """Test use lokally to output the releas notes to a HTML file"""
     github = GithubSettings(
