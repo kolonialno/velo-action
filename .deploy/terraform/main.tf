@@ -117,9 +117,12 @@ resource "github_actions_organization_secret" "velo_action_gsa_key_decoded" {
 
 # The secrets below are used by the velo-action
 module "deploy_artifacts_bucket_name" {
-  source      = "git@github.com:kolonialno/nube.git//terraform/modules/service_secret?ref=1f399a1125d177aec7167fa32745303924509202"
-  secret_id   = "velo_action_artifacts_bucket_name"
-  secret_data = "${var.project_id}-deploy-artifacts"
+  source    = "git@github.com:kolonialno/nube.git//terraform/modules/service_secret?ref=1f399a1125d177aec7167fa32745303924509202"
+  secret_id = "velo_action_artifacts_bucket_name"
+  # Currently there is no dev env for the artifacts bucket.
+  # Use prod
+  # "${var.project_id}-deploy-artifacts"
+  secret_data = "nube-velo-prod-deploy-artifacts"
   project_id  = var.project_id
   service_account_emails = [
     google_service_account.velo_action.email
