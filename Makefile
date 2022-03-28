@@ -65,3 +65,27 @@ markdownlint:
 
 install:
 	poetry install
+
+docs_generate:
+	techdocs-cli generate --verbose --no-docker
+
+# The 'mkdocs-click' is not installed in the techdocs docker image
+docs: docs_generate
+	techdocs-cli serve --verbose --no-docker
+
+# require access to nube-centro-prod
+docs_publish_prod: docs_generate
+	techdocs-cli publish \
+	--publisher-type googleGcs \
+	--storage-name centro-docs-prod \
+	--entity "default/Component/velo"
+
+# require access to nube-centro-staging
+docs_publish_staging: docs_generate
+	techdocs-cli publish \
+	--publisher-type googleGcs \
+	--storage-name centro-docs-staging \
+	--entity "default/Component/velo"
+
+mkdocs:
+	mkdocs serve --verbose
