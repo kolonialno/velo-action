@@ -1,18 +1,24 @@
-import json
-
 from loguru import logger
 
 from velo_action.octopus.client import OctopusClient
-from velo_action.settings import ActionInputs
+from velo_action.settings import GithubSettings
 
 _RELEASE_REGEX = r"^(|\+.*)$"
+
+# This name is set in Octopus deploy when creating the StepTemplate
+# https://octopusdeploy.prod.nube.tech/app#/Spaces-1/library/steptemplates/ActionTemplates-1?activeTab=settings
+VELO_BOOTSTRAPPER_ACTION_NAME = "run velo"
+
+# Id of the uploaded velo-bootstrapper NuGet package
+# https://octopusdeploy.prod.nube.tech/app#/Spaces-1/library/builtinrepository/versions/velo-bootstrapper
+VELO_BOOTSTRAPPER_PACKAGE_ID = "velo-bootstrapper"
 
 
 class Release:
     _octo_object: dict = {}
 
     def __init__(self, client=None):
-        self._client: OctopusClient = client
+        self.client: OctopusClient = client
 
     @classmethod
     def from_project_and_version(
@@ -37,19 +43,21 @@ class Release:
     def create(
         self,
         project_name: str,
-        version: str,
-        notes: str = None,
+        project_version: str,
+        github_settings: GithubSettings,
         auto_select_packages: bool = True,
-    ):
-        if self.exists(project_name, version, client=self._client):
+    ) -> None:
+
+        if self.exists(project_name, project_version, client=self.client):
             logger.info(
-                f"Release '{version}' already exists at "
-                f"'{self._client._baseurl}/app#/Spaces-1/projects/"
-                f"{project_name}/deployments/releases/{version}'. "  # pylint: disable=protected-access
+                f"Release '{project_version}' already exists at "
+                f"'{self.client.baseurl}/app#/Spaces-1/projects/"
+                f"{project_name}/deployments/releases/{project_version}'. "
                 "Skipping..."
             )
             return None
-        project_id = self._client.lookup_project_id(project_name)
+
+        project_id = self.client.lookup_project_id(project_name)
         if auto_select_packages:
             packages = self._determine_latest_deploy_packages(project_id)
         else:
@@ -57,14 +65,17 @@ class Release:
 
         payload = {
             "ProjectId": project_id,
-            "Version": version,
-            "ReleaseNotes": notes,
+            "Version": project_version,
+            "ReleaseNotes": create_release_notes(
+                github_settings,
+            ),
         }
 
         if packages:
             payload["SelectedPackages"] = packages
 
-        self._octo_object = self._client.post("api/releases", data=payload)
+        self._octo_object = self.client.post("api/releases", data=payload)
+        return None
 
     def form_variable_id_mapping(self) -> dict:
         """
@@ -72,7 +83,7 @@ class Release:
         """
         links = self._octo_object["Links"]
         path = links["ProjectVariableSnapshot"]
-        project_vars = self._client.get(path)
+        project_vars = self.client.get(path)
         variables = project_vars.get("Variables", [])
         var_ids = {v["Name"]: v["Id"] for v in variables}
         return var_ids
@@ -82,13 +93,13 @@ class Release:
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.
         """
-        template: dict = self._client.get(
+        template: dict = self.client.get(
             f"api/projects/{project_id}/deploymentprocesses/template"
         )
 
         packages = []
         for pkg in template["Packages"]:
-            ver = self._client.get(
+            ver = self.client.get(
                 f"api/feeds/{pkg['FeedId']}/packages/versions?"
                 f"packageId={pkg['PackageId']}&preReleaseTag={_RELEASE_REGEX}&take=1"
             )
@@ -106,3 +117,18 @@ class Release:
     def exists(cls, project_name, version, client):
         project_id = client.lookup_project_id(project_name)
         return client.head(f"api/projects/{project_id}/releases/{version}")
+
+
+def create_release_notes(github: GithubSettings) -> str:
+    """Create release notes for a Octopus Deploy"""
+    return f"""
+<b>Commit</b>: <a href={github.server_url}/{github.repository}/commit/{github.sha}>{github.sha}</a>
+<br>
+<br>
+<b>Branch name</b>: <a href={github.server_url}/{github.repository}/tree/{github.ref_name}>{github.ref_name}</a>
+<br>
+<br>
+<b>Created by </b>: <a href={github.server_url}/{github.actor}>{github.actor}</a>
+""".replace(
+        "\n", " "
+    )

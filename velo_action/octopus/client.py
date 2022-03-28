@@ -7,18 +7,18 @@ from requests.exceptions import RequestException
 
 
 class OctopusClient:
-    _baseurl: str = ""
+    baseurl: str = ""
     _cached_environment_ids: dict = {}
     _cached_tenant_ids: dict = {}
     _headers: dict = {}
 
     def __init__(self, server=None, api_key=None):
-        self._baseurl = server
+        self.baseurl = server
         self._headers = {"X-Octopus-ApiKey": f"{api_key}"}
         self._verify_connection()
 
     def base_url(self):
-        return self._baseurl
+        return self.baseurl
 
     def get(self, path):
         """
@@ -76,7 +76,7 @@ class OctopusClient:
         return self._cached_tenant_ids[tenant_name]
 
     def _request(self, method, path, data=None):
-        url = urllib.parse.urljoin(self._baseurl, path)
+        url = urllib.parse.urljoin(self.baseurl, path)
         try:
             response = requests.request(method, url, json=data, headers=self._headers)
             logger.debug(
@@ -92,10 +92,10 @@ class OctopusClient:
         except requests.RequestException as err:
             logger.error(
                 "Could not establish connection with Octopus deploy server "
-                f"at '{self._baseurl}'. Failed with '{err}'"
+                f"at '{self.baseurl}'. Failed with '{err}'"
             )
         logger.debug(
-            f"Successfully connected to Octopus deploy server '{self._baseurl}'"
+            f"Successfully connected to Octopus deploy server '{self.baseurl}'"
         )
 
     @staticmethod
