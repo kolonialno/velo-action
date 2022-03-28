@@ -21,7 +21,7 @@ class Deployment:
     _release: Release = None
 
     def __init__(self, project_name=None, version=None, client=None):
-        self._client: OctopusClient = client
+        self.client: OctopusClient = client
         if project_name and version:
             self._release = Release.from_project_and_version(
                 project_name=project_name, version=version, client=client
@@ -53,8 +53,8 @@ class Deployment:
         if not self._release:
             raise RuntimeError("Cannot create deployment. Release was not specified.")
 
-        environment_id = self._client.lookup_environment_id(env_name)
-        tenant_id = self._client.lookup_tenant_id(tenant)
+        environment_id = self.client.lookup_environment_id(env_name)
+        tenant_id = self.client.lookup_tenant_id(tenant)
 
         payload = {
             "EnvironmentId": environment_id,
@@ -70,10 +70,10 @@ class Deployment:
                 environment_id, variables
             )
 
-        self._octo_object = self._client.post("api/deployments", data=payload)
+        self._octo_object = self.client.post("api/deployments", data=payload)
 
         logger.info(
-            f'Deployment URL: {self._client.base_url()}{self._octo_object["Links"]["Web"]}'
+            f'Deployment URL: {self.client.base_url()}{self._octo_object["Links"]["Web"]}'
         )
 
         if wait_seconds:
@@ -92,7 +92,7 @@ class Deployment:
                 raise RuntimeError(f"Unexpected state '{result}'")
 
     def get_state(self, environment_id, tenant_id) -> DeploymentState:
-        progression = self._client.get(f"api/projects/{self.project_id()}/progression")
+        progression = self.client.get(f"api/projects/{self.project_id()}/progression")
         dep_state = {}
 
         for rel in progression["Releases"]:
@@ -161,7 +161,7 @@ class Deployment:
         The mapping does also exist in the VariableSet (api/variables/variableset-*)
         but that endpoint requires additional permissions.
         """
-        preview = self._client.get(
+        preview = self.client.get(
             f"api/releases/{self.release_id()}/deployments/preview/{environment_id}"
         )
         form_elements = preview["Form"]["Elements"]
