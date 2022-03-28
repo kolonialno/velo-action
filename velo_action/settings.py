@@ -1,6 +1,6 @@
 # pylint: disable=no-self-argument,no-self-use
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 from loguru import logger
 from pydantic import BaseModel, BaseSettings, Field, ValidationError, validator
@@ -34,19 +34,7 @@ class VeloSettings(BaseModel):
         arbitrary_types_allowed = True
 
     project: str = Field(..., alias=APP_SPEC_FIELD_PROJECT)
-    version_spec: Any = Field(..., alias=APP_SPEC_FIELD_VELO_VERSION)
-
-    @validator("version_spec")
-    def parse_as_semantic_version(cls, value) -> SimpleSpec:
-        try:
-            version_spec = SimpleSpec(value)
-            return version_spec
-        except ValueError:
-            raise SystemExit(  # pylint: disable=raise-missing-from
-                f"{APP_SPEC_FIELD_VELO_VERSION}: '{value}' in the AppSpec is not a valid semantic version spesification.\n"
-                f"See {VELO_SEM_VER_SPEC_DOCS_URL} for valid syntax,\n"
-                f"and {VELO_RELEASE_GITUHB_URL} for valid releases."
-            )
+    version_spec: SimpleSpec = Field(..., alias=APP_SPEC_FIELD_VELO_VERSION)
 
 
 class GithubSettings(BaseSettings):

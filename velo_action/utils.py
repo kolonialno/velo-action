@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 from typing import List, Optional
 
@@ -9,6 +8,8 @@ from velo_action.settings import (
     APP_SPEC_FIELD_PROJECT,
     APP_SPEC_FIELD_VELO_VERSION,
     APP_SPEC_FILENAMES,
+    VELO_RELEASE_GITUHB_URL,
+    VELO_SEM_VER_SPEC_DOCS_URL,
     VeloSettings,
 )
 
@@ -35,23 +36,35 @@ def read_velo_settings(deploy_folder: Path) -> VeloSettings:
     """Parse the AppSpec (app.yml)"""
     filepath = resolve_app_spec_filename(deploy_folder)
 
-    project = read_field_from_app_spec(APP_SPEC_FIELD_PROJECT, filepath)
-    if project is None:
-        sys.exit(  # pylint: disable=raise-missing-from
+    try:
+        project = read_field_from_app_spec(APP_SPEC_FIELD_PROJECT, filepath)
+    except ValueError as error:
+        raise SystemExit(
             "'project' field is required in the AppSpec (app.yml). "
             "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
-        )
-    velo_version = read_field_from_app_spec(APP_SPEC_FIELD_VELO_VERSION, filepath)
-    if velo_version is None:
-        sys.exit(  # pylint: disable=raise-missing-from
+        ) from error
+
+    try:
+        value = read_field_from_app_spec(APP_SPEC_FIELD_VELO_VERSION, filepath)
+    except ValueError as error:
+        raise SystemExit(
             "'velo_version' field is required in the AppSpec (app.yml). "
             "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
-        )
+        ) from error
 
-    return VeloSettings(project=project, velo_version=velo_version)
+    try:
+        version_spec = SimpleSpec(value)
+    except ValueError as error:
+        raise SystemExit(  # pylint: disable=raise-missing-from
+            f"{APP_SPEC_FIELD_VELO_VERSION}: '{value}' in the AppSpec is not a valid semantic version spesification.\n"
+            f"See {VELO_SEM_VER_SPEC_DOCS_URL} for valid syntax,\n"
+            f"and {VELO_RELEASE_GITUHB_URL} for valid releases."
+        ) from error
+
+    return VeloSettings(project=project, version_spec=version_spec)
 
 
-def read_field_from_app_spec(field: str, filename: Path) -> Optional[str]:
+def read_field_from_app_spec(field: str, filename: Path) -> str:
     """Read the project field from the app.yml.
 
     Cannot assume the app.yml is rendered,
@@ -62,7 +75,7 @@ def read_field_from_app_spec(field: str, filename: Path) -> Optional[str]:
         for line in lines:
             if line.startswith(f"{field}:"):
                 return line.split(":")[1].strip().strip('"').strip("'")
-    return None
+    raise ValueError(f"Could not find '{field}' in {filename}")
 
 
 def find_matching_version(

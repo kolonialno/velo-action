@@ -99,3 +99,11 @@ def test_read_field_from_app_spec_sucess(app_spec, field, result):
     with patch("builtins.open", mock_open(read_data=app_spec)):
         field = read_field_from_app_spec(field=field, filename=Path("/mocked"))
         assert field == result
+
+
+def test_read_field_from_app_spec_failure():
+    """Verify the read field from app spec handles edge cases."""
+
+    with pytest.raises(ValueError):
+        with patch("builtins.open", mock_open(read_data="project: test")):
+            read_field_from_app_spec(field="not_present", filename=Path("/mocked"))
