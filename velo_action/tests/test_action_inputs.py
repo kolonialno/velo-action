@@ -1,11 +1,14 @@
+# pylint: disable=unused-argument
 import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
 
+from velo_action.conftest import fill_default_action_envvars
 from velo_action.settings import ActionInputs, resolve_workspace
-from velo_action.tests.conftest import fill_default_action_envvars
 
 
 @patch("velo_action.settings.generate_version", return_value="4be1d57")
@@ -54,7 +57,6 @@ def test_parse_none(generate_version):
             "deploy_to_environments": "None",
             "octopus_api_key_secret": "None",
             "octopus_server_secret": "None",
-            "project": "None",
             "service_account_key": "None",
             "tenants": "None",
             "velo_artifact_bucket_secret": "None",
@@ -63,7 +65,6 @@ def test_parse_none(generate_version):
     )
     assert sett.octopus_api_key_secret is None
     assert sett.octopus_server_secret is None
-    assert sett.project is None
     assert sett.service_account_key is None
     assert sett.velo_artifact_bucket_secret is None
     assert sett.version is generate_version.return_value
@@ -126,21 +127,20 @@ def test_use_github_workspace_as_fallback(
     unsett_dot_env_variables, monkeypatch, default_github_settings
 ):
     fill_default_action_envvars(monkeypatch)
-    default_github_settings.github_workspace = "/var"
-    monkeypatch.delenv("INPUT_WORKSPACE")
+    with TemporaryDirectory() as tmpdir:
+        path = str(Path(tmpdir).expanduser().resolve())
 
-    sett = ActionInputs()
+        default_github_settings.workspace = path
+        monkeypatch.delenv("INPUT_WORKSPACE")
 
-    sett.workspace = resolve_workspace(sett, default_github_settings)
-    assert (
-        sett.workspace == "/var" or sett.workspace == "/private/var"
-    )  # /private/ on macOS
+        sett = ActionInputs()
 
-    monkeypatch.setenv("INPUT_WORKSPACE", "/etc")
-    sett = ActionInputs()
-    assert (
-        sett.workspace == "/etc" or sett.workspace == "/private/etc"
-    )  # /private/ on macOS
+        sett.workspace = resolve_workspace(sett, default_github_settings)
+        assert sett.workspace == path
+
+        monkeypatch.setenv("INPUT_WORKSPACE", path)
+        sett = ActionInputs()
+        assert sett.workspace == path
 
 
 def test_wait_for_deployment_becomes_wait_for_success_seconds(

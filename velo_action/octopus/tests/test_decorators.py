@@ -68,7 +68,7 @@ def mock_client_requests(registered_responses: list = None):
 
             if responses:
                 raise RuntimeError(
-                    f"Not all client responses have been used. Remaining: {responses}"
+                    f"Not all client responses have been used. Remaining: {[response.path for response in responses]}"
                 )
 
             return result

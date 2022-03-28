@@ -1,3 +1,6 @@
+# pylint: disable=protected-access
+from unittest.mock import patch
+
 import pytest
 
 from velo_action.octopus.client import OctopusClient
@@ -63,13 +66,21 @@ def client():
         ),
     ]
 )
-def test_create_release_without_packages(client):
+def test_create_release_without_packages(client, default_github_settings):
     rel = Release(client)
-    rel.create("ProjectName", "v1.2.3", "Notes", auto_select_packages=False)
+    with patch(
+        "velo_action.octopus.release.create_release_notes", return_value="Notes"
+    ):
+        rel.create(
+            project_name="ProjectName",
+            project_version="v1.2.3",
+            github_settings=default_github_settings,
+            auto_select_packages=False,
+        )
 
-    assert rel.id() == "release-1"
-    assert rel.project_id() == "project-1"
-    assert rel.version() == "v1.2.3"
+        assert rel.id() == "release-1"
+        assert rel.project_id() == "project-1"
+        assert rel.version() == "v1.2.3"
 
 
 @mock_client_requests(
@@ -111,13 +122,21 @@ def test_create_release_without_packages(client):
         ),
     ]
 )
-def test_create_release_with_packages(client):
+def test_create_release_with_packages(client, default_github_settings):
     rel = Release(client)
-    rel.create("Project-1", "v1.2.3", "Notes", auto_select_packages=True)
+    with patch(
+        "velo_action.octopus.release.create_release_notes", return_value="Notes"
+    ):
+        rel.create(
+            project_name="Project-1",
+            project_version="v1.2.3",
+            github_settings=default_github_settings,
+            auto_select_packages=True,
+        )
 
-    assert rel.id() == "release-1"
-    assert rel.project_id() == "project-1"
-    assert rel.version() == "v1.2.3"
+        assert rel.id() == "release-1"
+        assert rel.project_id() == "project-1"
+        assert rel.version() == "v1.2.3"
 
 
 @mock_client_requests(
@@ -216,6 +235,11 @@ def test_exists(client):
         Request("head", "api/projects/project-1/releases/v1.2.3", response=True),
     ]
 )
-def test_skip_create_existing_release(client):
+def test_skip_create_existing_release(client, default_github_settings):
     rel = Release(client)
-    rel.create("ProjectName", "v1.2.3", "Notes", auto_select_packages=False)
+    rel.create(
+        project_name="ProjectName",
+        project_version="v1.2.3",
+        github_settings=default_github_settings,
+        auto_select_packages=False,
+    )

@@ -2,94 +2,102 @@ import os
 import sys
 from pathlib import Path
 
-import pydantic
 from loguru import logger
+from pydantic import ValidationError
 
-from velo_action import gcp, github, tracing_helpers
+from velo_action import gcp, github
 from velo_action.octopus.client import OctopusClient
 from velo_action.octopus.deployment import Deployment
 from velo_action.octopus.release import Release
-from velo_action.release_note import create_release_notes
 from velo_action.settings import (
     VELO_TRACE_ID_NAME,
     ActionInputs,
     GithubSettings,
     resolve_workspace,
 )
+from velo_action.tracing_helpers import (
+    construct_github_action_trace,
+    init_tracer,
+    print_trace_link,
+    stringify_span,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 VELO_DEPLOY_FOLDER_NAME = ".deploy"
-VELO_PROJECT_NAME = "nube-velo-prod"
 LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
 def action(
     args: ActionInputs,
     github_settings: GithubSettings,
-):  # pylint: disable=too-many-branches
-
-    try:
-        trace_id = tracing_helpers.start_trace(args.service_account_key)  # type: ignore
-    except Exception as err:  # pylint: disable=broad-except
-        trace_id = None
-        logger.exception("Starting trace failed", exc_info=err)
+) -> None:  # pylint: disable=too-many-branches
 
     logger.info("Starting velo-action")
+
+    try:
+        init_trace = False
+        tracer = init_tracer(args.service_account_key, service="velo-action")
+        span = construct_github_action_trace(tracer)
+        trace_id = stringify_span(span)
+        init_trace = True
+    except Exception as error:  # pylint: disable=broad-except
+        trace_id = None
+        logger.warning(f"Starting trace failed: {error}", exc_info=error)
+
+    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
+    if not deploy_folder.is_dir():
+        sys.exit(
+            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
+        )
 
     # Read secrets early to fail fast
     gcloud = gcp.GCP(args.service_account_key)
 
-    octopus_server = gcloud.lookup_data(args.octopus_server_secret, VELO_PROJECT_NAME)
-    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, VELO_PROJECT_NAME)
+    octopus_server = gcloud.lookup_data(args.octopus_server_secret, args.velo_project)
+    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, args.velo_project)
     velo_artifact_bucket = gcloud.lookup_data(
-        args.velo_artifact_bucket_secret, VELO_PROJECT_NAME
+        args.velo_artifact_bucket_secret, args.velo_project
     )
-
-    os.chdir(args.workspace)
-
-    logger.info(f"Deploy to environments: {args.deploy_to_environments}")
-    if args.tenants:
-        logger.info(f"Tenants: {args.tenants}")
-
-    logger.info(f"Create release: {args.create_release}")
-    logger.info(f"Version: {args.version}")
-
-    github.actions_output("version", args.version)
+    os.chdir(args.workspace)  # type: ignore
 
     if not args.create_release and not args.deploy_to_environments:
         logger.warning("Nothing to do. Exciting now.")
-        return
-
-    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)
-
-    if not deploy_folder.is_dir():
-        raise Exception(
-            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
-        )
+        return None
 
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
-
     if args.create_release:
-        logger.info(
-            f"Uploading artifacts to '{velo_artifact_bucket}/{args.project}/{args.version}'"
-        )
-        gcloud.upload_from_directory(
-            deploy_folder, velo_artifact_bucket, f"{args.project}/{args.version}"
-        )
-
-        logger.info(
-            f"Creating a release for project '{args.project}' with version '{args.version}'"
-        )
-
         release = Release(client=octo)
+
+        if release.exists(project_name=args.project, version=args.version, client=octo):
+            logger.info(
+                f"Release '{args.version}' already exists at "
+                f"'{release.client.baseurl}/app#/Spaces-1/projects/"  # pylint: disable=no-member
+                f"{args.project}/deployments/releases/{args.version}'. "
+                "If you want to recreate this release, please delete it first in Octopus Deploy. "
+                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
+            )
+            return None
+
+        files = gcloud.upload_from_directory(
+            deploy_folder,
+            velo_artifact_bucket,
+            f"{args.project}/{args.version}",
+        )
+
+        logger.info(
+            f"Uploaded {len(files)} release files to "
+            f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{args.project}/{args.version}'"
+        )
+
         release.create(
             project_name=args.project,
-            version=args.version,
-            notes=create_release_notes(github_settings),
+            project_version=args.version,
+            github_settings=github_settings,
         )
 
     if args.deploy_to_environments:
+        logger.info(f"Deploy to environments: {args.deploy_to_environments}")
         deploy_vars = {}
         if trace_id:
             deploy_vars[VELO_TRACE_ID_NAME] = trace_id
@@ -115,7 +123,17 @@ def action(
                     wait_seconds=args.wait_for_success_seconds,
                     variables=deploy_vars,
                 )
+
+    # Set outputs in environment to be used by other
+    # steps in the Github Action Workflows
+    logger.info("Github actions outputs:")
+    github.actions_output("version", args.version)
+
+    if init_trace:
+        print_trace_link(span)
+
     logger.info("Done")
+    return None
 
 
 if __name__ == "__main__":
@@ -125,8 +143,9 @@ if __name__ == "__main__":
 
         s.workspace = resolve_workspace(s, gh)
 
-    except pydantic.ValidationError as err:
-        logger.error(err)
+    except ValidationError as err:
+        # Logger is not instantiated yet
+        print(err)
         sys.exit(1)
 
     logger.add(sys.stdout, level=s.log_level, format=LOG_FORMAT)
