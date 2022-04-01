@@ -11,7 +11,7 @@ inputs:
   deploy_to_environments:
     description: |-
       If specified trigger a deployment to the environment.
-      Can be multiple values by seperating environment names by a comma. Example 'staging,prod'.
+      Can be multiple values by seperating environment names by a comma. Example 'dev,staging,prod'.
     required: false
     default: None
   log_level:

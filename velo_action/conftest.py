@@ -6,7 +6,7 @@ import yaml
 
 from velo_action.settings import ActionInputs, GithubSettings
 
-_ACTION_FILE = os.path.dirname(__file__) + "/../../action.yml"
+_ACTION_FILE = os.path.dirname(__file__) + "/../action.yml"
 
 
 def fill_default_action_envvars(monkeypatch):
@@ -32,12 +32,12 @@ def read_github_action_inputs_defaults() -> dict:
 @pytest.fixture
 def default_github_settings():
     return GithubSettings(
-        github_workspace=".",
-        github_sha="ffac537e6cbbf934b08745a378932722df287a53",
-        github_ref_name="main",
-        github_server_url="https://github.com",
-        github_repository="octocat/Hello-World",
-        github_actor="octocat",
+        workspace=".",
+        sha="ffac537e6cbbf934b08745a378932722df287a53",
+        ref_name="main",
+        server_url="https://github.com",
+        repository="octocat/Hello-World",
+        actor="octocat",
     )
 
 

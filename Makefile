@@ -12,9 +12,11 @@ tests:
 
 image: image_tag
 	docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:dev
 
 push: image
 	docker push ${IMAGE_NAME}:${IMAGE_TAG}
+	docker push ${IMAGE_NAME}:dev
 
 image_size:
 	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
@@ -27,6 +29,12 @@ run_docker:
 
 run_docker_shell:
 	. ./env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
+
+velo_render_dev:
+	velo deploy-local-dir --environment dev
+
+velo_deploy_dev:
+	velo deploy-local-dir --environment dev --do-deploy
 
 velo_render_staging:
 	velo deploy-local-dir --environment staging
@@ -52,7 +60,7 @@ mypy:
 	poetry run mypy --config-file=.mypy.ini velo_action
 
 pylint:
-	poetry run pylint --rcfile=.pylintrc --fail-under=8 velo_action
+	poetry run pylint --rcfile=.pylintrc --fail-under=10 velo_action
 
 isort:
 	poetry run isort .

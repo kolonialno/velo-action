@@ -7,4 +7,6 @@ exclude =
     .tox,
     .venv,
     __pycache__,
-    fabfile
+    fabfile,
+    .terraform,
+    temp-deploy

@@ -1,11 +1,10 @@
 import os
 
 import requests
-from loguru import logger
 
 
 def actions_output(key, value):
-    logger.debug("Github actions output:")
+    """Output variables such that they can be used in GitHub Actions."""
     os.system(f'echo "::set-output name={key}::{value}"')
 
 

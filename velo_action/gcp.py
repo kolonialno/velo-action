@@ -3,6 +3,7 @@ import binascii
 import json
 import os
 from functools import lru_cache
+from typing import List
 
 from google.api_core.exceptions import PermissionDenied
 from google.auth.exceptions import DefaultCredentialsError
@@ -39,8 +40,9 @@ class GCP:
 
         return secrets_client
 
-    def upload_from_directory(self, path, dest_bucket_name, dest_blob_name):
-
+    def upload_from_directory(
+        self, path, dest_bucket_name, dest_blob_name
+    ) -> List[str]:
         client = self._get_storage_client()
 
         rel_paths = []
@@ -49,13 +51,16 @@ class GCP:
 
         bucket = client.get_bucket(dest_bucket_name)
 
+        uploaded_files = []
         for local_file in rel_paths:
             relative_path = os.path.relpath(local_file, path)
             remote_path = os.path.join(dest_blob_name, relative_path)
             if os.path.isfile(local_file):
                 blob = bucket.blob(remote_path)
                 blob.upload_from_filename(local_file)
-                logger.info(f"Uploading {relative_path}")
+                uploaded_files.append(relative_path)
+
+        return uploaded_files
 
     def lookup_data(self, key, project_id, version=None):
         logger.debug(f"Looking for '{key}' in '{project_id}', with version '{version}'")
@@ -69,7 +74,7 @@ class GCP:
                     "name": f"projects/{project_id}/secrets/{key}/versions/{str(version)}"
                 }
             ).payload.data.decode("utf-8")
-        except PermissionDenied as err:
+        except PermissionDenied:
             msg = (
                 f"Missing permission to access secret '{key}' in project '{project_id}'"
             )
@@ -77,9 +82,9 @@ class GCP:
             if not self.scoped_credentials:
                 msg = msg + (
                     ". Elevate your permissions with:\nklipy power elevate --group "
-                    "nube.project.editor.nube-velo-prod"
+                    "nube.project.editor.{project_id}"
                 )
-            raise RuntimeError(msg) from err
+            raise SystemExit(msg)  # pylint: disable=raise-missing-from
 
         return secret
 
