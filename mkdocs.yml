@@ -1,0 +1,14 @@
+site_name: Velo-action
+repo_url: https://github.com/kolonialno/velo-action
+edit_uri: edit/main/docs/
+plugins:
+  - techdocs-core
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.tabbed
+nav:
+  - Developer Guide:
+      - Development: development.md
+      - Release: release.md
