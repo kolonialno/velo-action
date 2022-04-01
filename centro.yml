@@ -1,0 +1,20 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: velo-action
+  description: A Github Action to create releases for Velo
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: kolonialno/velo-action
+  links:
+    - url: https://github.com/kolonialno/velo-action
+      title: Velo-action repo
+      icon: dashboard
+spec:
+  dependsOn:
+    - Resource:octopusdeploy
+  owner: cloud-platform
+  lifecycle: production
+  system: deployment
+  type: tool
