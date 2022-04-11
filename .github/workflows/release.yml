@@ -1,0 +1,48 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Required for GitVersion
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.11
+        with:
+          versionSpec: "5.x" # What version of Gitversion to use
+
+      - name: Generate gitversion
+        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+        id: gitversion
+
+      - name: Update image version in action.yml
+        uses: mikefarah/yq@v4
+        with:
+          cmd: yq eval -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - name: Commit action.yml
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: Release-action
+          message: Update action image tag to ${{ steps.gitversion.outputs.version }}
+          add: action.yml
+
+
+      - name: Create Github release
+        uses: marvinpinto/action-automatic-releases@v1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ steps.gitversion.outputs.version }}
+          release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
+          draft: false
+          prerelease: false
