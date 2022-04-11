@@ -96,7 +96,6 @@ def action(
         release.create(
             project_name=velo_settings.project,
             project_version=args.version,
-            velo_version_spec=velo_settings.version_spec,
             github_settings=github_settings,
         )
 

@@ -4,7 +4,6 @@ from typing import List, Optional, Union
 
 from loguru import logger
 from pydantic import BaseModel, BaseSettings, Field, ValidationError, validator
-from semantic_version import SimpleSpec
 
 from velo_action.version import generate_version
 
@@ -34,7 +33,6 @@ class VeloSettings(BaseModel):
         arbitrary_types_allowed = True
 
     project: str = Field(..., alias=APP_SPEC_FIELD_PROJECT)
-    version_spec: SimpleSpec = Field(..., alias=APP_SPEC_FIELD_VELO_VERSION)
 
 
 class GithubSettings(BaseSettings):

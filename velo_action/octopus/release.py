@@ -1,16 +1,10 @@
-import sys
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from loguru import logger
-from semantic_version import SimpleSpec, Version
+from semantic_version import Version
 
 from velo_action.octopus.client import OctopusClient
-from velo_action.settings import (
-    APP_SPEC_FIELD_VELO_VERSION,
-    VELO_RELEASE_GITUHB_URL,
-    GithubSettings,
-)
-from velo_action.utils import find_matching_version
+from velo_action.settings import GithubSettings
 
 _RELEASE_REGEX = r"^(|\+.*)$"
 
@@ -53,13 +47,9 @@ class Release:
         self,
         project_name: str,
         project_version: str,
-        velo_version_spec: SimpleSpec,
         github_settings: GithubSettings,
+        auto_select_packages: bool = True,
     ) -> None:
-
-        assert isinstance(
-            velo_version_spec, SimpleSpec
-        ), "velo_version_spec is not a SimpleSpec type"
 
         if self.exists(project_name, project_version, client=self.client):
             logger.info(
@@ -74,25 +64,19 @@ class Release:
             f"Creating a release for project '{project_name}' with version '{project_version}'"
         )
         project_id = self.client.lookup_project_id(project_name)
-
-        velo_version = self._resolve_velo_bootstrapper_version(velo_version_spec)
-        if velo_version is None:
-            sys.exit(
-                f"Velo version spec '{velo_version_spec}' does not resolve to a valid Velo version. "
-                f"Make sure the version requirement you set in '{APP_SPEC_FIELD_VELO_VERSION}' in the AppSpec exists. "
-                f"You can find Velo releases at {VELO_RELEASE_GITUHB_URL}. "
-                "Exiting..."
-            )
-        package = self._create_octopus_package_payload(
-            package=VELO_BOOTSTRAPPER_ACTION_NAME, version=velo_version
-        )
+        if auto_select_packages:
+            packages = self._determine_latest_deploy_packages(project_id)
+        else:
+            packages = None
 
         payload = {
             "ProjectId": project_id,
             "Version": project_version,
             "ReleaseNotes": create_release_notes(github_settings),
-            "SelectedPackages": package,
         }
+
+        if packages:
+            payload["SelectedPackages"] = packages
 
         self._octo_object = self.client.post("api/releases", data=payload)
         return None
@@ -103,18 +87,6 @@ class Release:
     ) -> List[Dict[str, str]]:
         """Create payload for a Octopus Deploy pacakge to be used in a release."""
         return [{"ActionName": package, "Version": str(version)}]
-
-    def _resolve_velo_bootstrapper_version(
-        self, version_spec: SimpleSpec
-    ) -> Optional[Version]:
-        """Resolves the 'version_spec' to a valid 'velo-bootstrapper' package in Ocopus Deploy
-
-        If non is found not return None.
-        """
-        velo_bootstrapper_versions = self.list_available_deploy_packages()
-        return find_matching_version(
-            versions=velo_bootstrapper_versions, version_to_match=version_spec
-        )
 
     def form_variable_id_mapping(self) -> dict:
         """

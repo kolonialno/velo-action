@@ -6,10 +6,7 @@ from semantic_version import SimpleSpec, Version
 
 from velo_action.settings import (
     APP_SPEC_FIELD_PROJECT,
-    APP_SPEC_FIELD_VELO_VERSION,
     APP_SPEC_FILENAMES,
-    VELO_RELEASE_GITUHB_URL,
-    VELO_SEM_VER_SPEC_DOCS_URL,
     VeloSettings,
 )
 
@@ -44,24 +41,7 @@ def read_velo_settings(deploy_folder: Path) -> VeloSettings:
             "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
         ) from error
 
-    try:
-        value = read_field_from_app_spec(APP_SPEC_FIELD_VELO_VERSION, filepath)
-    except ValueError as error:
-        raise SystemExit(
-            "'velo_version' field is required in the AppSpec (app.yml). "
-            "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
-        ) from error
-
-    try:
-        version_spec = SimpleSpec(value)
-    except ValueError as error:
-        raise SystemExit(  # pylint: disable=raise-missing-from
-            f"{APP_SPEC_FIELD_VELO_VERSION}: '{value}' in the AppSpec is not a valid semantic version spesification.\n"
-            f"See {VELO_SEM_VER_SPEC_DOCS_URL} for valid syntax,\n"
-            f"and {VELO_RELEASE_GITUHB_URL} for valid releases."
-        ) from error
-
-    return VeloSettings(project=project, version_spec=version_spec)
+    return VeloSettings(project=project)
 
 
 def read_field_from_app_spec(field: str, filename: Path) -> str:

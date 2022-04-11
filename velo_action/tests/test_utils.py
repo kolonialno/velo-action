@@ -58,11 +58,10 @@ def test_read_app_spec_file_sucess():
     with TemporaryDirectory() as tmpdir:
         filename = Path.joinpath(Path(tmpdir), "app.yml")
         with open(filename, "w", encoding="utf-8") as file:
-            file.write("velo_version: 1.0.0\nproject: test\n")
+            file.write("project: test\n")
             file.flush()
             velo_settings = read_velo_settings(Path(tmpdir))
             assert velo_settings.project == "test"
-            assert velo_settings.version_spec == SimpleSpec("1.0.0")
 
 
 @pytest.mark.parametrize(
