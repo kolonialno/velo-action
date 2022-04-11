@@ -1,57 +1,8 @@
 # Changelog
 
-## v1.0.0
+## v0.4.32 (2022-04-11)
 
-New major release of Velo-action with a couple of breaking changes.
-
-Breaking changes:
-
-- Input: `project` removed.
-
-  Velo-action will now read the Octopus Project from the AppSpec `app.yml` file as described in the [Velo docs](https://centro.prod.nube.tech/docs/default/component/velo/app-spec/#project).
-
-  Example:
-
-  ```yml
-  # .deploy/app.yml
-  ...
-  project: <project_name>
-  vars:
-    ...
-  ```
-
-- Velo version field in the AppSpec is now required
-
-  Previously each release created would use the latest released Velo version. This resulted in little transparency to the end-users a lot of errors when new Velo version where deployed.
-
-  You could suddenly have an error from a new Velo release, without you knowing about it.
-
-  To solve this **you must now explicitly** set the Velo version in the AppSpec.
-
-  The `velo_version` uses the [python-semanticversion SimpleSpec](https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec) format to resolve the version.
-
-  From [python-semanticversion spesifications](https://python-semanticversion.readthedocs.io/en/latest/reference.html#version-specifications-the-spec-class)
-
-  > The [SemVer](https://semver.org/) specification doesn’t provide a standard description of version ranges. And simply using a naive implementation leads to unexpected situations: >=1.2.0,<1.3.0 isn’t expected to match version 1.3.0-rc.1, yet a strict application of [SemVer](https://semver.org/) precedence rules would include it.
-  > In order to solve this problem, each SemVer-based package management platform has designed its own rules.
-
-  Example:
-
-  ```yml
-  # .deploy/app.yml
-  ...
-  velo_version: '>0.4,<0.5'
-  vars:
-    ...
-  ```
-
-  ```yml
-  # .deploy/app.yml
-  ...
-  velo_version: '0.4.38
-  vars:
-    ...
-  ```
+Reformat the releasenotes in Octopus Deploy to use readable HTML formating with links.
 
 ## v0.4.0 (2022-02-01)
 

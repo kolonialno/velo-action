@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from loguru import logger
-from pydantic import BaseModel, BaseSettings, Field, ValidationError, validator
+from pydantic import BaseSettings, ValidationError, validator
 
 from velo_action.version import generate_version
 
@@ -24,15 +24,6 @@ APP_SPEC_FIELD_VELO_VERSION = "velo_version"
 
 # Name of the fields in the Velo-bootstrapper.
 VELO_VERSION_VARIABLE_NAME = "VELO_VERSION"
-
-
-class VeloSettings(BaseModel):
-    """Model to parse the app.yml config file."""
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    project: str = Field(..., alias=APP_SPEC_FIELD_PROJECT)
 
 
 class GithubSettings(BaseSettings):
@@ -89,6 +80,7 @@ class ActionInputs(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
+    project: str
     workspace: Optional[str] = None
     deploy_to_environments: Union[
         str, List[str]
