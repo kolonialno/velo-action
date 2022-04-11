@@ -1,0 +1,64 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  release:
+    name: Create Github release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Required for GitVersion
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.11
+        with:
+          versionSpec: "5.x" # What version of Gitversion to use
+
+      - name: Generate gitversion
+        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+        id: gitversion
+
+      - name: Update image version in action.yml
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - name: Commit action.yml with release version
+        uses: EndBug/add-and-commit@v9.0.0
+        with:
+          author_name: Release-action
+          message: |
+            Update action image tag to ${{ steps.gitversion.outputs.version }}
+          add: action.yml
+
+      - name: Create Github release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ steps.gitversion.outputs.version }}
+          release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
+          draft: false
+          prerelease: false
+
+      # Having the action.yml use the latest image makes debugging the velo-action much easier.
+      # Just reference a commit and run to test.
+      - name: Revert image version in action.yml to latest
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest"' action.yml
+
+      - name: Commit action.yml with latest version
+        uses: EndBug/add-and-commit@v9.0.0
+        with:
+          author_name: Release-action
+          message: |
+            Change action image back to latest
+          add: action.yml

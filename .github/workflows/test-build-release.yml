@@ -1,4 +1,4 @@
-name: '[ci] Build & Release'
+name: '[ci] Teat & Build'
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 
 env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
-  IMAGE_SIZE_LIMIT: 1300 MB
 
 jobs:
   test:
@@ -37,7 +36,7 @@ jobs:
 
       - name: Load Poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3.0.1
         with:
           path: .venv
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
@@ -54,16 +53,20 @@ jobs:
     runs-on: ubuntu-20.04
     name: Build & push image
     steps:
-      - uses: actions/checkout@v3
-        name: Checkout
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # required to get a unique ref
 
-      - name: Version
-        id: vars
-        run: |
-          echo "::set-output name=version::$(git rev-parse --short HEAD)"
-          echo ${{ steps.vars.outputs.version }}
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.11
+        with:
+          versionSpec: "5.x" # What version of Gitversion to use
+
+      - name: Generate gitversion
+        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+        id: gitversion
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -81,7 +84,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE }}:${{ steps.vars.outputs.version }}
+            ${{ env.IMAGE }}:${{ steps.gitversion.outputs.version }}
             ${{ env.IMAGE }}:latest
 
   release:
@@ -91,7 +94,8 @@ jobs:
       - test
       - build
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # required to get a unique ref
 

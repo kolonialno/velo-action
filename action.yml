@@ -54,10 +54,7 @@ inputs:
     required: false
     default: None
   wait_for_success_seconds:
-    description:
-      Waits the given number of seconds until the deployment is completed. The step fails
-      If it does not complete in the given period or if the deployment has an error. A value
-      of 0 will not verify the success or wait for completion.
+    description: Waits the given number of seconds until the deployment is completed. The step fails If it does not complete in the given period or if the deployment has an error. A value of 0 will not verify the success or wait for completion.
     required: false
     default: '0'
   wait_for_deployment:
@@ -78,7 +75,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:dev
+  image: docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
