@@ -33,8 +33,6 @@ def action(
     github_settings: GithubSettings,
 ) -> None:  # pylint: disable=too-many-branches
 
-    logger.info("Starting velo-action")
-
     try:
         init_trace = False
         tracer = init_tracer(args.service_account_key, service="velo-action")
@@ -72,10 +70,11 @@ def action(
         if release.exists(project_name=args.project, version=args.version, client=octo):
             logger.info(
                 f"Release '{args.version}' already exists at "
-                f"'{release.client.baseurl}/app#/Spaces-1/projects/"  # pylint: disable=no-member
+                f"'{release.client.baseurl}/app#/Spaces-1/projects/"
                 f"{args.project}/deployments/releases/{args.version}'. "
-                "If you want to recreate this release, please delete it first in Octopus Deploy. "
+                "If you want to recreate this release, please delete it first in Octopus Deploy."
                 "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
+                "Skipping..."
             )
             return None
 

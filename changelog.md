@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.32 (2022-04-11)
+
+Reformat the releasenotes in Octopus Deploy to use readable HTML formating with links.
+
 ## v0.4.0 (2022-02-01)
 
 Breaking changes:

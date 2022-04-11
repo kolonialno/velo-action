@@ -12,6 +12,18 @@ logger.remove()
 SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
+APP_SPEC_FILENAMES = ["app.yml", "app.yaml"]
+VELO_RELEASE_GITUHB_URL = "https://github.com/kolonialno/velo/releases"
+VELO_SEM_VER_SPEC_DOCS_URL = "https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec"
+
+
+# Name of the fields in the AppSpec.
+# These must match what is set in the AppSpec in Velo repo.
+APP_SPEC_FIELD_PROJECT = "project"
+APP_SPEC_FIELD_VELO_VERSION = "velo_version"
+
+# Name of the fields in the Velo-bootstrapper.
+VELO_VERSION_VARIABLE_NAME = "VELO_VERSION"
 
 
 class GithubSettings(BaseSettings):
@@ -68,7 +80,7 @@ class ActionInputs(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
-    project: Optional[str]
+    project: str
     workspace: Optional[str] = None
     deploy_to_environments: Union[
         str, List[str]
