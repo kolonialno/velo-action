@@ -30,13 +30,20 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: Commit action.yml
-        uses: EndBug/add-and-commit@v7
+      - name: Update CHANGELOG.md
+        uses: vemel/update-changelog@0.0.1
+        id: changelog
+        with:
+          version: ${{ steps.gitversion.outputs.version }}
+
+      - name: Commit action.yml and CHANGELOG.md
+        uses: EndBug/add-and-commit@v9.0.0
         with:
           author_name: Release-action
-          message: Update action image tag to ${{ steps.gitversion.outputs.version }}
-          add: action.yml
-
+          message: |
+            Update action image tag to ${{ steps.gitversion.outputs.version }}
+            Update CHANGELOG.md
+          add: action.yml CHANGELOG.md
 
       - name: Create Github release
         uses: marvinpinto/action-automatic-releases@v1.2.1
