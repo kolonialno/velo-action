@@ -30,20 +30,13 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: Update CHANGELOG.md
-        uses: vemel/update-changelog@0.0.1
-        id: changelog
-        with:
-          version: ${{ steps.gitversion.outputs.version }}
-
-      - name: Commit action.yml and CHANGELOG.md
+      - name: Commit action.yml with release version
         uses: EndBug/add-and-commit@v9.0.0
         with:
           author_name: Release-action
           message: |
             Update action image tag to ${{ steps.gitversion.outputs.version }}
-            Update CHANGELOG.md
-          add: action.yml CHANGELOG.md
+          add: action.yml
 
       - name: Create Github release
         uses: marvinpinto/action-automatic-releases@v1.2.1
@@ -53,3 +46,18 @@ jobs:
           release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
           draft: false
           prerelease: false
+
+      # Having the action.yml use the latest image makes debugging the velo-action much easier.
+      # Just reference a commit and run to test.
+      - name: Revert image version in action.yml to latest
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest"' action.yml
+
+      - name: Commit action.yml with latest version
+        uses: EndBug/add-and-commit@v9.0.0
+        with:
+          author_name: Release-action
+          message: |
+            Change action image back to latest
+          add: action.yml
