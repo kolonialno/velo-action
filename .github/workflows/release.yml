@@ -9,6 +9,7 @@ on:
 
 jobs:
   release:
+    name: Create Github release
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
