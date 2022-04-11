@@ -20,12 +20,12 @@ class GCP:
         else:
             logger.info("Using local credentials.")
 
-    @lru_cache
+    @lru_cache(maxsize=128)  # noqa: B019
     def _get_storage_client(self):
         client = storage.Client(credentials=self.scoped_credentials)
         return client
 
-    @lru_cache
+    @lru_cache(maxsize=128)  # noqa: B019
     def _get_secrets_client(self):
         try:
             secrets_client = secretmanager.SecretManagerServiceClient(
