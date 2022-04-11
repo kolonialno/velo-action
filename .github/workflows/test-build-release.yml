@@ -1,4 +1,4 @@
-name: '[ci] Build & Release'
+name: '[ci] Teat & Build'
 
 on:
   push:
