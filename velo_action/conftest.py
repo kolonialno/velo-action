@@ -1,4 +1,4 @@
-import os.path
+import os
 from functools import lru_cache
 
 import pytest
@@ -38,7 +38,31 @@ def default_github_settings():
         server_url="https://github.com",
         repository="octocat/Hello-World",
         actor="octocat",
+        api_url="test",
+        run_id="1",
+        workflow="test",
     )
+
+
+@pytest.fixture(scope="function")
+def default_github_settings_env_vars(monkeypatch):
+    monkeypatch.setenv("GITHUB_WORKSPACE", "test")
+    monkeypatch.setenv("GITHUB_SHA", "ffac537e6cbbf934b08745a378932722df287a53")
+    monkeypatch.setenv("GITHUB_REF_NAME", "test")
+    monkeypatch.setenv("GITHUB_SERVER_URL", "test")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "test")
+    monkeypatch.setenv("GITHUB_ACTOR", "test")
+    monkeypatch.setenv("GITHUB_API_URL", "test")
+    monkeypatch.setenv("GITHUB_RUN_ID", "test")
+    monkeypatch.setenv("GITHUB_WORKFLOW", "test")
+
+
+@pytest.fixture(scope="function")
+def default_action_inputs_env_vars(monkeypatch):
+    monkeypatch.setenv("INPUT_TOKEN", "test")
+    monkeypatch.setenv("INPUT_PRECEDING_RUN_IDS", "test")
+    monkeypatch.setenv("INPUT_TENANTS", "None")
+    monkeypatch.setenv("INPUT_DEPLOY_TO_ENVIRONMENTS", "None")
 
 
 @pytest.fixture

@@ -32,6 +32,8 @@ def test_github_default_values(generate_version, monkeypatch):
 def test_input_action_use_provided_workspace():
     sett = ActionInputs.parse_obj(
         {
+            "token": "test",
+            "preceding_run_ids": "test",
             "workspace": os.getcwd(),  # Needs to be a valid dir
         }
     )
@@ -43,11 +45,13 @@ def test_input_action_workspace_not_valid_path():
     throw error.
     """
     with pytest.raises(ValueError):
-        ActionInputs.parse_obj({"workspace": "invalid_path"})
+        ActionInputs.parse_obj(
+            {"token": "test", "preceding_run_ids": "test", "workspace": "invalid_path"}
+        )
 
 
 @patch("velo_action.settings.generate_version", return_value="4be1d57")
-def test_parse_none(generate_version):
+def test_parse_none(generate_version, default_github_settings_env_vars):
     """The Github Action only provides inputs as env vars.
     A None type will be parsed as 'None' string.
     We need to support this
@@ -61,6 +65,8 @@ def test_parse_none(generate_version):
             "tenants": "None",
             "velo_artifact_bucket_secret": "None",
             "version": "None",
+            "token": "None",
+            "preceding_run_ids": "None",
         }
     )
     assert sett.octopus_api_key_secret is None
@@ -144,7 +150,7 @@ def test_use_github_workspace_as_fallback(
 
 
 def test_wait_for_deployment_becomes_wait_for_success_seconds(
-    monkeypatch, unsett_dot_env_variables
+    monkeypatch, unsett_dot_env_variables, default_action_inputs_env_vars
 ):
 
     default = ActionInputs()
