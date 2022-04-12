@@ -23,4 +23,4 @@ runs:
     - name: Generate gitversion
       shell: bash
       run: |
-        echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)
+        echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
