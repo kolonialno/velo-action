@@ -35,16 +35,8 @@ jobs:
       - name: Checkout velo-action repo
         uses: actions/checkout@v3
 
-      - name: Checkout example-deploy-project
-        uses: actions/checkout@v3
-        with:
-          repository: kolonialno/example-deploy-project
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: example-deploy-project
-
       - uses: ./
         with:
-          workspace: example-deploy-project
           create_release: 'True'
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
