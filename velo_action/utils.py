@@ -4,7 +4,11 @@ from typing import List, Optional
 
 from semantic_version import SimpleSpec, Version
 
-from velo_action.settings import APP_SPEC_FILENAMES
+from velo_action.settings import (
+    APP_SPEC_FIELD_PROJECT,
+    APP_SPEC_FILENAMES,
+    VeloSettings,
+)
 
 
 def resolve_app_spec_filename(deploy_folder: Path) -> Path:
@@ -23,6 +27,21 @@ def read_file(file: Path):
 
     with open(file, "r", encoding="utf-8") as stream:
         return stream.read()
+
+
+def read_velo_settings(deploy_folder: Path) -> VeloSettings:
+    """Parse the AppSpec (app.yml)"""
+    filepath = resolve_app_spec_filename(deploy_folder)
+
+    try:
+        project = read_field_from_app_spec(APP_SPEC_FIELD_PROJECT, filepath)
+    except ValueError as error:
+        raise SystemExit(
+            "'project' field is required in the AppSpec (app.yml). "
+            "See https://centro.prod.nube.tech/docs/default/component/velo/app-spec/ for instructions."
+        ) from error
+
+    return VeloSettings(project=project)
 
 
 def read_field_from_app_spec(field: str, filename: Path) -> str:

@@ -29,11 +29,6 @@ inputs:
       Name of the GCP secret containing the Octopus Deploy server url.
     required: false
     default: 'velo_action_octopus_server'
-  project:
-    description: |-
-      Name of the project in Octopus Deploy to deploy to.
-    required: true
-    default: None
   service_account_key:
     description: |-
       A Google Service account key to use for authentication. This should be the JSON
@@ -84,7 +79,6 @@ runs:
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
-    - ${{ inputs.project }}
     - ${{ inputs.tenants }}
     - ${{ inputs.progress }}
     - ${{ inputs.wait_for_deployment }}

@@ -21,6 +21,7 @@ from velo_action.tracing_helpers import (
     print_trace_link,
     stringify_span,
 )
+from velo_action.utils import read_velo_settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,12 +67,15 @@ def action(
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
     if args.create_release:
         release = Release(client=octo)
+        velo_settings = read_velo_settings(deploy_folder)
 
-        if release.exists(project_name=args.project, version=args.version, client=octo):
+        if release.exists(
+            project_name=velo_settings.project, version=args.version, client=octo
+        ):
             logger.info(
                 f"Release '{args.version}' already exists at "
                 f"'{release.client.baseurl}/app#/Spaces-1/projects/"
-                f"{args.project}/deployments/releases/{args.version}'. "
+                f"{velo_settings.project}/deployments/releases/{args.version}'. "
                 "If you want to recreate this release, please delete it first in Octopus Deploy."
                 "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
                 "Skipping..."
@@ -81,16 +85,16 @@ def action(
         files = gcloud.upload_from_directory(
             deploy_folder,
             velo_artifact_bucket,
-            f"{args.project}/{args.version}",
+            f"{velo_settings.project}/{args.version}",
         )
 
         logger.info(
             f"Uploaded {len(files)} release files to "
-            f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{args.project}/{args.version}'"
+            f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
         )
 
         release.create(
-            project_name=args.project,
+            project_name=velo_settings.project,
             project_version=args.version,
             github_settings=github_settings,
         )
@@ -105,13 +109,13 @@ def action(
 
         for env in args.deploy_to_environments:
             for ten in tenants:
-                log = f"Deploying project '{args.project}' version '{args.version}' to '{env}' "
+                log = f"Deploying project '{velo_settings.project}' version '{args.version}' to '{env}' "
                 if ten:
                     log += f"for tenant '{ten}'"
                 logger.info(log)
 
                 deploy = Deployment(
-                    project_name=args.project,
+                    project_name=velo_settings.project,
                     version=args.version,
                     client=octo,
                 )

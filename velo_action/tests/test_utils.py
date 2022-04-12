@@ -1,10 +1,15 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import mock_open, patch
 
 import pytest
 from semantic_version import SimpleSpec, Version
 
-from velo_action.utils import find_matching_version, read_field_from_app_spec
+from velo_action.utils import (
+    find_matching_version,
+    read_field_from_app_spec,
+    read_velo_settings,
+)
 
 
 def test_should_find_version_that_is_exact_match():
@@ -41,6 +46,40 @@ def test_should_find_version_that_matches_only_major_highest_minor_low():
     versions = ["0.2.0", "0.2.10", "1.0.2"]
     version_to_match = SimpleSpec("0.2")
     assert find_matching_version(versions, version_to_match) == Version("0.2.10")
+
+
+def test_read_app_spec_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        read_velo_settings(Path("/tmp/not-found"))
+
+
+def test_read_app_spec_file_sucess():
+    """Read project and velo_version from app.yml"""
+    with TemporaryDirectory() as tmpdir:
+        filename = Path.joinpath(Path(tmpdir), "app.yml")
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write("project: test\n")
+            file.flush()
+            velo_settings = read_velo_settings(Path(tmpdir))
+            assert velo_settings.project == "test"
+
+
+@pytest.mark.parametrize(
+    "app_spec",
+    ['"project": "test"', 'velo_version: "1.0.2"'],
+)
+def test_read_app_spec_file_exit_on_missing_fields(app_spec):
+    """SystemExit if one of the required fields are not present
+
+    Here: project and velo_version
+    """
+    with TemporaryDirectory() as temp:
+        filename = Path.joinpath(Path(temp), "app.yml")
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(app_spec)
+            file.flush()
+            with pytest.raises(SystemExit):
+                read_velo_settings(Path(temp))
 
 
 @pytest.mark.parametrize(
