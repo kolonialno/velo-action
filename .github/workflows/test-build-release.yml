@@ -1,10 +1,11 @@
-name: '[ci] Teat & Build'
+name: '[ci] Test & Build'
 
 on:
   push:
     paths:
       - .deploy/**
       - velo_action/**
+      - .github/actions/**
       - .github/workflows/test-build-release.yml
 
 env:
@@ -55,17 +56,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # required to get a unique ref
 
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.11
-        with:
-          versionSpec: "5.x" # What version of Gitversion to use
-
-      - name: Generate gitversion
-        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+      - name: Generate version
+        uses: ./.github/actions/gitversion
         id: gitversion
 
       - name: Set up Docker Buildx
@@ -96,11 +89,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # required to get a unique ref
+
+      - name: Generate version
+        uses: ./.github/actions/gitversion
+        id: gitversion
 
       - uses: kolonialno/velo-action@v0.4.0
         with:
           create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
           project: velo-action
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
