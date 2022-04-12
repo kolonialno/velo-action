@@ -115,7 +115,7 @@ class GCP:
                 service_account_key.encode("ascii")
             ).decode("ascii")
         except binascii.Error as err:
-            logger.warning(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {err}")
+            logger.debug(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {err}")
 
         if google_service_account_key_json_str:
             service_account_info = json.loads(google_service_account_key_json_str)
