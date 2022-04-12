@@ -26,15 +26,10 @@ jobs:
         run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
 
-      - name: Environment Variables from Dotenv
-        uses: c-py/action-dotenv-to-setenv@v3
-        with:
-          env-file: env.dev
-
       - name: Run e2e test
         run: |
           set -ex
-          poetry run python velo_action/main.py
+          . ./env.dev && poetry run python velo_action/main.py
 
   build:
     runs-on: ubuntu-20.04
