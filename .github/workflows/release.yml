@@ -26,10 +26,18 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
+      - name: Get last commit message
+        id: last-commit-message
+        run: |
+          echo "::set-output name=msg::$(git log -1 --pretty=%s)"
+
+      # Avoid poluting the git history with the update action.yml commits
       - name: Commit action.yml
         uses: stefanzweifel/git-auto-commit-action@v4.14.0
         with:
-          commit_message: Update action image to ${{ steps.gitversion.outputs.version }}
+          commit_message: ${{ steps.last-commit-message.outputs.msg }}
+          commit_options: '--amend --no-edit'
+          push_options: '--force'
 
   create_github_release:
     name: Create Github release

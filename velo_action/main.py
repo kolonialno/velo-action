@@ -37,7 +37,9 @@ def action(
     try:
         init_trace = False
         tracer = init_tracer(args.service_account_key, service="velo-action")
-        span = construct_github_action_trace(tracer)
+        span = construct_github_action_trace(
+            tracer, args.token, args.preceding_run_ids, github_settings=github_settings
+        )
         trace_id = stringify_span(span)
         init_trace = True
     except Exception as error:  # pylint: disable=broad-except

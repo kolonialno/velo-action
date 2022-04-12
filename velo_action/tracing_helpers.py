@@ -15,6 +15,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
 from velo_action.github import request_github_workflow_data
+from velo_action.settings import GithubSettings
 
 
 def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
@@ -28,6 +29,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
         )
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
+
     if not password:
         raise ValueError(
             "OTEL_TEMPO_PASSWORD environment variable not set. Traces cannot be send without password."
@@ -125,13 +127,15 @@ def stringify_span(span):
     return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
 
 
-def construct_github_action_trace(tracer) -> Any:
-    if os.environ.get("TOKEN") is None:
-        raise ValueError(
-            "TOKEN environment variable not set. Traces cannot be send without token."
-        )
+def construct_github_action_trace(
+    tracer, token: str, preceding_run_ids: str, github_settings: GithubSettings
+) -> Any:
 
-    total_action_dict = request_github_workflow_data()
+    total_action_dict = request_github_workflow_data(
+        token=token,
+        preceding_run_ids=preceding_run_ids,
+        github_settings=github_settings,
+    )
 
     wf_start_times = []
     span_dict = make_empty_span_dict("build and deploy")
@@ -149,7 +153,7 @@ def construct_github_action_trace(tracer) -> Any:
     span_dict["span"] = span
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
-        if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
+        if wf_span_dict["name"] == github_settings.workflow:
             logger.debug(f"Current wf_span: {stringify_span(wf_span_dict['span'])}")
     span.end(span_dict["end"] or None)
     return span

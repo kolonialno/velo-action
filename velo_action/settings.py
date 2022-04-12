@@ -57,6 +57,9 @@ class GithubSettings(BaseSettings):
     server_url: str
     repository: str
     actor: str
+    api_url: str
+    run_id: str
+    workflow: str
 
     @validator("sha")
     def validate_commit_id(cls, value):
@@ -116,6 +119,10 @@ class ActionInputs(BaseSettings):
 
     # Variables making debugging easier
     velo_project: str = "nube-velo-prod"  # Project where Velo secrets are stored
+
+    # tracing
+    token: str
+    preceding_run_ids: str
 
     @validator("create_release", always=True)
     def validate_create_release(cls, value, values):
