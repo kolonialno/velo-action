@@ -15,7 +15,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
 from velo_action.github import request_github_workflow_data
-from velo_action.settings import GithubSettings
+from velo_action.settings import GRAFANA_URL, TRACING_URL, GithubSettings
 
 
 def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
@@ -38,7 +38,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
     basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
-        endpoint="https://tempo.infra.nube.tech:443/v1/traces",
+        endpoint=TRACING_URL,
         headers=headers,
     )
 
@@ -47,7 +47,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
 
 
 def print_trace_link(span: Any) -> None:
-    trace_host = "https://grafana.infra.nube.tech"
+    trace_host = GRAFANA_URL
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
     print(

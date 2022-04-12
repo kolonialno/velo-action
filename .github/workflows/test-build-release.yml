@@ -12,7 +12,7 @@ env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-20.04
     name: Test
     steps:
@@ -26,10 +26,29 @@ jobs:
         run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
 
-      - name: Run e2e test
-        run: |
-          set -ex
-          . ./env.dev && poetry run python velo_action/main.py
+  e2e_tests:
+    runs-on: ubuntu-20.04
+    name: E2E tests on example-deploy-project
+    needs:
+      - tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: kolonialno/example-deploy-project
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./
+        with:
+          create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
+
+      # - name: Run e2e test
+      #   run: |
+      #     set -ex
+      #     export GITHUB_WORKSPACE=example-deploy-project
+      #     . ./env.dev && poetry run python velo_action/main.py
 
   build:
     runs-on: ubuntu-20.04
@@ -65,7 +84,7 @@ jobs:
     runs-on: ubuntu-20.04
     name: Create release
     needs:
-      - test
+      - tests
       - build
     steps:
       - name: Checkout

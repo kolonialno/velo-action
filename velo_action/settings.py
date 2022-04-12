@@ -17,6 +17,9 @@ VELO_RELEASE_GITUHB_URL = "https://github.com/kolonialno/velo/releases"
 VELO_SEM_VER_SPEC_DOCS_URL = "https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec"
 
 
+TRACING_URL = "https://tempo.infra.nube.tech:443/v1/traces"
+GRAFANA_URL = "https://grafana.infra.nube.tech"
+
 # Name of the fields in the AppSpec.
 # These must match what is set in the AppSpec in Velo repo.
 APP_SPEC_FIELD_PROJECT = "project"
