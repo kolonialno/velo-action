@@ -58,7 +58,7 @@ jobs:
 
   e2e_tests:
     runs-on: ubuntu-20.04
-    name: E2E tests on example-deploy-project
+    name: E2E tests
     needs:
       - build
     steps:
