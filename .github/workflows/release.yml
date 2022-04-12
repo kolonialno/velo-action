@@ -44,21 +44,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: v${{ steps.gitversion.outputs.version }}
-          release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
+          title: v${{ steps.gitversion.outputs.version }} ${{ github.event.head_commit.message }}
           draft: false
           prerelease: false
-
-      # Having the action.yml use the latest image makes debugging the velo-action much easier.
-      # Just reference a commit and run to test.
-      - name: Revert image version in action.yml to latest
-        uses: mikefarah/yq@v4.24.2
-        with:
-          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest"' action.yml
-
-      - name: Commit action.yml with latest version
-        uses: EndBug/add-and-commit@v9.0.0
-        with:
-          author_name: Release-action
-          message: |
-            Change action image back to latest
-          add: action.yml
