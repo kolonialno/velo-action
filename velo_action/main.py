@@ -53,7 +53,9 @@ def action(
         )
 
     # Read secrets early to fail fast
-    gcloud = gcp.GCP(args.service_account_key)
+    gcloud = gcp.GCP(
+        project=args.velo_project, service_account_key=args.service_account_key
+    )
 
     octopus_server = gcloud.lookup_data(args.octopus_server_secret, args.velo_project)
     octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, args.velo_project)
@@ -79,15 +81,15 @@ def action(
                 f"'{release.client.baseurl}/app#/Spaces-1/projects/"
                 f"{velo_settings.project}/deployments/releases/{args.version}'. "
                 "If you want to recreate this release, please delete it first in Octopus Deploy."
-                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
+                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
                 "Skipping..."
             )
             return None
 
         files = gcloud.upload_from_directory(
-            deploy_folder,
-            velo_artifact_bucket,
-            f"{velo_settings.project}/{args.version}",
+            path=deploy_folder,
+            dest_bucket_name=velo_artifact_bucket,
+            dest_blob_name=f"{velo_settings.project}/{args.version}",
         )
 
         logger.info(
