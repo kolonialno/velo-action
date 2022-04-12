@@ -61,7 +61,7 @@ def read_velo_settings(deploy_folder: Path) -> VeloSettings:
             f"and {VELO_RELEASE_GITUHB_URL} for valid releases."
         ) from error
 
-    return VeloSettings(project=project, version_spec=version_spec)
+    return VeloSettings(project=project, velo_version=version_spec)
 
 
 def read_field_from_app_spec(field: str, filename: Path) -> str:

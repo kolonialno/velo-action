@@ -13,7 +13,7 @@ def test_velo_settings_parse_version_valid(version_spec):
 
     settings = VeloSettings(
         project="ProjectName",
-        velo_version=version_spec,
+        velo_version=SimpleSpec(version_spec),
     )
     assert settings.version_spec == SimpleSpec(version_spec)
 

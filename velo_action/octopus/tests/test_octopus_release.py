@@ -242,22 +242,6 @@ def test_exists(client):
 
 @mock_client_requests(
     [
-        Request("get", "api/projects/ProjectName", response={"Id": "project-1"}),
-        Request("head", "api/projects/project-1/releases/1.2.3", response=True),
-    ]
-)
-def test_skip_create_existing_release(client, default_github_settings):
-    rel = Release(client)
-    rel.create(
-        "ProjectName",
-        "1.2.3",
-        github_settings=default_github_settings,
-        velo_version_spec=SimpleSpec(">0.1"),
-    )
-
-
-@mock_client_requests(
-    [
         Request(
             "get",
             (
