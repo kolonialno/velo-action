@@ -8,9 +8,8 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file: env.dev-vars
-    environment:
-      INPUT_WORKSPACE: /github/workspace
     volumes:
-      - ${GITHUB_WORKSPACE}:/github/workspace:ro
-      - ${CLOUDSDK_CONFIG}:/root/.config/gcloud:ro
+      - ../velo-action:/github/workspace:ro
+      # - ${INPUT_WORKSPACE}:/github/workspace:ro
+      # - ${CLOUDSDK_CONFIG}:/root/.config/gcloud:ro
     working_dir: /github/workspace
