@@ -50,9 +50,9 @@ def print_trace_link(span: Any) -> None:
     trace_host = GRAFANA_URL
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
-    print(
-        f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
-        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D\n---"
+    logger.info(
+        f"See trace: {trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
+        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D"
     )
 
 
