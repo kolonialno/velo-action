@@ -106,7 +106,7 @@ jobs:
   update_action_image:
     name: Update image version in action.yml
     runs-on: ubuntu-20.04
-    if: ! github.event.pull_request.draft
+    if: ${{ !github.event.pull_request.draft }}
     needs:
       - release
     steps:
