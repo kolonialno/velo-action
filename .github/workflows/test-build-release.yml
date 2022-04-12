@@ -12,39 +12,15 @@ env:
   IMAGE: europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-20.04
     name: Test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Read .tool-versions
-        uses: marocchino/tool-versions-action@v1
-        id: versions
-
-      - name: Setup python
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ steps.versions.outputs.python }}
-
-      - name: Set up Poetry
-        uses: snok/install-poetry@v1.3
-        with:
-          version: ${{ steps.versions.outputs.poetry }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load Poetry cache
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3.0.1
-        with:
-          path: .venv
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+      - name: Setup Python env
+        uses: ./.github/actions/setup-python
 
       - name: Run tests
         run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
@@ -80,11 +56,37 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.gitversion.outputs.version }}
             ${{ env.IMAGE }}:latest
 
+  e2e_tests:
+    runs-on: ubuntu-20.04
+    name: E2E tests
+    needs:
+      - build
+    steps:
+      - name: Checkout velo-action repo
+        uses: actions/checkout@v3
+
+      - name: Generate version
+        uses: ./.github/actions/gitversion
+        id: gitversion
+
+      - name: Set image version to '${{ steps.gitversion.outputs.version }}' in action.yml
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - name: Run e2e test - create a release for velo-action
+        uses: ./
+        with:
+          create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
+
   release:
     runs-on: ubuntu-20.04
     name: Create release
     needs:
-      - test
+      - tests
+      - e2e_tests
       - build
     steps:
       - name: Checkout

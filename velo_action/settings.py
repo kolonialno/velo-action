@@ -17,13 +17,13 @@ VELO_RELEASE_GITUHB_URL = "https://github.com/kolonialno/velo/releases"
 VELO_SEM_VER_SPEC_DOCS_URL = "https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec"
 
 
+TRACING_URL = "https://tempo.infra.nube.tech:443/v1/traces"
+GRAFANA_URL = "https://grafana.infra.nube.tech"
+
 # Name of the fields in the AppSpec.
 # These must match what is set in the AppSpec in Velo repo.
 APP_SPEC_FIELD_PROJECT = "project"
 APP_SPEC_FIELD_VELO_VERSION = "velo_version"
-
-# Name of the fields in the Velo-bootstrapper.
-VELO_VERSION_VARIABLE_NAME = "VELO_VERSION"
 
 
 class VeloSettings(BaseModel):
@@ -57,6 +57,9 @@ class GithubSettings(BaseSettings):
     server_url: str
     repository: str
     actor: str
+    api_url: str
+    run_id: str
+    workflow: str
 
     @validator("sha")
     def validate_commit_id(cls, value):
@@ -116,6 +119,10 @@ class ActionInputs(BaseSettings):
 
     # Variables making debugging easier
     velo_project: str = "nube-velo-prod"  # Project where Velo secrets are stored
+
+    # tracing
+    token: str
+    preceding_run_ids: str
 
     @validator("create_release", always=True)
     def validate_create_release(cls, value, values):

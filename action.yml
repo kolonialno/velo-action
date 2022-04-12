@@ -69,13 +69,28 @@ inputs:
       The folder must be in a Git repository to use automated version numbers.
     required: false
     default: None
+  token:
+    description: |-
+      Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.
+      We recommend using a service account with the least permissions necessary.
+      Also when generating a new PAT, select the least scopes necessary.
+      [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    required: false
+    default: ${{ github.token }}
+  preceding_run_ids:
+    description: |-
+      Id of preceding workflows.
+    required: false
+    default: ${{ github.event.workflow_run.id }}
 outputs:
   version:
     description: |-
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.6'
+  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:dev'
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
@@ -86,3 +101,5 @@ runs:
     - ${{ inputs.octopus_server_secret }}
     - ${{ inputs.octopus_api_key_secret }}
     - ${{ inputs.velo_artifact_bucket_secret }}
+    - ${{ inputs.token }}
+    - ${{ inputs.preceding_run_ids }}

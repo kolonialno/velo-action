@@ -4,6 +4,9 @@ version = "0.0.0"
 description = "Github Action used to generate velo deploy version and trigger a release."
 authors = ["Cloud-platform team <team-cloud-platform@oda.com>"]
 
+[tool.poetry.scripts]
+velo_action = "velo_action.main:main"
+
 [tool.poetry.dependencies]
 python = "3.10.2"  # msut be the same as the Dockerfile
 semantic-version = "^2.9"
