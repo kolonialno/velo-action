@@ -1,6 +1,7 @@
 import os
 
 import requests
+from loguru import logger
 
 from velo_action.settings import GithubSettings
 
@@ -8,6 +9,7 @@ from velo_action.settings import GithubSettings
 def actions_output(key, value):
     """Output variables such that they can be used in GitHub Actions."""
     os.system(f'echo "::set-output name={key}::{value}"')
+    logger.info("{key}: {value}")
 
 
 def request_github_workflow_data(
