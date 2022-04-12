@@ -56,7 +56,7 @@ class OctopusClient:
             raise ValueError(f"Environment '{env_name}' is unknown")
         return self._cached_environment_ids[env_name]
 
-    @lru_cache
+    @lru_cache(maxsize=128)  # noqa: B019
     def lookup_project_id(self, project_name) -> str:
         """Translate project name into a project id"""
         pro = self.get(f"api/projects/{project_name}")

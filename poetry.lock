@@ -1300,8 +1300,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.10.2"
-content-hash = "776618c49c6f046e8603a1a6aae6cb1d24c75dd02e74079721c2e01b8d3f2b27"
+python-versions = "3.10.2"  # msut be the same as the Dockerfile
+content-hash = "bec32b4ad648594dbc23cba87dad723770d71b5e8c76e693c6640e64c96aa6cd"
 
 [metadata.files]
 appdirs = [
