@@ -14,16 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Required for GitVersion
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.11
-        with:
-          versionSpec: "5.x" # What version of Gitversion to use
-
-      - name: Generate gitversion
-        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+      - name: Generate version
+        uses: ./.github/actions/gitversion
         id: gitversion
 
       - name: Set image version to ${{ steps.gitversion.outputs.version }} in action.yml
@@ -45,8 +38,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Required for GitVersion
+
+      - name: Generate version
+        uses: ./.github/actions/gitversion
+        id: gitversion
 
       - name: Automatic release
         uses: marvinpinto/action-automatic-releases@v1.2.1
