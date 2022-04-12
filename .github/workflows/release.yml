@@ -52,4 +52,4 @@ jobs:
           automatic_release_tag: v${{ steps.gitversion.outputs.version }}
           title: v${{ steps.gitversion.outputs.version }} ${{ github.event.head_commit.message }}
           draft: false
-          prerelease: false
+          prerelease: github.ref != 'refs/heads/main'  # Only create release from main branch
