@@ -74,9 +74,11 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - uses: ./
+      - name: Run e2e test - create a release for velo-action
+        uses: ./
         with:
           create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
   release:

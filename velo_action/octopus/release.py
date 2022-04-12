@@ -1,6 +1,5 @@
 from typing import Dict, List
 
-from loguru import logger
 from semantic_version import Version
 
 from velo_action.octopus.client import OctopusClient
@@ -51,18 +50,6 @@ class Release:
         auto_select_packages: bool = True,
     ) -> None:
 
-        if self.exists(project_name, project_version, client=self.client):
-            logger.info(
-                f"Release '{project_version}' already exists at "
-                f"'{self.client.baseurl}/app#/Spaces-1/projects/"
-                f"{project_name}/deployments/releases/{project_version}'. "
-                "Skipping..."
-            )
-            return None
-
-        logger.info(
-            f"Creating a release for project '{project_name}' with version '{project_version}'"
-        )
         project_id = self.client.lookup_project_id(project_name)
         if auto_select_packages:
             packages = self._determine_latest_deploy_packages(project_id)
@@ -79,7 +66,6 @@ class Release:
             payload["SelectedPackages"] = packages
 
         self._octo_object = self.client.post("api/releases", data=payload)
-        return None
 
     @classmethod
     def _create_octopus_package_payload(

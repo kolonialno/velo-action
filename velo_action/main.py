@@ -95,10 +95,16 @@ def action(
             f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
         )
 
+        logger.info(
+            f"Creating a release in Octopus Deploy for project '{velo_settings.project}' with version '{args.version}'"
+        )
         release.create(
             project_name=velo_settings.project,
             project_version=args.version,
             github_settings=github_settings,
+        )
+        logger.info(
+            f"See {release.client.baseurl}/app#/Spaces-1/projects/{velo_settings.project}/deployments/releases/{args.version}"
         )
 
     if args.deploy_to_environments:
@@ -129,13 +135,13 @@ def action(
                     variables=deploy_vars,
                 )
 
+    if init_trace:
+        print_trace_link(span)
+
     # Set outputs in environment to be used by other
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
-
-    if init_trace:
-        print_trace_link(span)
 
     logger.info("Done")
     return None
