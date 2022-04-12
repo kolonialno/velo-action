@@ -6,7 +6,7 @@ outputs:
   version:
     description: |
       Gitversion generated based on commit history
-    value: ${{ steps.versions.outputs.version }}
+    value: ${{ steps.gitversion.outputs.version }}
 runs:
   using: 'composite'
   steps:
@@ -22,5 +22,7 @@ runs:
 
     - name: Generate gitversion
       shell: bash
+      id: gitversion
       run: |
+        set -x
         echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
