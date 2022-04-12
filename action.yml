@@ -90,7 +90,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.6'
+  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:dev'
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}
@@ -101,3 +101,5 @@ runs:
     - ${{ inputs.octopus_server_secret }}
     - ${{ inputs.octopus_api_key_secret }}
     - ${{ inputs.velo_artifact_bucket_secret }}
+    - ${{ inputs.token }}
+    - ${{ inputs.preceding_run_ids }}
