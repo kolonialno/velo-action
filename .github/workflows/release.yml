@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - release/**
+      - .github/actions/**
+      - .github/workflows/release.yml
 
 jobs:
   update_action_image:

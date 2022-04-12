@@ -5,6 +5,7 @@ on:
     paths:
       - .deploy/**
       - velo_action/**
+      - .github/actions/**
       - .github/workflows/test-build-release.yml
 
 env:
