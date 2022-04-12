@@ -43,7 +43,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ steps.gitversion.outputs.version }}
+          automatic_release_tag: v${{ steps.gitversion.outputs.version }}
           release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
           draft: false
           prerelease: false
