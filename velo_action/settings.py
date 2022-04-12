@@ -25,9 +25,6 @@ GRAFANA_URL = "https://grafana.infra.nube.tech"
 APP_SPEC_FIELD_PROJECT = "project"
 APP_SPEC_FIELD_VELO_VERSION = "velo_version"
 
-# Name of the fields in the Velo-bootstrapper.
-VELO_VERSION_VARIABLE_NAME = "VELO_VERSION"
-
 
 class VeloSettings(BaseModel):
     """Model to parse the app.yml config file."""

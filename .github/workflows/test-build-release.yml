@@ -26,20 +26,6 @@ jobs:
         run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
 
-  e2e_tests:
-    runs-on: ubuntu-20.04
-    name: E2E tests on example-deploy-project
-    needs:
-      - tests
-    steps:
-      - name: Checkout velo-action repo
-        uses: actions/checkout@v3
-
-      - uses: ./
-        with:
-          create_release: 'True'
-          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
-
   build:
     runs-on: ubuntu-20.04
     name: Build & push image
@@ -69,6 +55,29 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ steps.gitversion.outputs.version }}
             ${{ env.IMAGE }}:latest
+
+  e2e_tests:
+    runs-on: ubuntu-20.04
+    name: E2E tests on example-deploy-project
+    needs:
+      - build
+    steps:
+      - name: Checkout velo-action repo
+        uses: actions/checkout@v3
+
+      - name: Generate version
+        uses: ./.github/actions/gitversion
+        id: gitversion
+
+      - name: Set image version to '${{ steps.gitversion.outputs.version }}' in action.yml
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - uses: ./
+        with:
+          create_release: 'True'
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
   release:
     runs-on: ubuntu-20.04
