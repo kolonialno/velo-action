@@ -75,6 +75,7 @@ jobs:
     name: Create release
     needs:
       - tests
+      - e2e_tests
       - build
     steps:
       - name: Checkout
