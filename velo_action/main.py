@@ -79,7 +79,7 @@ def action(
                 f"'{release.client.baseurl}/app#/Spaces-1/projects/"
                 f"{velo_settings.project}/deployments/releases/{args.version}'. "
                 "If you want to recreate this release, please delete it first in Octopus Deploy."
-                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
+                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
                 "Skipping..."
             )
             return None
