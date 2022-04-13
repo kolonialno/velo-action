@@ -1,0 +1,25 @@
+---
+name: '[docs] Upload to Centro'
+
+on:
+  push:
+    paths:
+      - .github/workflows/docs-to-centro.yml
+      - .github/actions/docs-to-centro/action.yml
+      - centro.yaml
+      - mkdocs.yml
+      - docs/**
+      - README.md
+
+jobs:
+  generate_documentation:
+    name: Publish documentation to Centro
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Publish documentation to Centro
+        uses: ./.github/actions/docs-to-centro
+        with:
+          name: velo-action
