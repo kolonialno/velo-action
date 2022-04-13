@@ -29,19 +29,12 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4.14.0
         with:
           commit_message: Release ${{ steps.gitversion.outputs.version }}
+          tagging_message: v${{ steps.gitversion.outputs.version }}
 
-  create_github_release:
-    name: Create Github release
-    runs-on: ubuntu-20.04
-    needs:
-      - update_action_image
-    steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Generate version
-        uses: ./.github/actions/gitversion
-        id: gitversion
+        with:
+          ref: v${{ steps.gitversion.outputs.version }}
 
       - name: Create Github release v${{ steps.gitversion.outputs.version }}
         uses: marvinpinto/action-automatic-releases@v1.2.1
@@ -51,3 +44,15 @@ jobs:
           title: v${{ steps.gitversion.outputs.version }}
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/main' }}  # Only create release from main branch
+
+  # create_github_release:
+  #   name: Create Github release
+  #   runs-on: ubuntu-20.04
+  #   needs:
+  #     - update_action_image
+  #   steps:
+
+
+  #     - name: Generate version
+  #       uses: ./.github/actions/gitversion
+  #       id: gitversion
