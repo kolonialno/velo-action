@@ -31,7 +31,7 @@ jobs:
           commit_message: Release ${{ steps.gitversion.outputs.version }}
           tagging_message: v${{ steps.gitversion.outputs.version }}
 
-      - name: Checkout
+      - name: Checkout tag v${{ steps.gitversion.outputs.version }}
         uses: actions/checkout@v3
         with:
           ref: v${{ steps.gitversion.outputs.version }}
@@ -45,14 +45,7 @@ jobs:
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/main' }}  # Only create release from main branch
 
-  # create_github_release:
-  #   name: Create Github release
-  #   runs-on: ubuntu-20.04
-  #   needs:
-  #     - update_action_image
-  #   steps:
-
-
-  #     - name: Generate version
-  #       uses: ./.github/actions/gitversion
-  #       id: gitversion
+      - name: Craft a release
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
