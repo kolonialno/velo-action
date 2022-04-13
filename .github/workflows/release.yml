@@ -6,16 +6,15 @@ on:
     branches:
       - main
       - release/**
-      - .github/actions/**
-      - .github/workflows/release.yml
 
 jobs:
   update_action_image:
     name: Update image version in action.yml
     runs-on: ubuntu-20.04
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Generate version
         uses: ./.github/actions/gitversion
@@ -26,39 +25,29 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: Get last commit message
-        id: last-commit-message
-        run: |
-          echo "::set-output name=msg::$(git log -1 --pretty=%s)"
-
-      # Avoid poluting the git history with the update action.yml commits
       - name: Commit action.yml
         uses: stefanzweifel/git-auto-commit-action@v4.14.0
         with:
-          commit_message: ${{ steps.last-commit-message.outputs.msg }}
-          commit_options: '--amend --no-edit'
-          push_options: '--force'
+          commit_message: Release ${{ steps.gitversion.outputs.version }}
+          tagging_message: v${{ steps.gitversion.outputs.version }}
 
-  create_github_release:
-    name: Create Github release
-    runs-on: ubuntu-20.04
-    needs:
-      - update_action_image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout tag v${{ steps.gitversion.outputs.version }}
+        uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # Checkout pull request HEAD commit instead of merge commit (to get the updated action.yml)
+          ref: v${{ steps.gitversion.outputs.version }}
 
-      - name: Generate version
-        uses: ./.github/actions/gitversion
-        id: gitversion
-
-      - name: Create Github release v${{ steps.gitversion.outputs.version }} ${{ github.event.head_commit.message }}
+      - name: Create Github release v${{ steps.gitversion.outputs.version }}
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: v${{ steps.gitversion.outputs.version }}
-          title: v${{ steps.gitversion.outputs.version }} ${{ github.event.head_commit.message }}
+          title: v${{ steps.gitversion.outputs.version }}
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/main' }}  # Only create release from main branch
+
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

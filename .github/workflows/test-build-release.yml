@@ -47,7 +47,7 @@ jobs:
           username: _json_key
           password: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
-      - name: Build and push
+      - name: Build and push ${{ steps.gitversion.outputs.version }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -75,7 +75,7 @@ jobs:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
       - name: Run e2e test - create a release for velo-action
-        uses: ./
+        uses: ./  # Use action.yml in root
         with:
           create_release: 'True'
           version: ${{ steps.gitversion.outputs.version }}
@@ -96,6 +96,7 @@ jobs:
         uses: ./.github/actions/gitversion
         id: gitversion
 
+        # Actually create the release with a released version
       - uses: kolonialno/velo-action@v0.4.0
         with:
           create_release: 'True'
