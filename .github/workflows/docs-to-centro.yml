@@ -5,11 +5,8 @@ on:
   push:
     paths:
       - .github/workflows/docs-to-centro.yml
-      - .github/actions/docs-to-centro/action.yml
-      - centro.yaml
       - mkdocs.yml
       - docs/**
-      - README.md
 
 jobs:
   generate_documentation:
@@ -19,7 +16,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Publish documentation to Centro
-        uses: ./.github/actions/docs-to-centro
+      - name: Checkout Centro repo main
+        uses: actions/checkout@v3
+        with:
+          repository: kolonialno/centro
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Indicate where to check action out to
+          path: centro
+
+      - name: Publish to Centro prod
+        uses: ./centro/.github/actions/docs-to-centro
+        if: github.ref == 'refs/heads/main'
         with:
           name: velo-action
+          entity: Component
+          service_account_key: ${{ secrets.CENTRO_DOCS_UPLOADER_GSA_KEY_PROD }}
+
+      - name: Publish to Centro staging
+        uses: ./centro/.github/actions/docs-to-centro
+        continue-on-error: true  # Staging instance may be down
+        with:
+          name: velo-action
+          entity: Component
+          env: staging
+          service_account_key: ${{ secrets.CENTRO_DOCS_UPLOADER_GSA_KEY_STAGING }}

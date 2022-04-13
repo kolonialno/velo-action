@@ -95,5 +95,7 @@ docs_publish_staging: docs_generate
 	--storage-name centro-docs-staging \
 	--entity "default/Component/velo"
 
+# Kill the mkdocs server
+# kill -9 $(lsof -ti:8000)
 mkdocs:
 	mkdocs serve --verbose
