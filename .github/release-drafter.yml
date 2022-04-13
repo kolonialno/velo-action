@@ -1,9 +1,11 @@
----
 ame-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 template: |
   # What's Changed
   $CHANGES
+
+change-template: '- $TITLE ([#$NUMBER](https://github.com/kolonialno/velo-action/pull/$NUMBER))'
+
 categories:
   - title: Added
     labels:

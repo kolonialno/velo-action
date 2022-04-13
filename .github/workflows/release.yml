@@ -45,7 +45,9 @@ jobs:
           draft: false
           prerelease: ${{ github.ref != 'refs/heads/main' }}  # Only create release from main branch
 
-      - name: Craft a release
-        uses: release-drafter/release-drafter@v5
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
