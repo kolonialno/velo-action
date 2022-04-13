@@ -8,9 +8,12 @@ on:
       - release/**
 
 jobs:
-  create_github_release:
-    name: Create Github release
+  update_action_image:
+    name: Update image version in action.yml
     runs-on: ubuntu-20.04
+    if: ${{ !github.event.pull_request.draft }}
+    needs:
+      - release
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,7 +22,26 @@ jobs:
         uses: ./.github/actions/gitversion
         id: gitversion
 
-      - name: Create Github release v${{ steps.gitversion.outputs.version }} ${{ github.event.head_commit.message }}
+      - name: Set image version to '${{ steps.gitversion.outputs.version }}' in action.yml
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - name: Commit action.yml
+        uses: stefanzweifel/git-auto-commit-action@v4.14.0
+        with:
+          commit_message: Release ${{ steps.gitversion.outputs.version }}
+
+  create_github_release:
+    name: Create Github release
+    runs-on: ubuntu-20.04
+    needs:
+      - update_action_image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create Github release v${{ steps.gitversion.outputs.version }}
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
