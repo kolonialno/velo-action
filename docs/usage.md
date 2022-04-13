@@ -5,7 +5,7 @@ This action is part of the Velo deploy tooling.
 ## Usage
 
 ```yaml
-- uses: actions/checkout@v0.4.0
+- uses: kolonialno/velo-action@v0.4.0
   id: velo
   with:
     # Version used to generate release and tag image. If unspecified, the git short ref is used.

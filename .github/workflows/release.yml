@@ -12,11 +12,9 @@ jobs:
     name: Update image version in action.yml
     runs-on: ubuntu-20.04
     if: ${{ !github.event.pull_request.draft }}
-    needs:
-      - release
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Generate version
         uses: ./.github/actions/gitversion
@@ -39,7 +37,7 @@ jobs:
       - update_action_image
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create Github release v${{ steps.gitversion.outputs.version }}
         uses: marvinpinto/action-automatic-releases@v1.2.1
