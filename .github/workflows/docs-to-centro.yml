@@ -16,31 +16,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.CENTRO_GITUHB_APP_ID }}
-          private_key: ${{ secrets.CENTRO_GITUHB_APP_SECRET }}
-
-      - name: Checkout action
-        uses: actions/checkout@v3
-        with:
-          repository: kolonialno/centro
-          token: ${{ steps.generate_token.outputs.token }}
-          path: centro
-
-      - name: Checkout Centro repo main
-        uses: actions/checkout@v3
-        with:
-          repository: kolonialno/centro
-          ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Indicate where to check action out to
-          path: centro
-
       - name: Publish to Centro prod
-        uses: ./centro/.github/actions/docs-to-centro
+        uses: .github/actions/docs-to-centro
         if: github.ref == 'refs/heads/main'
         with:
           name: velo-action
@@ -48,7 +25,7 @@ jobs:
           service_account_key: ${{ secrets.CENTRO_DOCS_UPLOADER_GSA_KEY_PROD }}
 
       - name: Publish to Centro staging
-        uses: ./centro/.github/actions/docs-to-centro
+        uses: .github/actions/docs-to-centro
         continue-on-error: true  # Staging instance may be down
         with:
           name: velo-action
