@@ -177,11 +177,11 @@ resource "github_actions_secret" "velo_action_gsa_key" {
 resource "google_storage_bucket_iam_member" "upload_centro_docs_prod" {
   bucket = "centro-docs-prod"
   member = "serviceAccount:${google_service_account.velo_action.email}"
-  role   = "roles/storage.objectCreator"
+  role   = "roles/storage.legacyBucketWriter"
 }
 
 resource "google_storage_bucket_iam_member" "upload_centro_docs_staging" {
   bucket = "centro-docs-staging"
   member = "serviceAccount:${google_service_account.velo_action.email}"
-  role   = "roles/storage.objectCreator"
+  role   = "roles/storage.legacyBucketWriter"
 }
