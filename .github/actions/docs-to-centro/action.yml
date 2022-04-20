@@ -1,0 +1,98 @@
+---
+name: Docs-to-centro
+description: |
+  Generate docs using techdocs-cli and upload to Centro
+inputs:
+  service_account_key:
+    description: |
+      GCP Service account key.
+      Use Github org secret CENTRO_DOCS_UPLOADER_GSA_KEY_PROD or CENTRO_DOCS_UPLOADER_GSA_KEY_STAGING
+    required: true
+  name:
+    description: |
+      Name
+    required: true
+  entity:
+    description: |
+      The Centro entity to use. See https://centro.prod.nube.tech/docs/default/component/centro/catalog-entities/
+    required: true
+  namespace:
+    description: |
+      Centro namespace
+    required: true
+    default: default
+  env:
+    description: |
+      Centro environment. Either staging og prod
+      Default prod
+    required: true
+    default: prod
+  techdocs_version:
+    description: |
+      Version of the techdocs/cli NPM package
+    required: true
+    default: 0.8.6
+  node_version:
+    description: |
+      NodeJS version
+    required: true
+    default: 16.13.2
+  python_version:
+    description: |
+      Python version
+    required: true
+    default: 3.10.2
+  mkdocs_techdocs_core_version:
+    description: |
+      mkdocs-techdocs-core package version. See https://pypi.org/project/mkdocs-techdocs-core/
+    required: true
+    default: 1.0.0
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup python ${{ inputs.python_version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install mkdocs package
+      shell: bash
+      run: |
+        set -e
+        pip install mkdocs-techdocs-core==${{ inputs.mkdocs_techdocs_core_version }} mkdocs-click==0.5
+
+    - name: Setup Node ${{ inputs.node_version }}
+      uses: actions/setup-node@v3.1.0
+      with:
+        node-version: ${{ inputs.node_version }}
+
+    - name: Install techdocs-cli@${{ inputs.techdocs_version }}
+      shell: bash
+      run: |
+        set -e
+        npm install -g @techdocs/cli@${{ inputs.techdocs_version }}
+
+    - name: Generate docs
+      shell: bash
+      run: |
+        set -e
+        npx techdocs-cli generate --no-docker --verbose --source-dir . --output-dir ./site/
+
+    - name: Authenticate to nube-centro-${{ inputs.env }}
+      uses: google-github-actions/auth@v0.7.0
+      with:
+        credentials_json: ${{ inputs.service_account_key }}
+        project_id: nube-centro-${{ inputs.env }}
+        create_credentials_file: true
+
+    - name: Publish docs to Centro ${{ inputs.env }}
+      shell: bash
+      run: |
+        set -e
+        npx techdocs-cli publish \
+          --publisher-type googleGcs \
+          --storage-name centro-docs-${{ inputs.env }} \
+          --entity "${{ inputs.namespace }}/${{ inputs.entity }}/${{ inputs.name }}"

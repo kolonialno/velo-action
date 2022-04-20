@@ -15,7 +15,9 @@ __pycache__/
 __pypackages__/
 appversion.json
 appversion.txt
+dist
 key.json
 releasenotes.html
 site
 temp-deploy
+version.txt

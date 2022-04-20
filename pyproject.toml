@@ -4,6 +4,9 @@ version = "0.0.0"
 description = "Github Action used to generate velo deploy version and trigger a release."
 authors = ["Cloud-platform team <team-cloud-platform@oda.com>"]
 
+[tool.poetry.scripts]
+velo_action = "velo_action.main:main"
+
 [tool.poetry.dependencies]
 python = "3.10.2"  # msut be the same as the Dockerfile
 semantic-version = "^2.9"
@@ -27,12 +30,13 @@ pytest = "^7.1"
 black = "^22.1.0"
 flake8 = "^4.0"
 flake8-bugbear = "^22.1"
-mypy = "^0.941"
+mypy = "^0.942"
 pylint = "^2.12"
 pytest-mock = "^3.6"
 docker-image-size-limit = "^0.4.1"
 types-requests = "^2.26.0"
 mkdocs-techdocs-core = "^1.0.0"
+types-PyYAML = "^6.0.5"
 
 
 [build-system]

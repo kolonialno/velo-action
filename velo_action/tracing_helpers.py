@@ -15,6 +15,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
 from velo_action.github import request_github_workflow_data
+from velo_action.settings import GRAFANA_URL, TRACING_URL, GithubSettings
 
 
 def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
@@ -28,6 +29,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
         )
     else:
         password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
+
     if not password:
         raise ValueError(
             "OTEL_TEMPO_PASSWORD environment variable not set. Traces cannot be send without password."
@@ -36,7 +38,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
     basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
     headers = {"Authorization": f"Basic {basic_header}"}
     otlp_exporter = OTLPSpanExporter(
-        endpoint="https://tempo.infra.nube.tech:443/v1/traces",
+        endpoint=TRACING_URL,
         headers=headers,
     )
 
@@ -45,12 +47,12 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
 
 
 def print_trace_link(span: Any) -> None:
-    trace_host = "https://grafana.infra.nube.tech"
+    trace_host = GRAFANA_URL
     # Use this locally together with docker-compose in the velo-tracing directory
     # trace_host = "http://localhost:3000"
-    print(
-        f"---\nSee trace at:\n{trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
-        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D\n---"
+    logger.info(
+        f"See trace: {trace_host}/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Tem"
+        f"po%22,%7B%22queryType%22:%22traceId%22,%22query%22:%22{span.context.trace_id:x}%22%7D%5D"
     )
 
 
@@ -125,13 +127,15 @@ def stringify_span(span):
     return f"{span.context.trace_id:x}:{span.context.span_id:x}:0:{span.context.trace_flags:x}"
 
 
-def construct_github_action_trace(tracer) -> Any:
-    if os.environ.get("TOKEN") is None:
-        raise ValueError(
-            "TOKEN environment variable not set. Traces cannot be send without token."
-        )
+def construct_github_action_trace(
+    tracer, token: str, preceding_run_ids: str, github_settings: GithubSettings
+) -> Any:
 
-    total_action_dict = request_github_workflow_data()
+    total_action_dict = request_github_workflow_data(
+        token=token,
+        preceding_run_ids=preceding_run_ids,
+        github_settings=github_settings,
+    )
 
     wf_start_times = []
     span_dict = make_empty_span_dict("build and deploy")
@@ -149,7 +153,7 @@ def construct_github_action_trace(tracer) -> Any:
     span_dict["span"] = span
     for wf_span_dict in span_dict["sub_spans"]:
         recurse_add_spans(tracer, span, wf_span_dict)
-        if wf_span_dict["name"] == os.environ["GITHUB_WORKFLOW"]:
+        if wf_span_dict["name"] == github_settings.workflow:
             logger.debug(f"Current wf_span: {stringify_span(wf_span_dict['span'])}")
     span.end(span_dict["end"] or None)
     return span

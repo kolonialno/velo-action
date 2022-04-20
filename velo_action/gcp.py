@@ -13,23 +13,27 @@ from loguru import logger
 
 
 class GCP:
-    def __init__(self, service_account_key=None):
+    def __init__(self, project: str, service_account_key=None):
         self.scoped_credentials = None
+        self.project = project
         if service_account_key:
             self._auth_service_account(service_account_key)
         else:
             logger.info("Using local credentials.")
 
-    @lru_cache
+    @lru_cache(maxsize=128)  # noqa: B019
     def _get_storage_client(self):
-        client = storage.Client(credentials=self.scoped_credentials)
+        logger.info(f"project {self.project}")
+        client = storage.Client(
+            credentials=self.scoped_credentials, project=self.project
+        )
         return client
 
-    @lru_cache
+    @lru_cache(maxsize=128)  # noqa: B019
     def _get_secrets_client(self):
         try:
             secrets_client = secretmanager.SecretManagerServiceClient(
-                credentials=self.scoped_credentials
+                credentials=self.scoped_credentials,
             )
         except DefaultCredentialsError as err:
             raise RuntimeError(
@@ -115,7 +119,7 @@ class GCP:
                 service_account_key.encode("ascii")
             ).decode("ascii")
         except binascii.Error as err:
-            logger.warning(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {err}")
+            logger.debug(f"INPUT_SERVICE_ACCOUNT_KEY was not base64 encoded. {err}")
 
         if google_service_account_key_json_str:
             service_account_info = json.loads(google_service_account_key_json_str)

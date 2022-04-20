@@ -1,25 +1,25 @@
-.PHONY: img_tag tests
-
 IMAGE_NAME:=europe-docker.pkg.dev/nube-hub/docker-public/velo-action
-IMAGE_SIZE_LIMIT="1300 MB"
 
-image_tag:
-	$(eval IMAGE_TAG=$(shell git rev-parse --short HEAD))
-	echo ${IMAGE_TAG}
+.PHONY: version tests version_semver
+
+version_semver:
+	docker run --rm -v "$(PWD):/repo" gittools/gitversion:5.6.10-alpine.3.12-x64-3.1 /repo /showvariable SemVer > version.txt
+
+# The version command is split in to. Forst generate it then read.
+# If these are the same command the echo part will read the "old" version, and create confusion.
+version: version_semver
+	echo "Version: $(shell cat version.txt)"
 
 tests:
 	poetry run pytest velo_action -c pytest.ini -v -m "not docker"
 
-image: image_tag
-	docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-	docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:dev
+image: version
+	docker build -t ${IMAGE_NAME}:$(shell cat version.txt) .
+	docker tag ${IMAGE_NAME}:$(shell cat version.txt) ${IMAGE_NAME}:dev
 
 push: image
-	docker push ${IMAGE_NAME}:${IMAGE_TAG}
+	docker push ${IMAGE_NAME}:$(shell cat version.txt)
 	docker push ${IMAGE_NAME}:dev
-
-image_size:
-	docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -e INPUT_IMAGE=${IMAGE_NAME} -e INPUT_SIZE=${IMAGE_SIZE_LIMIT} wemakeservices/docker-image-size-limit
 
 run:
 	. ./env.dev && poetry run python velo_action/main.py
@@ -47,6 +47,12 @@ velo_render_prod:
 
 velo_deploy_prod:
 	velo deploy-local-dir --environment prod --do-deploy
+
+tfi:
+	cd temp-deploy/terraform && terraform init
+
+tfa: tfi
+	cd temp-deploy/terraform && terraform apply -var-file=values.json
 
 lint: black flake8 mypy pylint yamllint isort markdownlint
 
@@ -95,5 +101,7 @@ docs_publish_staging: docs_generate
 	--storage-name centro-docs-staging \
 	--entity "default/Component/velo"
 
+# Kill the mkdocs server
+# kill -9 $(lsof -ti:8000)
 mkdocs:
 	mkdocs serve --verbose

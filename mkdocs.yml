@@ -9,6 +9,4 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed
 nav:
-  - Developer Guide:
-      - Development: development.md
-      - Release: release.md
+  - Usage: README.md

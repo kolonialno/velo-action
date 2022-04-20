@@ -24,7 +24,7 @@ MD013: false
 MD022: true
 
 # Multiple headings with the same content
-MD024: true
+MD024: false
 
 # Multiple top level headings in the same document
 MD025: true

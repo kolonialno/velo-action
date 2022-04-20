@@ -169,3 +169,19 @@ resource "github_actions_secret" "velo_action_gsa_key" {
   secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}_PUBLIC"
   plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
 }
+
+# Give velo-action GSA permission to upload files to Centro bucket
+# This is a hack to get around the fact that the "CENTRO_DOCS_UPLOADER_GSA_KEY_PROD" Github Org secret is
+# not available for this repo since it is public.
+# The repo is public since private Github Actions is not supported.
+resource "google_storage_bucket_iam_member" "upload_centro_docs_prod" {
+  bucket = "centro-docs-prod"
+  member = "serviceAccount:${google_service_account.velo_action.email}"
+  role   = "roles/storage.legacyBucketWriter"
+}
+
+resource "google_storage_bucket_iam_member" "upload_centro_docs_staging" {
+  bucket = "centro-docs-staging"
+  member = "serviceAccount:${google_service_account.velo_action.email}"
+  role   = "roles/storage.legacyBucketWriter"
+}

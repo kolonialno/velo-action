@@ -1,4 +1,6 @@
-from loguru import logger
+from typing import Dict, List
+
+from semantic_version import Version
 
 from velo_action.octopus.client import OctopusClient
 from velo_action.settings import GithubSettings
@@ -48,15 +50,6 @@ class Release:
         auto_select_packages: bool = True,
     ) -> None:
 
-        if self.exists(project_name, project_version, client=self.client):
-            logger.info(
-                f"Release '{project_version}' already exists at "
-                f"'{self.client.baseurl}/app#/Spaces-1/projects/"
-                f"{project_name}/deployments/releases/{project_version}'. "
-                "Skipping..."
-            )
-            return None
-
         project_id = self.client.lookup_project_id(project_name)
         if auto_select_packages:
             packages = self._determine_latest_deploy_packages(project_id)
@@ -66,16 +59,20 @@ class Release:
         payload = {
             "ProjectId": project_id,
             "Version": project_version,
-            "ReleaseNotes": create_release_notes(
-                github_settings,
-            ),
+            "ReleaseNotes": create_release_notes(github_settings),
         }
 
         if packages:
             payload["SelectedPackages"] = packages
 
         self._octo_object = self.client.post("api/releases", data=payload)
-        return None
+
+    @classmethod
+    def _create_octopus_package_payload(
+        cls, package: str, version: Version
+    ) -> List[Dict[str, str]]:
+        """Create payload for a Octopus Deploy pacakge to be used in a release."""
+        return [{"ActionName": package, "Version": str(version)}]
 
     def form_variable_id_mapping(self) -> dict:
         """
@@ -88,7 +85,7 @@ class Release:
         var_ids = {v["Name"]: v["Id"] for v in variables}
         return var_ids
 
-    def _determine_latest_deploy_packages(self, project_id) -> list:
+    def _determine_latest_deploy_packages(self, project_id) -> List[Dict[str, str]]:
         """
         A release needs to specify the version of all deployment steps. We fetch
         the latest version by selecting the highest available SemVer.
@@ -112,6 +109,24 @@ class Release:
             )
 
         return packages
+
+    def list_available_deploy_packages(self) -> List[str]:
+        """
+        A release needs to specify the version of all deployment steps. We fetch
+        the latest version by selecting the highest available SemVer.
+        """
+        packages: dict = self.client.get(
+            (
+                "api/Spaces-1/feeds/feeds-builtin/packages/versions?"
+                f"packageId={VELO_BOOTSTRAPPER_PACKAGE_ID}&take=1000&includePreRelease=false&includeReleaseNotes=false"
+            )
+        )
+
+        versions = []
+
+        for pkg in packages["Items"]:
+            versions.append(pkg["Version"])
+        return versions
 
     @classmethod
     def exists(cls, project_name, version, client):

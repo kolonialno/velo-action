@@ -1,0 +1,28 @@
+---
+name: Gitversion
+description: |
+  Generate a GitVersion and reformat it to multiple formats.
+outputs:
+  version:
+    description: |
+      Gitversion generated based on commit history
+    value: ${{ steps.gitversion.outputs.version }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # required for gitversion
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.11
+      with:
+        versionSpec: "5.x" # What version of Gitversion to use
+
+    - name: Generate gitversion
+      shell: bash
+      id: gitversion
+      run: |
+        set -x
+        echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"

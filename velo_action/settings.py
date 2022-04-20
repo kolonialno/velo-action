@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from loguru import logger
-from pydantic import BaseSettings, ValidationError, validator
+from pydantic import BaseModel, BaseSettings, Field, ValidationError, validator
 
 from velo_action.version import generate_version
 
@@ -12,6 +12,27 @@ logger.remove()
 SERVICE_NAME = "velo-action"
 GIT_COMMIT_HASH_LENGTH = 40
 VELO_TRACE_ID_NAME = "VeloTraceID"
+APP_SPEC_FILENAMES = ["app.yml", "app.yaml"]
+VELO_RELEASE_GITUHB_URL = "https://github.com/kolonialno/velo/releases"
+VELO_SEM_VER_SPEC_DOCS_URL = "https://python-semanticversion.readthedocs.io/en/latest/reference.html#semantic_version.SimpleSpec"
+
+
+TRACING_URL = "https://tempo.infra.nube.tech:443/v1/traces"
+GRAFANA_URL = "https://grafana.infra.nube.tech"
+
+# Name of the fields in the AppSpec.
+# These must match what is set in the AppSpec in Velo repo.
+APP_SPEC_FIELD_PROJECT = "project"
+APP_SPEC_FIELD_VELO_VERSION = "velo_version"
+
+
+class VeloSettings(BaseModel):
+    """Model to parse the app.yml config file."""
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    project: str = Field(..., alias=APP_SPEC_FIELD_PROJECT)
 
 
 class GithubSettings(BaseSettings):
@@ -36,6 +57,9 @@ class GithubSettings(BaseSettings):
     server_url: str
     repository: str
     actor: str
+    api_url: str
+    run_id: str
+    workflow: str
 
     @validator("sha")
     def validate_commit_id(cls, value):
@@ -68,7 +92,6 @@ class ActionInputs(BaseSettings):
     class Config:
         env_prefix = "INPUT_"
 
-    project: Optional[str]
     workspace: Optional[str] = None
     deploy_to_environments: Union[
         str, List[str]
@@ -96,6 +119,10 @@ class ActionInputs(BaseSettings):
 
     # Variables making debugging easier
     velo_project: str = "nube-velo-prod"  # Project where Velo secrets are stored
+
+    # tracing
+    token: str
+    preceding_run_ids: str
 
     @validator("create_release", always=True)
     def validate_create_release(cls, value, values):
