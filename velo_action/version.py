@@ -1,5 +1,7 @@
 import subprocess
 
+from loguru import logger
+
 
 def generate_version() -> str:
     """Version used to generate release and tag image.
@@ -16,4 +18,5 @@ def generate_version() -> str:
         check=True,
     )
     version = result.stdout.decode(encoding="utf-8").rstrip()
+    logger.info(f"Generate version: {version}")
     return version

@@ -37,7 +37,9 @@ def action(
     try:
         init_trace = False
         tracer = init_tracer(args.service_account_key, service="velo-action")
-        span = construct_github_action_trace(tracer)
+        span = construct_github_action_trace(
+            tracer, args.token, args.preceding_run_ids, github_settings=github_settings
+        )
         trace_id = stringify_span(span)
         init_trace = True
     except Exception as error:  # pylint: disable=broad-except
@@ -51,7 +53,9 @@ def action(
         )
 
     # Read secrets early to fail fast
-    gcloud = gcp.GCP(args.service_account_key)
+    gcloud = gcp.GCP(
+        project=args.velo_project, service_account_key=args.service_account_key
+    )
 
     octopus_server = gcloud.lookup_data(args.octopus_server_secret, args.velo_project)
     octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, args.velo_project)
@@ -77,15 +81,15 @@ def action(
                 f"'{release.client.baseurl}/app#/Spaces-1/projects/"
                 f"{velo_settings.project}/deployments/releases/{args.version}'. "
                 "If you want to recreate this release, please delete it first in Octopus Deploy."
-                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete."
+                "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
                 "Skipping..."
             )
             return None
 
         files = gcloud.upload_from_directory(
-            deploy_folder,
-            velo_artifact_bucket,
-            f"{velo_settings.project}/{args.version}",
+            path=deploy_folder,
+            dest_bucket_name=velo_artifact_bucket,
+            dest_blob_name=f"{velo_settings.project}/{args.version}",
         )
 
         logger.info(
@@ -93,11 +97,17 @@ def action(
             f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
         )
 
+        logger.info(
+            f"Creating a release in Octopus Deploy for project '{velo_settings.project}' with version '{args.version}'"
+        )
         release.create(
             project_name=velo_settings.project,
             project_version=args.version,
             velo_version_spec=velo_settings.version_spec,
             github_settings=github_settings,
+        )
+        logger.info(
+            f"See {release.client.baseurl}/app#/Spaces-1/projects/{velo_settings.project}/deployments/releases/{args.version}"
         )
 
     if args.deploy_to_environments:
@@ -128,13 +138,13 @@ def action(
                     variables=deploy_vars,
                 )
 
+    if init_trace:
+        print_trace_link(span)
+
     # Set outputs in environment to be used by other
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
-
-    if init_trace:
-        print_trace_link(span)
 
     logger.info("Done")
     return None

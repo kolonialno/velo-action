@@ -28,15 +28,16 @@ repos:
     hooks:
       - id: markdownlint
         args:
-          - '--config=.markdownlint.yaml'
+          - --config=.markdownlint.yaml
+        exclude: .github/pull_request_template.md
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: 'v1.50.0' # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+    rev: 'v1.50.0'
     hooks:
       - id: terraform_fmt
 
   - repo: https://github.com/psf/black
-    rev: '22.1.0' # Replace by any tag/version: https://github.com/psf/black/tags
+    rev: '22.1.0'
     hooks:
       - id: black
         args: ["--config=pyproject.toml"]

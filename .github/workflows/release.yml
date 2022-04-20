@@ -8,57 +8,58 @@ on:
       - release/**
 
 jobs:
-  release:
-    name: Create Github release
+  update_action_image:
+    name: Update image version in action.yml
     runs-on: ubuntu-20.04
+    if: ${{ !github.event.pull_request.draft }}
+    outputs:
+      version: ${{ steps.gitversion.outputs.version }}
+      commit_hash: ${{ steps.auto-commit-action.outputs.commit_hash }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Required for GitVersion
+        uses: actions/checkout@v3
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.11
-        with:
-          versionSpec: "5.x" # What version of Gitversion to use
-
-      - name: Generate gitversion
-        run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+      - name: Generate version
+        uses: ./.github/actions/gitversion
         id: gitversion
 
-      - name: Update image version in action.yml
+      - name: Set image version to '${{ steps.gitversion.outputs.version }}' in action.yml
         uses: mikefarah/yq@v4.24.2
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: Commit action.yml with release version
-        uses: EndBug/add-and-commit@v9.0.0
-        with:
-          author_name: Release-action
-          message: |
-            Update action image tag to ${{ steps.gitversion.outputs.version }}
-          add: action.yml
+      - name: Cat action.yml to see changes
+        run: |
+          cat action.yml
 
-      - name: Create Github release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+      # Do not tag the commit
+      - name: Commit action.yml
+        uses: stefanzweifel/git-auto-commit-action@v4.14.0
+        id: auto-commit-action
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ steps.gitversion.outputs.version }}
-          release_name: "velo-action ${{ steps.gitversion.outputs.version }}"
-          draft: false
-          prerelease: false
+          file_pattern: action.yml
+          repository: .
+          commit_message: Release ${{ steps.gitversion.outputs.version }}
 
-      # Having the action.yml use the latest image makes debugging the velo-action much easier.
-      # Just reference a commit and run to test.
-      - name: Revert image version in action.yml to latest
-        uses: mikefarah/yq@v4.24.2
+  release:
+    name: Create Github release
+    runs-on: ubuntu-20.04
+    if: ${{ !github.event.pull_request.draft }}
+    needs:
+      - update_action_image
+    steps:
+      - name: Checkout ${{ needs.update_action_image.outputs.commit_hash }}
+        uses: actions/checkout@v3
         with:
-          cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:latest"' action.yml
+          ref: ${{ needs.update_action_image.outputs.commit_hash }}
 
-      - name: Commit action.yml with latest version
-        uses: EndBug/add-and-commit@v9.0.0
+      # The commits is automatically tagged when the draft is promoted to a release
+      # in the Github UI
+      - name: Create Github release v${{ needs.update_action_image.outputs.version }}
+        uses: softprops/action-gh-release@v1
         with:
-          author_name: Release-action
-          message: |
-            Change action image back to latest
-          add: action.yml
+          draft: true
+          name: v${{ needs.update_action_image.outputs.version }}
+          tag_name: v${{ needs.update_action_image.outputs.version }}
+          target_commitish: ${{ needs.update_action_image.outputs.commit_hash }}
+          generate_release_notes: true

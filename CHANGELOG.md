@@ -40,7 +40,7 @@ vars:
   ...
 ```
 
-## [1.0.0] - 2022-04-12
+## [1.0.0] - 2022-04-20
 
 ### Added
 
@@ -62,21 +62,12 @@ Breaking changes:
     ...
   ```
 
-### Changed
-
-- Reverted back to using [Semantic Versioning](https://semver.org/spec/v2.0.0.html) for.
-
-## [0.4.32] - 2022-04-11
+- Reverted back to using [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-Reformat the releasenotes in Octopus Deploy to use readable HTML formating with links.
-
-## [0.4.29] - 2022-04-11
-
-### Added
-
-Auto-release Velo-action on merge to main.
+- Reformat the releasenotes in Octopus Deploy to use readable HTML formating with links.
+- Generate draft Github release of Velo-action on merge to main.
 
 ## [0.4.0] - 2022-02-01
 
