@@ -9,4 +9,4 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed
 nav:
-  - Usage: usage.md
+  - Usage: README.md
