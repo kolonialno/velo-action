@@ -25,11 +25,19 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
+      - name: Read action.yml to verify changes
+        uses: mikefarah/yq@v4.24.2
+        with:
+          cmd: cat action.yml | yq '.runs.image'
+
       - name: Commit action.yml
         uses: stefanzweifel/git-auto-commit-action@v4.14.0
         with:
+          file_pattern: action.yml
+          repository: .
           commit_message: Release ${{ steps.gitversion.outputs.version }}
           tagging_message: v${{ steps.gitversion.outputs.version }}
+          push_options: --tags
 
       - name: Checkout tag v${{ steps.gitversion.outputs.version }}
         uses: actions/checkout@v3
