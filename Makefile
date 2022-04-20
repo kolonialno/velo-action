@@ -48,6 +48,12 @@ velo_render_prod:
 velo_deploy_prod:
 	velo deploy-local-dir --environment prod --do-deploy
 
+tfi:
+	cd temp-deploy/terraform && terraform init
+
+tfa: tfi
+	cd temp-deploy/terraform && terraform apply -var-file=values.json
+
 lint: black flake8 mypy pylint yamllint isort markdownlint
 
 black:

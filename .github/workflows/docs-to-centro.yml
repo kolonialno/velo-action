@@ -23,7 +23,7 @@ jobs:
         with:
           name: velo-action
           entity: Component
-          service_account_key: ${{ secrets.CENTRO_DOCS_UPLOADER_GSA_KEY_PROD }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
       - name: Publish to Centro staging
         uses: ./.github/actions/docs-to-centro
@@ -32,4 +32,4 @@ jobs:
           name: velo-action
           entity: Component
           env: staging
-          service_account_key: ${{ secrets.CENTRO_DOCS_UPLOADER_GSA_KEY_STAGING }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
