@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2022-04-25
+
+### Changed
+
+Fix bug preventing deploys of existing releases in Octopus Deploy. If a release exist, do not recreate it, but do perform the deploys as specified in `deploy_to_environments`.
+
 ## [1.0.0] - 2022-04-20
 
 ### Added
