@@ -71,11 +71,14 @@ def action(
     octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
     if args.create_release:
         release = Release(client=octo)
+
         velo_settings = read_velo_settings(deploy_folder)
 
-        if release.exists(
+        release_exists = release.exists(
             project_name=velo_settings.project, version=args.version, client=octo
-        ):
+        )
+
+        if release_exists:
             logger.info(
                 f"Release '{args.version}' already exists at "
                 f"'{release.client.baseurl}/app#/Spaces-1/projects/"
@@ -84,7 +87,6 @@ def action(
                 "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
                 "Skipping..."
             )
-
         else:
             files = gcloud.upload_from_directory(
                 path=deploy_folder,
@@ -94,7 +96,8 @@ def action(
 
             logger.info(
                 f"Uploaded {len(files)} release files to "
-                f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
+                "'https://console.cloud.google.com/storage/browser/"
+                f"{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
             )
 
             logger.info(
