@@ -84,30 +84,30 @@ def action(
                 "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
                 "Skipping..."
             )
-            return None
 
-        files = gcloud.upload_from_directory(
-            path=deploy_folder,
-            dest_bucket_name=velo_artifact_bucket,
-            dest_blob_name=f"{velo_settings.project}/{args.version}",
-        )
+        else:
+            files = gcloud.upload_from_directory(
+                path=deploy_folder,
+                dest_bucket_name=velo_artifact_bucket,
+                dest_blob_name=f"{velo_settings.project}/{args.version}",
+            )
 
-        logger.info(
-            f"Uploaded {len(files)} release files to "
-            f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
-        )
+            logger.info(
+                f"Uploaded {len(files)} release files to "
+                f"'https://console.cloud.google.com/storage/browser/{velo_artifact_bucket}/{velo_settings.project}/{args.version}'"
+            )
 
-        logger.info(
-            f"Creating a release in Octopus Deploy for project '{velo_settings.project}' with version '{args.version}'"
-        )
-        release.create(
-            project_name=velo_settings.project,
-            project_version=args.version,
-            github_settings=github_settings,
-        )
-        logger.info(
-            f"See {release.client.baseurl}/app#/Spaces-1/projects/{velo_settings.project}/deployments/releases/{args.version}"
-        )
+            logger.info(
+                f"Creating a release in Octopus Deploy for project '{velo_settings.project}' with version '{args.version}'"
+            )
+            release.create(
+                project_name=velo_settings.project,
+                project_version=args.version,
+                github_settings=github_settings,
+            )
+            logger.info(
+                f"See {release.client.baseurl}/app#/Spaces-1/projects/{velo_settings.project}/deployments/releases/{args.version}"
+            )
 
     if args.deploy_to_environments:
         logger.info(f"Deploy to environments: {args.deploy_to_environments}")
