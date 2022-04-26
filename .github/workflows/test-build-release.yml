@@ -101,6 +101,7 @@ jobs:
 
       - name: Test deploy to environment when a release exist
         uses: ./  # Use action.yml in root
+        if: ${{ !github.event.pull_request.draft }}  # Test is slow since it performs a deploy. Do not run when in draft PR.
         with:
           create_release: 'True'
           deploy_to_environments: staging
