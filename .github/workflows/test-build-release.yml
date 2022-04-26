@@ -82,12 +82,22 @@ jobs:
 
       - name: Verify version
         run:
-          test "${{ steps.test_version.outputs.version }}"=="$(git rev-parse --short HEAD)"
+          if [[ "${{ steps.test_version.outputs.version }}"!="$(git rev-parse --short HEAD)"]]; then
+            exit(1)
+          fi
 
-      - name: Run e2e test - create a release for velo-action
+      - name: Test create a release
         uses: ./  # Use action.yml in root
         with:
           create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
+
+      - name: Test deploy to environment when a release exist
+        uses: ./  # Use action.yml in root
+        with:
+          create_release: 'True'
+          deploy_to_environments: staging
           version: ${{ steps.gitversion.outputs.version }}
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 

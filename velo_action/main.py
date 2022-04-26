@@ -54,10 +54,6 @@ def action(  # pylint: disable=too-many-branches
 
     os.chdir(args.workspace)  # type: ignore
 
-    if not args.create_release and not args.deploy_to_environments:
-        logger.warning("Nothing to do. Exciting now.")
-        return None
-
     if args.create_release or args.deploy_to_environments:
         gcloud = gcp.GCP(
             project=args.velo_project, service_account_key=args.service_account_key
@@ -144,14 +140,13 @@ def action(  # pylint: disable=too-many-branches
                     variables=deploy_vars,
                 )
 
-    if init_trace:
+    if init_trace and (args.deploy_to_environments or args.create_release):
         print_trace_link(span)
 
     # Set outputs in environment to be used by other
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
-    return None
 
 
 if __name__ == "__main__":
