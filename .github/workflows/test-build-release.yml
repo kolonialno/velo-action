@@ -64,6 +64,8 @@ jobs:
     steps:
       - name: Checkout velo-action repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Generate version
         uses: ./.github/actions/gitversion
@@ -73,6 +75,14 @@ jobs:
         uses: mikefarah/yq@v4.24.2
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
+
+      - name: Test generate version
+        uses: ./  # Use action.yml in root
+        id: test_version
+
+      - name: Verify version
+        run:
+          test "${{ steps.test_version.outputs.version }}"=="$(git rev-parse --short HEAD)"
 
       - name: Run e2e test - create a release for velo-action
         uses: ./  # Use action.yml in root

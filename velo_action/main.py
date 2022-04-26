@@ -29,10 +29,10 @@ VELO_DEPLOY_FOLDER_NAME = ".deploy"
 LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
-def action(
+def action(  # pylint: disable=too-many-branches
     args: ActionInputs,
     github_settings: GithubSettings,
-) -> None:  # pylint: disable=too-many-branches
+) -> None:
 
     try:
         init_trace = False
@@ -52,23 +52,27 @@ def action(
             f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
         )
 
-    # Read secrets early to fail fast
-    gcloud = gcp.GCP(
-        project=args.velo_project, service_account_key=args.service_account_key
-    )
-
-    octopus_server = gcloud.lookup_data(args.octopus_server_secret, args.velo_project)
-    octopus_api_key = gcloud.lookup_data(args.octopus_api_key_secret, args.velo_project)
-    velo_artifact_bucket = gcloud.lookup_data(
-        args.velo_artifact_bucket_secret, args.velo_project
-    )
     os.chdir(args.workspace)  # type: ignore
 
     if not args.create_release and not args.deploy_to_environments:
         logger.warning("Nothing to do. Exciting now.")
         return None
 
-    octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
+    if args.create_release or args.deploy_to_environments:
+        gcloud = gcp.GCP(
+            project=args.velo_project, service_account_key=args.service_account_key
+        )
+        octopus_server = gcloud.lookup_data(
+            args.octopus_server_secret, args.velo_project
+        )
+        octopus_api_key = gcloud.lookup_data(
+            args.octopus_api_key_secret, args.velo_project
+        )
+        velo_artifact_bucket = gcloud.lookup_data(
+            args.velo_artifact_bucket_secret, args.velo_project
+        )
+        octo = OctopusClient(server=octopus_server, api_key=octopus_api_key)
+
     if args.create_release:
         release = Release(client=octo)
 
@@ -147,8 +151,6 @@ def action(
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
-
-    logger.info("Done")
     return None
 
 
