@@ -85,7 +85,6 @@ def action(  # pylint: disable=too-many-branches
                 f"{velo_settings.project}/deployments/releases/{args.version}'. "
                 "If you want to recreate this release, please delete it first in Octopus Deploy."
                 "Project -> Releases -> <Select Release> -> : menu in top right corner -> Delete. "
-                "Skipping..."
             )
         else:
             files = gcloud.upload_from_directory(

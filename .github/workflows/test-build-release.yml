@@ -88,6 +88,8 @@ jobs:
           if [[ "${{ steps.test_version.outputs.version }}" != "$git_ref" ]]; then
               echo "Version is not correct."
               exit 1
+          else
+            echo "Version is correct."
           fi
 
       - name: Test create a release
