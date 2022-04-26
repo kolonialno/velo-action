@@ -64,6 +64,8 @@ jobs:
     steps:
       - name: Checkout velo-action repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Generate version
         uses: ./.github/actions/gitversion
@@ -74,10 +76,35 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: Run e2e test - create a release for velo-action
+      - name: Test generate version
+        uses: ./  # Use action.yml in root
+        id: test_version
+
+      - name: Verify version
+        shell: bash
+        run: |
+          git_ref=$(git rev-parse --short HEAD)
+
+          if [[ "${{ steps.test_version.outputs.version }}" != "$git_ref" ]]; then
+              echo "Version is not correct."
+              exit 1
+          else
+            echo "Version is correct."
+          fi
+
+      - name: Test create a release
         uses: ./  # Use action.yml in root
         with:
           create_release: 'True'
+          version: ${{ steps.gitversion.outputs.version }}
+          service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
+
+      - name: Test deploy to environment when a release exist
+        uses: ./  # Use action.yml in root
+        if: ${{ !github.event.pull_request.draft }}  # Test is slow since it performs a deploy. Do not run when in draft PR.
+        with:
+          create_release: 'True'
+          deploy_to_environments: staging
           version: ${{ steps.gitversion.outputs.version }}
           service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD_PUBLIC }}
 
