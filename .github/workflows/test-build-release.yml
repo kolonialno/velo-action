@@ -81,9 +81,13 @@ jobs:
         id: test_version
 
       - name: Verify version
-        run:
-          if [[ "${{ steps.test_version.outputs.version }}"!="$(git rev-parse --short HEAD)"]]; then
-            exit(1)
+        shell: bash
+        run: |
+          git_ref=$(git rev-parse --short HEAD)
+
+          if [[ "${{ steps.test_version.outputs.version }}" != "$git_ref" ]]; then
+              echo "Version is not correct."
+              exit 1
           fi
 
       - name: Test create a release
