@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.16] - 2022-05-10
+## [1.0.17] - 2022-05-11
 
 - Improve workflow and release with comments in PRs.
 - Add test verifying version generation when no inputs is provided.
+- Do not init tracer when `service_account_key` is not provided. This use case is valid when using `velo-action` to only generate version.
 
 ## [1.0.13] - 2022-05-09
 
