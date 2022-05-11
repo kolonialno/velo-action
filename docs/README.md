@@ -7,7 +7,7 @@ See detailes of all inputs in [action.yml](../action.yml).
 ## Usage
 
 ```yaml
-- uses: kolonialno/velo-action@v0.4.0
+- uses: kolonialno/velo-action@v1.0.13
   id: velo
   with:
     # Version used to generate release and tag image. If unspecified, the git short ref is used.
@@ -42,7 +42,7 @@ See detailes of all inputs in [action.yml](../action.yml).
     fetch-depth: 0
 
 - name: Create release
-  uses: kolonialno/velo-action@v0.4.0
+  uses: kolonialno/velo-action@v1.0.13
   with:
     create_release: 'True'
     service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
@@ -60,7 +60,7 @@ If a release does not exist, one will be created.
     fetch-depth: 0
 
 - name: Deploy release
-  uses: kolonialno/velo-action@v0.4.0
+  uses: kolonialno/velo-action@v1.0.13
   with:
     deploy_to_environments: staging
     service_account_key: ${{ secrets.VELO_ACTION_GSA_KEY_PROD }}
@@ -81,7 +81,7 @@ But for repost with many comits it may create a longer string. For this reason y
   with:
     fetch-depth: 0
 
-- uses: kolonialno/velo-action@v0.4.0
+- uses: kolonialno/velo-action@v1.0.13
   id: velo
   with:
     create_release: 'True'
@@ -110,7 +110,7 @@ But for repost with many comits it may create a longer string. For this reason y
   id: gitversion
   run: echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
 
-- uses: kolonialno/velo-action@v0.4.0
+- uses: kolonialno/velo-action@v1.0.13
   id: velo
   with:
     create_release: 'True'

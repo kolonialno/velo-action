@@ -3,7 +3,7 @@ IMAGE_NAME:=europe-docker.pkg.dev/nube-hub/docker-public/velo-action
 .PHONY: version tests version_semver
 
 version_semver:
-	docker run --rm -v "$(PWD):/repo" gittools/gitversion:5.6.10-alpine.3.12-x64-3.1 /repo /showvariable SemVer > version.txt
+	docker run --rm -v "$(PWD):/repo" gittools/gitversion:5.10.1-alpine.3.14-6.0 /repo /showvariable SemVer > version.txt
 
 # The version command is split in to. Forst generate it then read.
 # If these are the same command the echo part will read the "old" version, and create confusion.
