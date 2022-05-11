@@ -2,8 +2,8 @@ import os
 import sys
 from pathlib import Path
 
+import pydantic
 from loguru import logger
-from pydantic import ValidationError
 
 from velo_action import gcp, github
 from velo_action.octopus.client import OctopusClient
@@ -34,18 +34,33 @@ def action(  # pylint: disable=too-many-branches
     args: ActionInputs,
     github_settings: GithubSettings,
 ) -> ActionOutputs:
+    """Velo-action has two seperate usages: to create and deplot a release, or just generate verison.
 
-    try:
-        init_trace = False
-        tracer = init_tracer(args.service_account_key, service="velo-action")
-        span = construct_github_action_trace(
-            tracer, args.token, args.preceding_run_ids, github_settings=github_settings
-        )
-        trace_id = stringify_span(span)
-        init_trace = True
-    except Exception as error:  # pylint: disable=broad-except
-        trace_id = None
-        logger.warning(f"Starting trace failed: {error}", exc_info=error)
+    When just generating version it will be run without any inputs.
+    Meaning no 'service_account_key'.
+    This should not produce an error when initialising the tracing.
+    """
+
+    local_debug = pydantic.parse_obj_as(bool, os.getenv("LOCAL_DEBUG_MODE", "False"))
+    init_trace = False
+
+    if args.service_account_key or local_debug:
+        # Do not init tracer when action is running without a
+        # service_account_key.
+        # This is supported behavior when only generating the verison.
+        try:
+            tracer = init_tracer(args.service_account_key, service="velo-action")
+            span = construct_github_action_trace(
+                tracer,
+                args.token,
+                args.preceding_run_ids,
+                github_settings=github_settings,
+            )
+            trace_id = stringify_span(span)
+            init_trace = True
+        except Exception as error:  # pylint: disable=broad-except
+            trace_id = None
+            logger.warning(f"Starting trace failed: {error}", exc_info=error)
 
     if args.create_release or args.deploy_to_environments:
         deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
@@ -159,7 +174,7 @@ if __name__ == "__main__":
 
         s.workspace = resolve_workspace(s, gh)
 
-    except ValidationError as err:
+    except pydantic.ValidationError as err:
         # Logger is not instantiated yet
         print(err)
         sys.exit(1)
