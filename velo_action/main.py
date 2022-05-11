@@ -47,15 +47,15 @@ def action(  # pylint: disable=too-many-branches
         trace_id = None
         logger.warning(f"Starting trace failed: {error}", exc_info=error)
 
-    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
-    if not deploy_folder.is_dir():
-        sys.exit(
-            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
-        )
-
-    os.chdir(args.workspace)  # type: ignore
-
     if args.create_release or args.deploy_to_environments:
+        deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
+        if not deploy_folder.is_dir():
+            sys.exit(
+                f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
+            )
+
+        os.chdir(args.workspace)  # type: ignore
+
         gcloud = gcp.GCP(
             project=args.velo_project, service_account_key=args.service_account_key
         )

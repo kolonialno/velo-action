@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.16] - 2022-05-10
+
+- Improve workflow and release with comments in PRs.
+- Add test verifying version generation when no inputs is provided.
+
+## [1.0.13] - 2022-05-09
+
+Update dependencies.
+
 ## [1.0.2] - 2022-04-26
 
 Fix bug preventing the action to output the generated version if `service_account_key` input is not set.
