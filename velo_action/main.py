@@ -12,6 +12,7 @@ from velo_action.octopus.release import Release
 from velo_action.settings import (
     VELO_TRACE_ID_NAME,
     ActionInputs,
+    ActionOutputs,
     GithubSettings,
     resolve_workspace,
 )
@@ -32,7 +33,7 @@ LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 def action(  # pylint: disable=too-many-branches
     args: ActionInputs,
     github_settings: GithubSettings,
-) -> None:
+) -> ActionOutputs:
 
     try:
         init_trace = False
@@ -142,10 +143,13 @@ def action(  # pylint: disable=too-many-branches
     if init_trace and (args.deploy_to_environments or args.create_release):
         print_trace_link(span)
 
+    output = ActionOutputs(version=args.version)
     # Set outputs in environment to be used by other
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
+
+    return output
 
 
 if __name__ == "__main__":

@@ -3,7 +3,6 @@ import datetime as dt
 import os
 from typing import Any, Optional
 
-import gcp
 from loguru import logger
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (  # type: ignore
@@ -14,6 +13,7 @@ from opentelemetry.sdk.trace import TracerProvider  # type: ignore
 from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
+from velo_action.gcp import GCP
 from velo_action.github import request_github_workflow_data
 from velo_action.settings import GRAFANA_URL, TRACING_URL, GithubSettings
 
@@ -23,7 +23,7 @@ def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
         TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
     )
     if service_acc_key:
-        gcloud = gcp.GCP(service_acc_key)
+        gcloud = GCP(service_acc_key)
         password = gcloud.lookup_data(
             "tempo-basic-auth-password", "nube-observability-prod"
         )

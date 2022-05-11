@@ -1,5 +1,7 @@
 import os
 from functools import lru_cache
+from tempfile import TemporaryDirectory
+from unittest.mock import MagicMock, patch
 
 import pytest
 import yaml
@@ -7,6 +9,18 @@ import yaml
 from velo_action.settings import ActionInputs, GithubSettings
 
 _ACTION_FILE = os.path.dirname(__file__) + "/../action.yml"
+
+
+@pytest.fixture
+def mock_generate_version_subprocess_run():
+    with patch("velo_action.version.subprocess.run") as mock_subprocess_run:
+        mock_subprocess_run.return_value = MagicMock(
+            args=["git rev-parse --short HEAD"],
+            returncode=0,
+            stdout=b"1af9c7c\n",
+            stderr=b"",
+        )
+        yield mock_subprocess_run
 
 
 def fill_default_action_envvars(monkeypatch):
@@ -66,8 +80,13 @@ def default_action_inputs_env_vars(monkeypatch):
 
 
 @pytest.fixture
-def default_settings(default_github_settings):
-    return ActionInputs(gh=default_github_settings)
+def default_action_inputs():
+    with TemporaryDirectory() as tempdir:
+        return ActionInputs(
+            workspace=tempdir,
+            token="test",
+            preceding_run_ids="test",
+        )
 
 
 @pytest.fixture(scope="session", autouse=True)
