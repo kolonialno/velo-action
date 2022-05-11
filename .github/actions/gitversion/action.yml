@@ -7,6 +7,10 @@ outputs:
     description: |
       Gitversion generated based on commit history
     value: ${{ steps.gitversion.outputs.version }}
+  merged-version:
+    description: |
+      SemVer after merge to main. Only x.y.z without branch name and commit numbers.
+    value: ${{ steps.gitversion.outputs.merged-version }}
 runs:
   using: 'composite'
   steps:
@@ -26,3 +30,11 @@ runs:
       run: |
         set -x
         echo "::set-output name=version::$(dotnet-gitversion /showvariable SemVer)"
+        echo "::set-output name=merged-version::$(dotnet-gitversion /showvariable SemVer | sed 's/[[:alpha:]|(|[:space:]]//g' | awk -F- '{print $1}')"
+
+    - name: Print versions
+      run: |
+        set -x
+        echo "Version is ${{ steps.gitversion.outputs.version }}"
+        echo "Merged version is ${{ steps.gitversion.outputs.merged-version }}"
+      shell: bash

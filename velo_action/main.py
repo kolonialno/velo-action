@@ -12,6 +12,7 @@ from velo_action.octopus.release import Release
 from velo_action.settings import (
     VELO_TRACE_ID_NAME,
     ActionInputs,
+    ActionOutputs,
     GithubSettings,
     resolve_workspace,
 )
@@ -32,7 +33,7 @@ LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 def action(  # pylint: disable=too-many-branches
     args: ActionInputs,
     github_settings: GithubSettings,
-) -> None:
+) -> ActionOutputs:
 
     try:
         init_trace = False
@@ -46,15 +47,15 @@ def action(  # pylint: disable=too-many-branches
         trace_id = None
         logger.warning(f"Starting trace failed: {error}", exc_info=error)
 
-    deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
-    if not deploy_folder.is_dir():
-        sys.exit(
-            f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
-        )
-
-    os.chdir(args.workspace)  # type: ignore
-
     if args.create_release or args.deploy_to_environments:
+        deploy_folder = Path.joinpath(Path(args.workspace), VELO_DEPLOY_FOLDER_NAME)  # type: ignore
+        if not deploy_folder.is_dir():
+            sys.exit(
+                f"Did not find a '{VELO_DEPLOY_FOLDER_NAME}' folder in '{args.workspace}'."
+            )
+
+        os.chdir(args.workspace)  # type: ignore
+
         gcloud = gcp.GCP(
             project=args.velo_project, service_account_key=args.service_account_key
         )
@@ -142,10 +143,13 @@ def action(  # pylint: disable=too-many-branches
     if init_trace and (args.deploy_to_environments or args.create_release):
         print_trace_link(span)
 
+    output = ActionOutputs(version=args.version)
     # Set outputs in environment to be used by other
     # steps in the Github Action Workflows
     logger.info("Github actions outputs:")
     github.actions_output("version", args.version)
+
+    return output
 
 
 if __name__ == "__main__":

@@ -197,6 +197,10 @@ class ActionInputs(BaseSettings):
         return False
 
 
+class ActionOutputs(BaseModel):
+    version: str
+
+
 def resolve_workspace(
     action_inputs: ActionInputs, github_settings: GithubSettings
 ) -> str:
