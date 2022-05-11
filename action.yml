@@ -90,7 +90,7 @@ outputs:
       Version used to crate release and tag image.
 runs:
   using: docker
-  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.16-fix-add-test-for-version-generation.3'
+  image: 'docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.17-fix-trace-init.1'
   args:
     - ${{ inputs.version }}
     - ${{ inputs.create_release }}

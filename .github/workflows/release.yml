@@ -47,8 +47,8 @@ jobs:
           repository: .
           commit_message: Release ${{ steps.gitversion.outputs.version }}
 
-  release:
-    name: Create Github release
+  test_main:
+    name: Test velo action on main
     runs-on: ubuntu-20.04
     needs:
       - update_action_image
@@ -58,15 +58,15 @@ jobs:
         with:
           ref: ${{ needs.update_action_image.outputs.commit_hash }}
 
-      - name: Test velo generate version from commit ${{ needs.update_action_image.outputs.commit_hash }}
-        uses: kolonialno/velo-action@${{ needs.update_action_image.outputs.commit_hash }}
+      - name: Test velo generate version from main
+        uses: kolonialno/velo-action@main
         id: velo
 
       - name: Get git short rev
         shell: bash
         id: short_ref
         run: |
-          echo "::set-output name=sha::$(git rev-parse --short HEAD)"                                                                                                                                                                                                                                   )"
+          echo "::set-output name=sha::$(git rev-parse --short HEAD)"
 
       - name: Fail if version command is not correct
         shell: bash
@@ -76,6 +76,18 @@ jobs:
           echo "Git sha is: ${{ steps.short_ref.outputs.sha }}"
           echo "Version is wrong"
           exit 1
+
+  release:
+    name: Create Github release
+    runs-on: ubuntu-20.04
+    needs:
+      - update_action_image
+      - test_main
+    steps:
+      - name: Checkout ${{ needs.update_action_image.outputs.commit_hash }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.update_action_image.outputs.commit_hash }}
 
       # The commits is automatically tagged when the draft is promoted to a release
       # in the Github UI
