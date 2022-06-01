@@ -294,7 +294,7 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.10.0"
+version = "2.11.0"
 description = "Secret Manager API API client library"
 category = "main"
 optional = false
@@ -302,7 +302,7 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["grpc"]}
-grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
+grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
 proto-plus = ">=1.15.0"
 
 [package.extras]
@@ -1301,7 +1301,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "ce92954a8b875aee226210e2e924dc6c7e59e0e54225008ce63306cf59fa956e"
+content-hash = "efef3f3973da8ee4d1eab61dbddd262ef5dea2691bd48a25b4b4c73df0e5dfd8"
 
 [metadata.files]
 appdirs = [
@@ -1418,8 +1418,8 @@ google-cloud-core = [
     {file = "google_cloud_core-2.3.0-py2.py3-none-any.whl", hash = "sha256:35900f614045a33d5208e1d50f0d7945df98ce088388ce7237e7a2db12d5656e"},
 ]
 google-cloud-secret-manager = [
-    {file = "google-cloud-secret-manager-2.10.0.tar.gz", hash = "sha256:9d07dd7a3d92bde3b44316a6e7b6510324d0d0d9c6a326f89f1d98167aad0212"},
-    {file = "google_cloud_secret_manager-2.10.0-py2.py3-none-any.whl", hash = "sha256:4bc9e8ce0592653c5ef782712c3d7f316d6d3db9bc820c9a1c9b2db6f4e84c6c"},
+    {file = "google-cloud-secret-manager-2.11.0.tar.gz", hash = "sha256:9da1357bb4f51343f7331242318737619efdbffdd54d6d7d0ff2e1cd189eee39"},
+    {file = "google_cloud_secret_manager-2.11.0-py2.py3-none-any.whl", hash = "sha256:c6f7c86d149907bcec0bc5b8d0867a65ca9f1aaee5ae0f82079749ea3039e828"},
 ]
 google-cloud-storage = [
     {file = "google-cloud-storage-2.3.0.tar.gz", hash = "sha256:f4cbb0de5e17228e9c09cdc897d81eaa70e2c396f58513f79de0e824584c8f5b"},
