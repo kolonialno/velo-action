@@ -177,6 +177,8 @@ class ActionInputs(BaseSettings):
     def absolute_path(cls, value):
         if value is None:
             return None
+        if value == "auto-resolve":  # This is for local running
+            value = Path(__file__).parents[1]
 
         path = Path(value).expanduser().resolve()
         if not path.exists():

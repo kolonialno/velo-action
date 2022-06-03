@@ -1,4 +1,5 @@
 IMAGE_NAME:=europe-docker.pkg.dev/nube-hub/docker-public/velo-action
+SHELL := /bin/bash
 
 .PHONY: version tests version_semver
 

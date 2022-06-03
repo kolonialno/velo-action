@@ -178,6 +178,7 @@ if __name__ == "__main__":
         # Logger is not instantiated yet
         print(err)
         sys.exit(1)
-
+    print(gh)
+    print(s)
     logger.add(sys.stdout, level=s.log_level, format=LOG_FORMAT)
     action(s, gh)
