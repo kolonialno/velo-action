@@ -40,8 +40,8 @@ def action(  # pylint: disable=too-many-branches,too-many-locals,too-many-statem
     Meaning no 'service_account_key'.
     This should not produce an error when initialising the tracing.
     """
-    print(args)
-    print(github_settings)
+    logger.info(args)
+    logger.info(github_settings)
     local_debug = pydantic.parse_obj_as(bool, os.getenv("LOCAL_DEBUG_MODE", "False"))
     init_trace = False
 
