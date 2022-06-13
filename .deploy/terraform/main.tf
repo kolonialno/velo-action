@@ -57,6 +57,14 @@ resource "google_storage_bucket_iam_member" "velo_action_cloudbuild_bucket_admin
   member = "serviceAccount:${google_service_account.velo_action.email}"
 }
 
+# since this is a public repo it cannot use the Centro Github Org Secret.
+# give the velo-action GSA access to upload docs to the centro bucket.
+resource "google_storage_bucket_iam_member" "velo_action_docs_bucket" {
+  bucket = "centro-docs-prod"
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:${google_service_account.velo_action.email}"
+}
+
 resource "google_project_iam_member" "velo_action_nube_hub_storage_admin" {
   project = "nube-hub"
   role    = "roles/storage.admin"

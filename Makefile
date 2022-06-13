@@ -93,14 +93,14 @@ docs_publish_prod: docs_generate
 	techdocs-cli publish \
 	--publisher-type googleGcs \
 	--storage-name centro-docs-prod \
-	--entity "default/Component/velo"
+	--entity "default/Component/velo-action"
 
 # require access to nube-centro-staging
 docs_publish_staging: docs_generate
 	techdocs-cli publish \
 	--publisher-type googleGcs \
 	--storage-name centro-docs-staging \
-	--entity "default/Component/velo"
+	--entity "default/Component/velo-action"
 
 # Kill the mkdocs server
 # kill -9 $(lsof -ti:8000)
