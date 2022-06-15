@@ -63,7 +63,7 @@ def init_tracer(
         ),
     ]
     if pydantic.parse_obj_as(bool, os.getenv("LOCAL_DEBUG_MODE", "False")):
-        exporters = ConsoleSpanExporter()
+        exporters = [ConsoleSpanExporter()]
     for exporter in exporters:
         trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(exporter))
 

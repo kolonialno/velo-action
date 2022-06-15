@@ -2,14 +2,14 @@
     {
         "name": "Set up job",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf9658e99e75d7351",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x591d7fea339f6217",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:52:00.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:22:59.000000Z",
+        "end_time": "2022-06-13T07:23:01.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -18,21 +18,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Checkout",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc6abf16e3f666f05",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x6112f253ad00eeeb",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:00.000000Z",
-        "end_time": "2022-06-13T10:52:00.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:23:01.000000Z",
+        "end_time": "2022-06-13T07:23:02.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -41,1838 +41,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x9fa0dc4ac643aa17",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:01.000000Z",
-        "end_time": "2022-06-13T10:52:01.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xb8ad1ff5e6781881",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:02.000000Z",
-        "end_time": "2022-06-13T10:52:09.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc035f9e595b7324b",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:10.000000Z",
-        "end_time": "2022-06-13T10:52:24.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xdee607449db4a789",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:24.000000Z",
-        "end_time": "2022-06-13T10:52:34.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x05a23251a37b50a7",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:52:34.000000Z",
-        "end_time": "2022-06-13T10:53:05.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run poetry run pytest -c pytest.ini -m \"not smoketest\"",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xb7c77b868101f89d",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:53:05.000000Z",
-        "end_time": "2022-06-13T10:53:06.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x9602b7f8da9fc919",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x1716c8f1d79e5793",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf3e15a25698c037f",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x597e924f7945964d",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xf3c4251484299ef5",
-        "start_time": "2022-06-13T10:53:07.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "test",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf3c4251484299ef5",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:53:18.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x830399a6a2e8bedd",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf87a4354c55fe912",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:51:59.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x0c56ade9f838edbe",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:52:00.000000Z",
-        "end_time": "2022-06-13T10:52:00.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x68ab3066e7df544a",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:52:00.000000Z",
-        "end_time": "2022-06-13T10:52:10.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x351f6218fa31fd4f",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:52:10.000000Z",
-        "end_time": "2022-06-13T10:52:26.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x5f380ddf1c03c8ed",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:52:26.000000Z",
-        "end_time": "2022-06-13T10:52:37.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x81a46db995801d3b",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:52:37.000000Z",
-        "end_time": "2022-06-13T10:53:05.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run linter",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x9a8e4bf41eaf33ca",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:53:05.000000Z",
-        "end_time": "2022-06-13T10:53:06.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc4aed344ec18fa38",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:53:06.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x8ed89a7036a1589d",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x39ae32477651d0d5",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x304aa21f3b458b5e",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x069e2d811538cf9b",
-        "start_time": "2022-06-13T10:53:17.000000Z",
-        "end_time": "2022-06-13T10:53:17.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "lint (isort -c .)",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x069e2d811538cf9b",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:56.000000Z",
-        "end_time": "2022-06-13T10:53:19.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x075859963d959fd5",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:51:57.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc9b738a7160d4b50",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xe4e957d00d7382f0",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x29666abfc07fce45",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:52:08.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x17f3dfea780286a6",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:52:09.000000Z",
-        "end_time": "2022-06-13T10:52:23.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc9a27555017da7e0",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:52:23.000000Z",
-        "end_time": "2022-06-13T10:52:33.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xb42b5e8ffd6d34bb",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:52:33.000000Z",
-        "end_time": "2022-06-13T10:53:00.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run linter",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x1ca6dc1163a23f17",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:53:00.000000Z",
-        "end_time": "2022-06-13T10:53:02.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x1a16a034b4866bd4",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:53:14.000000Z",
-        "end_time": "2022-06-13T10:53:14.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xfd2896465c77bfdc",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:53:14.000000Z",
-        "end_time": "2022-06-13T10:53:14.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xaeed8ec3d55f6270",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:53:13.000000Z",
-        "end_time": "2022-06-13T10:53:13.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x6ae6306ac4bb3349",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2e245a3f4dd8eccf",
-        "start_time": "2022-06-13T10:53:02.000000Z",
-        "end_time": "2022-06-13T10:53:12.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "lint (pylint --rcfile=.pylintrc --fail-under=9 --output-format=parseable --reports=no example_app)",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2e245a3f4dd8eccf",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:53:14.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x857eaf9c36b4b4b0",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:52:02.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x38e5fc887a52aca2",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:02.000000Z",
-        "end_time": "2022-06-13T10:52:04.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x4510e33cbc4cf0d8",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:04.000000Z",
-        "end_time": "2022-06-13T10:52:04.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc645fcfec9a86303",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:04.000000Z",
-        "end_time": "2022-06-13T10:52:19.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2c461c14f4d94b92",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:20.000000Z",
-        "end_time": "2022-06-13T10:52:39.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xdfa49535b8040f5e",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:39.000000Z",
-        "end_time": "2022-06-13T10:52:42.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc7998450c1005eea",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:42.000000Z",
-        "end_time": "2022-06-13T10:52:42.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run linter",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x5294bea03311e584",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:42.000000Z",
-        "end_time": "2022-06-13T10:52:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xb067165e916c3857",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:58.000000Z",
-        "end_time": "2022-06-13T10:52:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x02604ec1675eb8e8",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:53:00.000000Z",
-        "end_time": "2022-06-13T10:53:00.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x33f07ddd4ff6d206",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:58.000000Z",
-        "end_time": "2022-06-13T10:52:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x27c662942ca4f049",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x159defe262408bd9",
-        "start_time": "2022-06-13T10:52:58.000000Z",
-        "end_time": "2022-06-13T10:52:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "lint (mypy --config-file=.mypy.ini .)",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x159defe262408bd9",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:53:00.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x13c410d624411878",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:51:57.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x274df8017522dd4e",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x35d295c51f854361",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x397aa46a86db87b7",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:51:59.000000Z",
-        "end_time": "2022-06-13T10:52:08.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x3caa300359f6d4ff",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:52:09.000000Z",
-        "end_time": "2022-06-13T10:52:23.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x956aa3d0e9faa603",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:52:24.000000Z",
-        "end_time": "2022-06-13T10:52:34.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x146c593581f69b53",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:52:34.000000Z",
-        "end_time": "2022-06-13T10:53:04.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run linter",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf390dfb18df2965f",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:53:04.000000Z",
-        "end_time": "2022-06-13T10:53:05.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xee934368f7e6d6de",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:53:06.000000Z",
-        "end_time": "2022-06-13T10:53:11.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x0c451b31acd3b4cf",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:53:12.000000Z",
-        "end_time": "2022-06-13T10:53:12.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2073b8517faf5e82",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:53:11.000000Z",
-        "end_time": "2022-06-13T10:53:11.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x6e68d5117560c22f",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x85b987a3806894a2",
-        "start_time": "2022-06-13T10:53:12.000000Z",
-        "end_time": "2022-06-13T10:53:12.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "lint (black --check --config=pyproject.toml .)",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x85b987a3806894a2",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:56.000000Z",
-        "end_time": "2022-06-13T10:53:12.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xf6fdade7308fae47",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:51:57.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x420be550f552920e",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Read .tool-versions",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x8d5f7c85ff0466f7",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:51:58.000000Z",
-        "end_time": "2022-06-13T10:51:58.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x75ea3f04bbb22ffc",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:51:59.000000Z",
-        "end_time": "2022-06-13T10:52:08.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up Poetry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc38c13b6031f25a3",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:52:09.000000Z",
-        "end_time": "2022-06-13T10:52:24.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xe2f73c8f73a7d13f",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:52:24.000000Z",
-        "end_time": "2022-06-13T10:52:34.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Install dependencies",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x1fed28de1854becd",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:52:35.000000Z",
-        "end_time": "2022-06-13T10:53:03.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Run linter",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xa843d258deb79e9e",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:53:04.000000Z",
-        "end_time": "2022-06-13T10:53:04.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Load Poetry cache",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x9e44ac4bf2d5b674",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:53:05.000000Z",
-        "end_time": "2022-06-13T10:53:15.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xa57faef5c4447e61",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:53:15.000000Z",
-        "end_time": "2022-06-13T10:53:15.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Complete job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x727b1961c032e097",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:53:15.000000Z",
-        "end_time": "2022-06-13T10:53:15.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Python",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x8fc8dbc7f4d659e1",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2db0e8fdd695c4f2",
-        "start_time": "2022-06-13T10:53:15.000000Z",
-        "end_time": "2022-06-13T10:53:15.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "lint (flake8 --config='.flake8' .)",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2db0e8fdd695c4f2",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:53:16.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Set up job",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x89f3e6bfaaaf5731",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:51:56.000000Z",
-        "end_time": "2022-06-13T10:51:57.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Pull europe-docker.pkg.dev/nube-hub/docker-public/velo-action:dev",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xe3371a9d28d29d60",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:52:26.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Checkout",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xa719e17b652235ee",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:52:26.000000Z",
-        "end_time": "2022-06-13T10:52:27.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Generate version",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x02c728ec30aea950",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xdf5ec8b5317b4926",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:52:27.000000Z",
-        "end_time": "2022-06-13T10:52:29.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:23:03.000000Z",
+        "end_time": "2022-06-13T07:23:18.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1881,21 +64,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "Create release 519b2d7 to octopus-deploy prod",
+        "name": "Post Generate version",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x412270c2db07e8f6",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x5fd9669deec637d1",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:52:29.000000Z",
-        "end_time": "2022-06-13T10:52:41.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:23:19.000000Z",
+        "end_time": "2022-06-13T07:23:19.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1904,21 +87,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Post Checkout",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x39971a52b80e258b",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x3f2b1b92093726f4",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:52:41.000000Z",
-        "end_time": "2022-06-13T10:52:41.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:23:19.000000Z",
+        "end_time": "2022-06-13T07:23:19.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1927,21 +110,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Complete job",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2450cb69ba526293",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x2d47e738f9c9b84e",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x441fec0c8bca99dc",
-        "start_time": "2022-06-13T10:52:41.000000Z",
-        "end_time": "2022-06-13T10:52:41.000000Z",
+        "parent_id": "0x7604862706e93f5b",
+        "start_time": "2022-06-13T07:23:19.000000Z",
+        "end_time": "2022-06-13T07:23:19.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1950,21 +133,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "release",
+        "name": "Generate version",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x441fec0c8bca99dc",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x7604862706e93f5b",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:51:57.000000Z",
-        "end_time": "2022-06-13T10:52:42.000000Z",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:22:59.000000Z",
+        "end_time": "2022-06-13T07:23:21.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1973,21 +156,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Set up job",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x56b80417c0062a1e",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x55a71bbabca14381",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:53:30.000000Z",
-        "end_time": "2022-06-13T10:53:33.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:00.000000Z",
+        "end_time": "2022-06-13T07:23:01.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -1996,21 +179,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Checkout",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x18cd5e7750d0ac4d",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x3c1dc82cc552149d",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:53:33.000000Z",
-        "end_time": "2022-06-13T10:53:34.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:01.000000Z",
+        "end_time": "2022-06-13T07:23:02.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2019,21 +202,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "Set up Docker Buildx",
+        "name": "Setup Python env",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x53e584e06315d215",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x0632e70396635d62",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:53:35.000000Z",
-        "end_time": "2022-06-13T10:53:38.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:02.000000Z",
+        "end_time": "2022-06-13T07:23:31.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2042,21 +225,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "Login to GCP Artifact Registry",
+        "name": "Run tests",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x57bb9070ce5e90cf",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xd7a327f196ff1e52",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:53:38.000000Z",
-        "end_time": "2022-06-13T10:53:41.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:31.000000Z",
+        "end_time": "2022-06-13T07:23:34.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2065,21 +248,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "Build and push image",
+        "name": "Post Setup Python env",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x5b18cd99542c62fc",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x38971367e6d96766",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:53:41.000000Z",
-        "end_time": "2022-06-13T10:54:31.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:34.000000Z",
+        "end_time": "2022-06-13T07:23:34.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2088,90 +271,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Build and push image",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x7dbe162e4dec1138",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:54:31.000000Z",
-        "end_time": "2022-06-13T10:54:31.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Login to GCP Artifact Registry",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x99c9b9b48577e00a",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:54:31.000000Z",
-        "end_time": "2022-06-13T10:54:31.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
-        }
-    },
-    {
-        "name": "Post Set up Docker Buildx",
-        "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x5a4c40c8a38a8c6a",
-            "trace_state": "[]"
-        },
-        "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:54:31.000000Z",
-        "end_time": "2022-06-13T10:54:32.000000Z",
-        "status": {
-            "status_code": "UNSET"
-        },
-        "attributes": {},
-        "events": [],
-        "links": [],
-        "resource": {
-            "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Post Checkout",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xc100bdf8218e4f93",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x7aca22d0e07e2bf8",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:54:32.000000Z",
-        "end_time": "2022-06-13T10:54:32.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:36.000000Z",
+        "end_time": "2022-06-13T07:23:36.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2180,21 +294,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "Complete job",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xe67ae8c176501f02",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xfaafc5b2c206cc1f",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x7f128be4d43e1217",
-        "start_time": "2022-06-13T10:54:32.000000Z",
-        "end_time": "2022-06-13T10:54:32.000000Z",
+        "parent_id": "0x8868708dd52ba2b3",
+        "start_time": "2022-06-13T07:23:35.000000Z",
+        "end_time": "2022-06-13T07:23:35.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2203,21 +317,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "build",
+        "name": "Test",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x7f128be4d43e1217",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x8868708dd52ba2b3",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0x2dbacb6a44209632",
-        "start_time": "2022-06-13T10:53:30.000000Z",
-        "end_time": "2022-06-13T10:54:34.000000Z",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:23:01.000000Z",
+        "end_time": "2022-06-13T07:23:36.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2226,21 +340,21 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
-        "name": "CI",
+        "name": "Set up job",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0x2dbacb6a44209632",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x766ebe274ff9a0fa",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
-        "parent_id": "0xa9ac252955479e04",
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-13T10:54:34.000000Z",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:23:32.000000Z",
+        "end_time": "2022-06-13T07:23:37.000000Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2249,21 +363,803 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Checkout",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x8de756a37227268d",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:23:37.000000Z",
+        "end_time": "2022-06-13T07:23:39.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Set up Docker Buildx",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xe3ee33292277808b",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:23:39.000000Z",
+        "end_time": "2022-06-13T07:23:48.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Login to GCP Artifactory",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x7b5ca67303e5da22",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:23:48.000000Z",
+        "end_time": "2022-06-13T07:23:51.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Build and push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.21",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xbfc2d810c51d075f",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:23:51.000000Z",
+        "end_time": "2022-06-13T07:27:11.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Build and push europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.21",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x1fe2fc090b9bc4fc",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:27:11.000000Z",
+        "end_time": "2022-06-13T07:27:11.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Login to GCP Artifactory",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x3d2f68a68d9d6710",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:27:11.000000Z",
+        "end_time": "2022-06-13T07:27:11.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Set up Docker Buildx",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xf5423809b857969e",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:27:11.000000Z",
+        "end_time": "2022-06-13T07:27:13.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Checkout",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x2fc6245cfb48c187",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:27:15.000000Z",
+        "end_time": "2022-06-13T07:27:15.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Complete job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xef4ad0f78fc803a9",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xfb5884bf46bedfe4",
+        "start_time": "2022-06-13T07:27:13.000000Z",
+        "end_time": "2022-06-13T07:27:13.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Build & push image",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xfb5884bf46bedfe4",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:23:33.000000Z",
+        "end_time": "2022-06-13T07:27:15.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Set up job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xa5bcdbd2ecd13c50",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0x9d6f0ba909a8801d",
+        "start_time": "2022-06-13T07:23:32.000000Z",
+        "end_time": "2022-06-13T07:23:33.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Get PR number",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x462cc58074aec285",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0x9d6f0ba909a8801d",
+        "start_time": "2022-06-13T07:23:33.000000Z",
+        "end_time": "2022-06-13T07:23:33.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Add PR comment",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xcd954b281eb10c17",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0x9d6f0ba909a8801d",
+        "start_time": "2022-06-13T07:23:34.000000Z",
+        "end_time": "2022-06-13T07:23:34.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Complete job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x8361474a012b5a2e",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0x9d6f0ba909a8801d",
+        "start_time": "2022-06-13T07:23:33.000000Z",
+        "end_time": "2022-06-13T07:23:33.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Add comment to PR about release",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x9d6f0ba909a8801d",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:23:32.000000Z",
+        "end_time": "2022-06-13T07:23:34.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Set up job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xbad3c704104493d8",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:27:25.000000Z",
+        "end_time": "2022-06-13T07:27:27.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Build mikefarah/yq@v4.25.1",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xc3b3052a7d9a2660",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:27:27.000000Z",
+        "end_time": "2022-06-13T07:27:32.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Checkout velo-action repo",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x82feb53f00be2dba",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:27:32.000000Z",
+        "end_time": "2022-06-13T07:27:33.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Set image version to '1.0.21' in action.yml",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x508a1de907ed62ad",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:27:33.000000Z",
+        "end_time": "2022-06-13T07:27:33.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Test generate version",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xc7d6a5b2d65dee11",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:27:34.000000Z",
+        "end_time": "2022-06-13T07:28:12.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Verify version",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xbeb161366fe97d3f",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:28:12.000000Z",
+        "end_time": "2022-06-13T07:28:12.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Test create a release 1.0.21",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x35bff0a8bc11c22d",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:28:12.000000Z",
+        "end_time": "2022-06-13T07:28:16.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Test deploy to environment when a release 1.0.21 exist",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xb859937c479648f6",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:28:16.000000Z",
+        "end_time": "2022-06-13T07:28:22.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Checkout velo-action repo",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xef3a8b341cac9317",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:28:22.000000Z",
+        "end_time": "2022-06-13T07:28:22.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Complete job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xc2323f84c302cce2",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xc38b6433e0a62eda",
+        "start_time": "2022-06-13T07:28:22.000000Z",
+        "end_time": "2022-06-13T07:28:22.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "E2E tests",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xc38b6433e0a62eda",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:27:25.000000Z",
+        "end_time": "2022-06-13T07:28:23.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Set up job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x9e935c7f6c8f49d5",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:28:35.000000Z",
+        "end_time": "2022-06-13T07:28:37.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Pull europe-docker.pkg.dev/nube-hub/docker-public/velo-action:1.0.13",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x8b1a85871c8dc5f9",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:28:37.000000Z",
+        "end_time": "2022-06-13T07:29:08.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Checkout",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x454c880a96db740c",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:29:08.000000Z",
+        "end_time": "2022-06-13T07:29:09.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Create release 1.0.21",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x4b7d640074c45e1d",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:29:09.000000Z",
+        "end_time": "2022-06-13T07:29:13.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Post Checkout",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x4bd861dedcd44e75",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:29:13.000000Z",
+        "end_time": "2022-06-13T07:29:13.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Complete job",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x226d9aa96964799a",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdadc5a42b99a3843",
+        "start_time": "2022-06-13T07:29:13.000000Z",
+        "end_time": "2022-06-13T07:29:13.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "Create release",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xdadc5a42b99a3843",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0xdf1470424a4d2c67",
+        "start_time": "2022-06-13T07:28:35.000000Z",
+        "end_time": "2022-06-13T07:29:14.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
+        }
+    },
+    {
+        "name": "ci",
+        "context": {
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0xdf1470424a4d2c67",
+            "trace_state": "[]"
+        },
+        "kind": "SpanKind.INTERNAL",
+        "parent_id": "0x6f63ad86f2496a48",
+        "start_time": "2022-06-13T07:22:59.000000Z",
+        "end_time": "2022-06-13T07:29:14.000000Z",
+        "status": {
+            "status_code": "UNSET"
+        },
+        "attributes": {},
+        "events": [],
+        "links": [],
+        "resource": {
+            "service.name": "velo-action",
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     },
     {
         "name": "build and deploy",
         "context": {
-            "trace_id": "0x646da238e7c9c32562e49db70de48395",
-            "span_id": "0xa9ac252955479e04",
+            "trace_id": "0x5dde516331917faf51a4fe388632d1ca",
+            "span_id": "0x6f63ad86f2496a48",
             "trace_state": "[]"
         },
         "kind": "SpanKind.INTERNAL",
         "parent_id": null,
-        "start_time": "2022-06-13T10:51:55.000000Z",
-        "end_time": "2022-06-14T14:41:41.523897Z",
+        "start_time": "2022-06-13T07:22:59.000000Z",
+        "end_time": "2022-06-15T14:22:49.364992Z",
         "status": {
             "status_code": "UNSET"
         },
@@ -2272,8 +1168,8 @@
         "links": [],
         "resource": {
             "service.name": "velo-action",
-            "build.repository": "example-deploy-project",
-            "build.actor": "someone-awesome"
+            "build.repository": "kolonialno/velo-action",
+            "build.actor": "andersliland"
         }
     }
 ]
