@@ -22,22 +22,27 @@ from velo_action.settings import GRAFANA_URL, GithubSettings, ActionInputs
 
 
 def init_tracer(
-        args: ActionInputs,
-        github_settings: GithubSettings,
+    args: ActionInputs,
+    github_settings: GithubSettings,
 ) -> TracerProvider:
-    jwt_content = json.loads(base64.b64decode(args.service_account_key).decode("ascii"))
-    iat = time.time()-10
+    jwt_content = json.loads(base64.b64decode(args.service_account_key).decode("ascii"))  # type: ignore
+    iat = time.time() - 10
     exp = iat + 3600
-    payload = {'iss': jwt_content['client_email'],
-               'sub': jwt_content['client_email'],
-               'aud': 'some-cool-internally-nube-app-endpoint',
-               'email': jwt_content['client_email'],
-               'iat': iat,
-               'exp': exp}
-    additional_headers = {'kid': jwt_content['private_key_id']}
-    signed_jwt = jwt.encode(payload, jwt_content['private_key'],
-                            headers=additional_headers,
-                            algorithm='RS256')
+    payload = {
+        "iss": jwt_content["client_email"],
+        "sub": jwt_content["client_email"],
+        "aud": "some-cool-internally-nube-app-endpoint",
+        "email": jwt_content["client_email"],
+        "iat": iat,
+        "exp": exp,
+    }
+    additional_headers = {"kid": jwt_content["private_key_id"]}
+    signed_jwt = jwt.encode(
+        payload,
+        jwt_content["private_key"],
+        headers=additional_headers,
+        algorithm="RS256",
+    )
     headers = {"Authorization": f"Bearer {signed_jwt}"}
 
     tracing_attributes = {
@@ -55,7 +60,7 @@ def init_tracer(
         OTLPSpanExporter(
             endpoint="https://otel.infra.nube.tech/v1/traces",
             headers=headers,
-        )
+        ),
     ]
     if pydantic.parse_obj_as(bool, os.getenv("LOCAL_DEBUG_MODE", "False")):
         exporters = ConsoleSpanExporter()

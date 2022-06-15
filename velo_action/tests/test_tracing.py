@@ -32,7 +32,6 @@ def gh_token():
 has_token = pytest.mark.skipif(not bool(gh_token()), reason="No Github token found")
 
 
-
 class SpanList:
     def __init__(self):
         self.found_string_spans = []
@@ -40,18 +39,18 @@ class SpanList:
     def write(self, span):
         span = json.loads(span)
 
-        del span['context']['trace_id']
-        del span['context']['span_id']
-        del span['parent_id']
+        del span["context"]["trace_id"]
+        del span["context"]["span_id"]
+        del span["parent_id"]
 
-        if span['name'] == 'build and deploy':
-            del span['end_time']  # Disregard because of dynamic end_time
+        if span["name"] == "build and deploy":
+            del span["end_time"]  # Disregard because of dynamic end_time
 
         self.found_string_spans.append(json.dumps(span))
 
     @staticmethod
     def flush():
-        print('flushed the toilet')
+        print("flushed the toilet")
 
 
 @has_token
@@ -86,7 +85,9 @@ def test_trace_creation():
     trace.set_tracer_provider(TracerProvider(resource=resource))
 
     span_list = SpanList()
-    trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(ConsoleSpanExporter(out=span_list)))
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(ConsoleSpanExporter(out=span_list))
+    )
 
     tracer = trace.get_tracer(__name__)
 
@@ -99,7 +100,7 @@ def test_trace_creation():
         actor=actor,
         api_url="https://api.github.com",
         run_id="2487831087",
-        workflow="CI"
+        workflow="CI",
     )
 
     construct_github_action_trace(
@@ -111,16 +112,16 @@ def test_trace_creation():
 
     assert tracer.span_processor.force_flush()
 
-    with (Path(__file__).parent / "action_trace_output.json").open('r') as f:
+    with (Path(__file__).parent / "action_trace_output.json").open("r") as f:
         required_spans = json.load(f)
 
     for span in required_spans:
-        del span['context']['trace_id']
-        del span['context']['span_id']
-        del span['parent_id']
+        del span["context"]["trace_id"]
+        del span["context"]["span_id"]
+        del span["parent_id"]
 
-        if span['name'] == 'build and deploy':
-            del span['end_time']  # Disregard because of dynamic end_time
+        if span["name"] == "build and deploy":
+            del span["end_time"]  # Disregard because of dynamic end_time
 
         span_list.found_string_spans.remove(json.dumps(span))
 
