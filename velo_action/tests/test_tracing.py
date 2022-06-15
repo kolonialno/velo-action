@@ -6,9 +6,6 @@ from pathlib import Path
 
 import pytest
 from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import (  # type: ignore
-    OTLPSpanExporter,
-)
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource  # type: ignore
 from opentelemetry.sdk.trace import TracerProvider  # type: ignore
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter  # type: ignore
@@ -25,7 +22,7 @@ def gh_token():
             ["gh", "auth", "status", "-t"], capture_output=True, text=True, check=True
         )
         return re.search(r"Token: (.*)\n", result.stderr).group(1)
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         return None
 
 
@@ -104,8 +101,8 @@ def test_trace_creation():
 
     assert tracer.span_processor.force_flush()
 
-    with (Path(__file__).parent / "action_trace_output.json").open("r") as f:
-        required_spans = json.load(f)
+    with (Path(__file__).parent / "action_trace_output.json").open("r") as file:
+        required_spans = json.load(file)
 
     for span in required_spans:
         del span["context"]["trace_id"]
@@ -116,4 +113,4 @@ def test_trace_creation():
             del span["end_time"]  # Disregard because of dynamic end_time
         span_list.found_string_spans.remove(json.dumps(span))
 
-    assert span_list.found_string_spans == []
+    assert not span_list.found_string_spans
