@@ -106,22 +106,7 @@ data "google_secret_manager_secret_version" "velo_action_gsa_key_secret_encoded_
   secret = module.velo_action_gsa_key_secret_encoded.secret_id
 }
 
-# Using the 'velo_action_gsa_key' resource directly wont work since this resource does not output the key if it already exists.
-resource "github_actions_organization_secret" "velo_action_gsa_key" {
-  secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}"
-  visibility      = "private"
-  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_encoded_version.secret_data
-}
 
-data "google_secret_manager_secret_version" "velo_action_gsa_key_secret_json_version" {
-  secret = module.velo_action_gsa_key_secret.secret_id
-}
-
-resource "github_actions_organization_secret" "velo_action_gsa_key_decoded" {
-  secret_name     = "VELO_ACTION_GSA_KEY_JSON_${upper(var.environment)}"
-  visibility      = "private"
-  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
-}
 
 # The secrets below are used by the velo-action
 module "deploy_artifacts_bucket_name" {
@@ -161,21 +146,39 @@ module "velo_action_octopus_serverapi_key" {
   ]
 }
 
-# Push velo-action image to dockerhub.
-# Dockerhub is used since it is publicly available.
-resource "github_actions_organization_secret" "velo_action_gsa_key_github_org_secret" {
-  secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}"
-  visibility      = "private"
-  plaintext_value = google_service_account_key.velo_action_gsa_key.private_key
-}
-
-
 # This secret is used by the Github Action in the velo-action repo to push
 # the velo-action image to the nube-docker-public repo.
 resource "github_actions_secret" "velo_action_gsa_key" {
+  count           = var.environment == "prod" ? 1 : 0
   repository      = "velo-action"
   secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}_PUBLIC"
   plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
+}
+
+resource "github_actions_secret" "velo_action_gsa_key_decoded" {
+  count           = var.environment == "prod" ? 1 : 0
+  repository      = "velo-action"
+  secret_name     = "VELO_ACTION_GSA_KEY_JSON_${upper(var.environment)}"
+  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
+}
+
+# Using the 'velo_action_gsa_key' resource directly wont work since this resource does not output the key if it already exists.
+resource "github_actions_organization_secret" "velo_action_gsa_key" {
+  count           = var.environment == "prod" ? 1 : 0
+  secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}"
+  visibility      = "private"
+  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_encoded_version.secret_data
+}
+
+resource "github_dependabot_organization_secret" "velo_action_gsa_key_dependabot" {
+  count           = var.environment == "prod" ? 1 : 0
+  secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}"
+  visibility      = "private"
+  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_encoded_version.secret_data
+}
+
+data "google_secret_manager_secret_version" "velo_action_gsa_key_secret_json_version" {
+  secret = module.velo_action_gsa_key_secret.secret_id
 }
 
 # Give velo-action GSA permission to upload files to Centro bucket
