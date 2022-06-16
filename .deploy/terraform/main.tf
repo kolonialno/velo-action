@@ -155,6 +155,13 @@ resource "github_actions_secret" "velo_action_gsa_key" {
   plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
 }
 
+resource "github_dependabot_secret" "example_secret" {
+  count           = var.environment == "prod" ? 1 : 0
+  repository      = "velo-action"
+  secret_name     = "VELO_ACTION_GSA_KEY_${upper(var.environment)}_PUBLIC"
+  plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_json_version.secret_data
+}
+
 resource "github_actions_secret" "velo_action_gsa_key_decoded" {
   count           = var.environment == "prod" ? 1 : 0
   repository      = "velo-action"
@@ -169,6 +176,7 @@ resource "github_actions_organization_secret" "velo_action_gsa_key" {
   visibility      = "private"
   plaintext_value = data.google_secret_manager_secret_version.velo_action_gsa_key_secret_encoded_version.secret_data
 }
+
 
 resource "github_dependabot_organization_secret" "velo_action_gsa_key_dependabot" {
   count           = var.environment == "prod" ? 1 : 0
