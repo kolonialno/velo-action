@@ -30,7 +30,7 @@ VELO_DEPLOY_FOLDER_NAME = ".deploy"
 LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} {message}"
 
 
-def action(  # pylint: disable=too-many-branches
+def action(  # pylint: disable=too-many-branches,too-many-locals,too-many-statements
     args: ActionInputs,
     github_settings: GithubSettings,
 ) -> ActionOutputs:

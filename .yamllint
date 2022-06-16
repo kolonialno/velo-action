@@ -17,3 +17,4 @@ ignore: |
   .git
   temp-deploy
   .terraform
+  .venv

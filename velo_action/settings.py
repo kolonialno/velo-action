@@ -1,4 +1,4 @@
-# pylint: disable=no-self-argument,no-self-use
+# pylint: disable=no-self-argument,too-few-public-methods
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -47,7 +47,7 @@ class GithubSettings(BaseSettings):
     NB: This is a seperate class since these fields do not have the 'INPUT_' prefix.
     """
 
-    # pylint: disable=no-self-argument,no-self-use
+    # pylint: disable=no-self-argument
     class Config:
         env_prefix = "GITHUB_"
 
@@ -87,7 +87,7 @@ class ActionInputs(BaseSettings):
     Otherwise you would get an env var in the container with no value, causing an error.
     """
 
-    # pylint: disable=no-self-argument,no-self-use
+    # pylint: disable=no-self-argument
 
     class Config:
         env_prefix = "INPUT_"
@@ -143,12 +143,12 @@ class ActionInputs(BaseSettings):
     def split_list(cls, value):
         if value in ("None", ""):
             return []
-        elif isinstance(value, str):
+        if isinstance(value, str):
             return value.split(",")
-        elif isinstance(value, list):
+        if isinstance(value, list):
             return value
-        else:
-            raise ValueError("Needs to be a string with ',' as separator or a list.")
+
+        raise ValueError("Needs to be a string with ',' as separator or a list.")
 
     @validator(
         "version",
