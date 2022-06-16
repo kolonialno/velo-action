@@ -35,7 +35,7 @@ pylint = "^2.14"
 pytest-mock = "^3.6"
 docker-image-size-limit = "^0.4.1"
 types-requests = "^2.26.0"
-mkdocs-techdocs-core = "^1.0.0"
+mkdocs-techdocs-core = "^1.1.2"
 types-PyYAML = "^6.0.5"
 
 

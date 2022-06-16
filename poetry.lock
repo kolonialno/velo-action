@@ -615,7 +615,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mkdocs-monorepo-plugin"
-version = "0.5.3"
+version = "1.0.2"
 description = "Plugin for adding monorepository support in Mkdocs."
 category = "dev"
 optional = false
@@ -627,7 +627,7 @@ python-slugify = ">=4.0.1"
 
 [[package]]
 name = "mkdocs-techdocs-core"
-version = "1.0.1"
+version = "1.1.2"
 description = "The core MkDocs plugin used by Backstage's TechDocs as a wrapper around multiple MkDocs plugins and Python Markdown extensions"
 category = "dev"
 optional = false
@@ -640,10 +640,10 @@ markdown-inline-graphviz-extension = "1.1"
 mdx-truly-sane-lists = "1.2"
 mkdocs = ">=1.2.2"
 mkdocs-material = "8.1.11"
-mkdocs-monorepo-plugin = ">=0.5.1,<0.6.0"
+mkdocs-monorepo-plugin = ">=1.0.1,<1.1.0"
 plantuml-markdown = "3.5.0"
 pygments = "2.10"
-pymdown-extensions = "9.0"
+pymdown-extensions = "9.3"
 pyparsing = "2.4.7"
 
 [[package]]
@@ -980,11 +980,11 @@ testutils = ["gitpython (>3)"]
 
 [[package]]
 name = "pymdown-extensions"
-version = "9.0"
+version = "9.3"
 description = "Extension pack for Python Markdown."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 Markdown = ">=3.2"
@@ -1311,7 +1311,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "3.10.2"
-content-hash = "b4c324bb112e1ee01c91512a9b5c86f585cbfcd3d34e0256fcc5a97578d777aa"
+content-hash = "3b0ec38d984437b9bd7946802e1326337f1b6cc5763ecf19cb412eca1265fd98"
 
 [metadata.files]
 appdirs = [
@@ -1698,12 +1698,12 @@ mkdocs-material-extensions = [
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
 ]
 mkdocs-monorepo-plugin = [
-    {file = "mkdocs-monorepo-plugin-0.5.3.tar.gz", hash = "sha256:d7957e42b4c9d01075a9a38a6368fa5b42251c4f65178d35deb94769f3bd621d"},
-    {file = "mkdocs_monorepo_plugin-0.5.3-py3-none-any.whl", hash = "sha256:1c8091bda35f9a865c1c0619c22ee37fd127c63bdc8b8d01fe3d160221e5965e"},
+    {file = "mkdocs-monorepo-plugin-1.0.2.tar.gz", hash = "sha256:236c46e4a5c5689d51dc7c55098be5377e09cec1c466b177f0297f25ed1d338f"},
+    {file = "mkdocs_monorepo_plugin-1.0.2-py3-none-any.whl", hash = "sha256:2cdc85c56232752018910a6204b198b99f28e98b75960db6c702f64d540cdbd4"},
 ]
 mkdocs-techdocs-core = [
-    {file = "mkdocs-techdocs-core-1.0.1.tar.gz", hash = "sha256:a49c909eaac2b40abaf64399edbe09ca12fdcf45bead261a9497d65d3314c442"},
-    {file = "mkdocs_techdocs_core-1.0.1-py3-none-any.whl", hash = "sha256:494369821aff90030082f1cf638f15dad25b365a98ffa71a7de4f2501dd3edec"},
+    {file = "mkdocs-techdocs-core-1.1.2.tar.gz", hash = "sha256:fc8626539e8ebf765810aa923a77654658b870ac3857c9875829325afa64711b"},
+    {file = "mkdocs_techdocs_core-1.1.2-py3-none-any.whl", hash = "sha256:441c5dc994ea9b52a53f8938ad659631fa4018dce8b65d933ee13cd8c83b2094"},
 ]
 mypy = [
     {file = "mypy-0.950-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:cf9c261958a769a3bd38c3e133801ebcd284ffb734ea12d01457cb09eacf7d7b"},
@@ -1914,8 +1914,8 @@ pylint = [
     {file = "pylint-2.14.0.tar.gz", hash = "sha256:10d291ea5133645f73fc1b51ca137ad6531223c1461a5632a1db029a9bc033b5"},
 ]
 pymdown-extensions = [
-    {file = "pymdown-extensions-9.0.tar.gz", hash = "sha256:01e4bec7f4b16beaba0087a74496401cf11afd69e3a11fe95cb593e5c698ef40"},
-    {file = "pymdown_extensions-9.0-py3-none-any.whl", hash = "sha256:430cc2fbb30cef2df70edac0b4f62614a6a4d2b06462e32da4ca96098b7c1dfb"},
+    {file = "pymdown-extensions-9.3.tar.gz", hash = "sha256:a80553b243d3ed2d6c27723bcd64ca9887e560e6f4808baa96f36e93061eaf90"},
+    {file = "pymdown_extensions-9.3-py3-none-any.whl", hash = "sha256:b37461a181c1c8103cfe1660081726a0361a8294cbfda88e5b02cefe976f0546"},
 ]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
