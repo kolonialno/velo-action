@@ -9,7 +9,7 @@ velo_action = "velo_action.main:main"
 
 [tool.poetry.dependencies]
 python = "3.10.2"  # msut be the same as the Dockerfile
-semantic-version = "^2.9"
+semantic-version = "^2.10"
 appdirs = "^1.4"
 google = "^3.0"
 google-auth = "^2.6.0"
