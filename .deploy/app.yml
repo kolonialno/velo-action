@@ -9,6 +9,6 @@ vars:
 deploy_spec:
   - src_dir: terraform
     deploy_type: TerraformApplyV1
-    terraform_version: 1.0.8
+    terraform_version: 1.2.3
     var_files:
       - values.json
