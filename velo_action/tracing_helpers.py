@@ -1,8 +1,12 @@
 import base64
 import datetime as dt
+import json
 import os
-from typing import Any, Optional
+import time
+from typing import Any
 
+import jwt
+import pydantic
 from loguru import logger
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (  # type: ignore
@@ -10,42 +14,59 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import (  # type: ign
 )
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource  # type: ignore
 from opentelemetry.sdk.trace import TracerProvider  # type: ignore
-from opentelemetry.sdk.trace.export import BatchSpanProcessor  # type: ignore
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter  # type: ignore
 from opentelemetry.trace import set_span_in_context
 
-from velo_action.gcp import GCP
 from velo_action.github import request_github_workflow_data
-from velo_action.settings import GRAFANA_URL, TRACING_URL, GithubSettings
+from velo_action.settings import GRAFANA_URL, GithubSettings, ActionInputs
 
 
-def init_tracer(service_acc_key: Optional[str], service: str) -> TracerProvider:
-    trace.set_tracer_provider(
-        TracerProvider(resource=Resource.create({SERVICE_NAME: service}))
+def init_tracer(
+    args: ActionInputs,
+    github_settings: GithubSettings,
+) -> TracerProvider:
+    jwt_content = json.loads(base64.b64decode(args.service_account_key).decode("ascii"))  # type: ignore
+    iat = time.time() - 10
+    exp = iat + 3600
+    payload = {
+        "iss": jwt_content["client_email"],
+        "sub": jwt_content["client_email"],
+        "aud": "some-cool-internally-nube-app-endpoint",
+        "email": jwt_content["client_email"],
+        "iat": iat,
+        "exp": exp,
+    }
+    additional_headers = {"kid": jwt_content["private_key_id"]}
+    signed_jwt = jwt.encode(
+        payload,
+        jwt_content["private_key"],
+        headers=additional_headers,
+        algorithm="RS256",
     )
-    if service_acc_key:
-        # When running as an action authenticate
-        # to read GCP secret.
-        gcloud = GCP(service_acc_key)
-        password = gcloud.lookup_data(
-            "tempo-basic-auth-password", "nube-observability-prod"
-        )
-    else:
-        # Used for local debug and testing
-        password = os.environ.get("OTEL_TEMPO_PASSWORD", "")
+    headers = {"Authorization": f"Bearer {signed_jwt}"}
 
-    if not password:
-        raise ValueError(
-            "OTEL_TEMPO_PASSWORD environment variable not set. Traces cannot be send without password."
-        )
+    tracing_attributes = {
+        "build.repository": github_settings.repository,
+        "build.actor": github_settings.actor,
+    }
+    resource = Resource(attributes={SERVICE_NAME: "velo-action", **tracing_attributes})
+    trace.set_tracer_provider(TracerProvider(resource=resource))
 
-    basic_header = base64.b64encode(f"tempo:{password}".encode()).decode()
-    headers = {"Authorization": f"Basic {basic_header}"}
-    otlp_exporter = OTLPSpanExporter(
-        endpoint=TRACING_URL,
-        headers=headers,
-    )
+    exporters = [
+        OTLPSpanExporter(
+            endpoint="https://traces-http.infra.nube.tech/v1/traces",
+            headers=headers,
+        ),
+        OTLPSpanExporter(
+            endpoint="https://otel.infra.nube.tech/v1/traces",
+            headers=headers,
+        ),
+    ]
+    if pydantic.parse_obj_as(bool, os.getenv("LOCAL_DEBUG_MODE", "False")):
+        exporters = [ConsoleSpanExporter()]
+    for exporter in exporters:
+        trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(exporter))
 
-    trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(otlp_exporter))
     return trace.get_tracer(__name__)
 
 

@@ -26,6 +26,8 @@ jobs:
       - name: Run tests
         run: poetry run pytest velo_action -c pytest.ini --capture=no -v -m "not docker"
         id: pytests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   generate-version:
     runs-on: ubuntu-20.04
