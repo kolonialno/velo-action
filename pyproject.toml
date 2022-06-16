@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "velo-action"
-version = "1.0.40"
+version = "1.0.42"
 description = "Github Action used to generate velo deploy version and trigger a release."
 authors = ["Cloud-platform team <team-cloud-platform@oda.com>"]
 
@@ -14,7 +14,7 @@ appdirs = "^1.4"
 google = "^3.0"
 google-auth = "^2.6.0"
 google-cloud-storage = "^2.3"
-google-cloud-secret-manager = "^2.9"
+google-cloud-secret-manager = "^2.11"
 pydantic = "^1.8.2"
 opentelemetry-sdk = "^1.6.2"
 opentelemetry-exporter-jaeger = "^1.11.0"
