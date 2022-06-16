@@ -1,15 +1,14 @@
 ---
 project: velo-action
 vars:
+  app: velo-action
   owner: cloud-platform
   region: europe-west4
   project_id: nube-velo-{{ environment }}
 
 deploy_spec:
-  - app: velo-action
-    component: action
+  - src_dir: terraform
     deploy_type: TerraformApplyV1
-    src_dir: terraform
     terraform_version: 1.0.8
     var_files:
       - values.json
