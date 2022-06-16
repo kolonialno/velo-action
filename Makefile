@@ -32,22 +32,22 @@ run_docker_shell:
 	. ./env.dev && docker-compose build && docker-compose run --rm --entrypoint bash velo-action
 
 velo_render_dev:
-	velo deploy-local-dir --environment dev
+	velo render -e dev
 
 velo_deploy_dev:
-	velo deploy-local-dir --environment dev --do-deploy
+	velo deploy -e dev
 
 velo_render_staging:
-	velo deploy-local-dir --environment staging
+	velo render -e staging
 
 velo_deploy_staging:
-	velo deploy-local-dir --environment staging --do-deploy
+	velo deploy -e staging
 
 velo_render_prod:
-	velo deploy-local-dir --environment prod
+	velo render -e prod
 
 velo_deploy_prod:
-	velo deploy-local-dir --environment prod --do-deploy
+	velo deploy -e prod
 
 tfi:
 	cd temp-deploy/terraform && terraform init
