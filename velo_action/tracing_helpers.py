@@ -45,9 +45,16 @@ def init_tracer(
     )
     headers = {"Authorization": f"Bearer {signed_jwt}"}
 
+    base_url = (
+        f"{github_settings.api_url}/repos/{github_settings.repository}/actions/runs"
+    )
+    workflow_url = f"{base_url}/{github_settings.run_id}/jobs"
+
     tracing_attributes = {
         "build.repository": github_settings.repository,
         "build.actor": github_settings.actor,
+        "build.sha": github_settings.sha,
+        "build.workflow_url": workflow_url,
     }
     resource = Resource(attributes={SERVICE_NAME: "velo-action", **tracing_attributes})
     trace.set_tracer_provider(TracerProvider(resource=resource))
