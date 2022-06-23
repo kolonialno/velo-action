@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup python
+        uses: ./.github/actions/setup-python
+
       - name: Generate version
         uses: ./.github/actions/gitversion
         id: gitversion
@@ -37,9 +40,6 @@ jobs:
 
       - name: git status
         run: git status
-
-      - name: Generate version
-        uses: ./.github/actions/setup-python
 
       - name: Update pyproject.toml version ${{ steps.gitversion.outputs.version }}
         run: poetry version ${{ steps.gitversion.outputs.version }}
