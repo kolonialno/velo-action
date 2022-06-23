@@ -28,9 +28,15 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
+      - name: git status
+        run: git status
+
       - name: Cat action.yml to see changes
         run: |
           cat action.yml
+
+      - name: git status
+        run: git status
 
       - name: Generate version
         uses: ./.github/actions/setup-python
