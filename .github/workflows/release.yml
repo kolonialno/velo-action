@@ -38,6 +38,9 @@ jobs:
       - name: Update pyproject.toml version ${{ steps.gitversion.outputs.version }}
         run: poetry version ${{ steps.gitversion.outputs.version }}
 
+      - name: git status
+        run: git status
+
       # Do not tag the commit
       - name: Commit action.yml and pyproject.toml
         uses: stefanzweifel/git-auto-commit-action@v4.14.0
