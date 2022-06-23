@@ -6,6 +6,10 @@ on:
     branches:
       - main
       - release/**
+    workflows:
+      - '[ci] Test & Build'
+    types:
+      - completed
 
 jobs:
   update_action_image:
