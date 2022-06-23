@@ -31,21 +31,12 @@ jobs:
         with:
           cmd: yq -i '.runs.image = "docker://europe-docker.pkg.dev/nube-hub/docker-public/velo-action:${{ steps.gitversion.outputs.version }}"' action.yml
 
-      - name: git status
-        run: git status
-
       - name: Cat action.yml to see changes
         run: |
           cat action.yml
 
-      - name: git status
-        run: git status
-
       - name: Update pyproject.toml version ${{ steps.gitversion.outputs.version }}
         run: poetry version ${{ steps.gitversion.outputs.version }}
-
-      - name: git status
-        run: git status
 
       # Do not tag the commit
       - name: Commit action.yml and pyproject.toml
