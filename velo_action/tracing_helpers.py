@@ -46,9 +46,9 @@ def init_tracer(
     headers = {"Authorization": f"Bearer {signed_jwt}"}
 
     base_url = (
-        f"{github_settings.api_url}/repos/{github_settings.repository}/actions/runs"
+        f"{github_settings.server_url}/{github_settings.repository}/actions/runs"
     )
-    workflow_url = f"{base_url}/{github_settings.run_id}/jobs"
+    workflow_url = f"{base_url}/{github_settings.run_id}"
 
     tracing_attributes = {
         "build.repository": github_settings.repository,
