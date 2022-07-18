@@ -28,5 +28,4 @@ jobs:
       - uses: pre-commit/action@v3.0.0
         name: ${{ matrix.id }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           extra_args: ${{ matrix.id }}
